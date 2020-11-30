@@ -2,21 +2,34 @@
 NULL
 
 def_attr_dl <- list(
-  transposition = 1.0
+  transposition = 1.0,
+  deletion = 1.0,
+  insertion = 1.0, 
+  substitution = 1.0,
+  normalize = FALSE,
+  symmetric = TRUE,
+  distance = TRUE,
+  tri_inequal = TRUE
 )
 
-attrs <- attributes(getClassDef("Levenshtein")@prototype)[-1]
+attrs <- attributes(getClassDef("StringMeasure")@prototype)[-1]
 attrs[names(def_attr_dl)] <- def_attr_dl
 
-setClass("DamerauLevenshtein", contains = "Levenshtein", 
-         slots = c(transposition = "numeric"),
+setClass("DamerauLevenshtein", contains = c("StringMeasure", "CppMeasure"), 
+         slots = c(deletion = "numeric", 
+                   insertion = "numeric", 
+                   substitution = "numeric",
+                   transposition = "numeric",
+                   normalize = "logical"),
          prototype = do.call(structure, 
                              append(c(.Data = elementwise_cpp_builder("DamerauLevenshtein", attrs)), 
                                     def_attr_dl)),
          validity = function(object) {
            errs <- character()
            # Other weights are compared in parent class
-           equal_weights <- object@deletion == object@transposition
+           equal_weights <- all(object@deletion == object@insertion, 
+                                object@deletion == object@substitution, 
+                                object@deletion == object@transposition)
            if (!object@symmetric & equal_weights)
              errs <- c(errs, "`symmetric` must be TRUE when equal weights are used")
            if (object@symmetric & !equal_weights)
@@ -25,8 +38,18 @@ setClass("DamerauLevenshtein", contains = "Levenshtein",
              errs <- c(errs, "`tri_inequal` must be TRUE when equal weights are used and `distance` is TRUE")
            if (object@tri_inequal & !equal_weights)
              errs <- c(errs, "`tri_inequal` must be FALSE when unequal weights are used")
+           if (object@deletion < 0 | length(object@deletion) != 1)
+             errs <- c(errs, "`deletion` must be a non-negative numeric vector of length 1")
+           if (object@insertion < 0 | length(object@insertion) != 1)
+             errs <- c(errs, "`insertion` must be a non-negative numeric vector of length 1")
+           if (object@substitution < 0 | length(object@substitution) != 1)
+             errs <- c(errs, "`substitution` must be a non-negative numeric vector of length 1")
            if (object@transposition < 0 | length(object@transposition) != 1)
              errs <- c(errs, "`transposition` must be a non-negative numeric vector of length 1")
+           if (length(object@normalize) != 1)
+             errs <- c(errs, "`normalize` must be a logical vector of length 1")
+           if (!(object@similarity | object@distance))
+             errs <- c(errs, "one of `similarity` or `distance` must be TRUE")
            ifelse(length(errs) == 0, TRUE, errs)
          })
 
