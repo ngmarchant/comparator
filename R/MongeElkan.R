@@ -1,4 +1,4 @@
-#' @include abstract.R Levenshtein.R
+#' @include StringMeasure.R Levenshtein.R
 NULL
 
 def_attr_me <- list(

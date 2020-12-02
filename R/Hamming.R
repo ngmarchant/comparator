@@ -1,4 +1,4 @@
-#' @include abstract.R
+#' @include StringMeasure.R CppMeasure.R
 NULL
 
 def_attr_hamming <- list(

@@ -20,10 +20,13 @@ Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
 Collate: 
     'PairwiseMatrix.R'
-    'abstract.R'
+    'Measure.R'
+    'StringMeasure.R'
     'BinaryComp.R'
+    'NumericMeasure.R'
     'Chebyshev.R'
     'Constant.R'
+    'CppMeasure.R'
     'Custom.R'
     'Levenshtein.R'
     'DamerauLevenshtein.R'
@@ -37,5 +40,8 @@ Collate:
     'MongeElkan.R'
     'OSA.R'
     'RcppExports.R'
+    'generalised_mean.R'
     'strcompr.R'
     'util.R'
+Suggests: 
+    testthat

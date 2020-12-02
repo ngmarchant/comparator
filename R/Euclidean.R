@@ -1,4 +1,4 @@
-#' @include abstract.R PairwiseMatrix.R Minkowski.R
+#' @include PairwiseMatrix.R Minkowski.R
 
 attrs <- attributes(getClassDef("Minkowski")@prototype)[-1]
 

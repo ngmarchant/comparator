@@ -1,4 +1,4 @@
-#' @include abstract.R PairwiseMatrix.R
+#' @include NumericMeasure.R PairwiseMatrix.R
 
 def_attr_chebyshev <- list(
   symmetric = TRUE,

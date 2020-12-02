@@ -1,4 +1,4 @@
-#' @include abstract.R PairwiseMatrix.R
+#' @include StringMeasure.R PairwiseMatrix.R
 NULL
 
 def_attr_invocab <- list(

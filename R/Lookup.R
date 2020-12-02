@@ -1,4 +1,4 @@
-#' @include abstract.R
+#' @include StringMeasure.R
 NULL
 
 def_attr_lookup <- list(

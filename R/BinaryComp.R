@@ -1,4 +1,4 @@
-#' @include abstract.R PairwiseMatrix.R
+#' @include StringMeasure.R PairwiseMatrix.R
 
 def_attr_bincomp <- list(
   disagree = 1.0,
