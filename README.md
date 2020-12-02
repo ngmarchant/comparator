@@ -37,6 +37,8 @@ Not yet implemented.
   - `InVocabulary()`: Compares strings using a reference vocabulary.
     Useful for comparing names.
   - `Lookup()`: Retrieves distances/similarities from a lookup table
+  - `BinaryComp()`: Compares strings based on whether they
+    agree/disagree exactly.
 
 ### Numeric measures:
 
@@ -68,11 +70,10 @@ instance, we can define a Levenshtein similarity measure that ignores
 differences in upper/lowercase characters as follows:
 
 ``` r
-measure <- Levenshtein(similarity = TRUE, ignore_case = TRUE)
+measure <- Levenshtein(similarity = TRUE, normalize = TRUE, ignore_case = TRUE)
 ```
 
-This measure can be use to compare vectors of strings element-wise as
-follows:
+A measure can be used to compare vectors element-wise as follows:
 
 ``` r
 x <- c("John Doe", "Jane Doe")

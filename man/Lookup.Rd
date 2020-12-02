@@ -10,7 +10,7 @@ Lookup(
   measure_colname,
   default_match = 0,
   default_nonmatch = Inf,
-  symmetric = FALSE,
+  symmetric = TRUE,
   ignore_case = FALSE,
   ...
 )

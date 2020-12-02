@@ -1,10 +1,21 @@
-#' Virtual measure class from which all other measures are derived
+#' Virtual Measure Class 
 #' 
-#' @slot .Data
-#' @slot symmetric
-#' @slot distance
-#' @slot similarity
-#' @slot tri_inequal
+#' @description This class represents a measure for comparing pairs of objects. 
+#'   It is the base class from which other types of measures (e.g. 
+#'   [`NumericMeasure-class`] and [`StringMeasure-class`]) are derived.
+#' 
+#' @slot .Data a function which takes a pair of arguments `x` and `y`, and 
+#'   returns the elementwise measure scores.
+#' @slot symmetric a logical of length 1. If TRUE, the measure is symmetric 
+#'   in its arguments---i.e. `measure(x, y)` is identical to `measure(y, x)`.
+#' @slot distance a logical of length 1. If `TRUE`, the measure produces  
+#'   distances and satisfies `measure(x, x) = 0`. The measure may not satisfy 
+#'   all of the properties of a distance metric.
+#' @slot similarity a logical of length 1. If `TRUE`, the measure produces 
+#'   similarity scores.
+#' @slot tri_inequal a logical of length 1. If `TRUE`, the measure satisfies 
+#'   the triangle inequality. This is only possible (but not guaranteed) if 
+#'   `distance = TRUE` and `symmetric = TRUE`.
 #' 
 #' @export
 setClass("Measure", 

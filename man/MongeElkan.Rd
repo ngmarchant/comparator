@@ -5,10 +5,10 @@
 \title{Monge-Elkan Measure}
 \usage{
 MongeElkan(
-  inner_measure = Levenshtein(similarity = TRUE),
+  inner_measure = Levenshtein(similarity = TRUE, normalize = TRUE),
   separator = "\\\\s+",
   agg_function = base::mean,
-  symmetrize = TRUE,
+  symmetrize = FALSE,
   ...
 )
 }

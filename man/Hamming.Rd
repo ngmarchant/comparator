@@ -28,3 +28,6 @@ rather than character-by-character.}
 \description{
 TODO
 }
+\note{
+Unlike other edit distances, this is not a metric if normalize is TRUE
+}
