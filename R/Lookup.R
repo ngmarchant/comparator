@@ -88,13 +88,14 @@ normalize_lookup_table <- function(lookup_table, values_colnames, measure_colnam
   if (symmetric) {
     # TODO: be more careful about not duplicating rows with v1 == v2
     # copy table with keys reversed
-    reversed_table <- lookup_table[c(2,1,3)]
+    reversed_table <- lookup_table[,c(2,1,3)]
+    names(reversed_table) <- names(reversed_table)[c(2,1,3)]
     # combine table
     lookup_table <- do.call(rbind, list(lookup_table, reversed_table))
   }
   
   # ensure duplicate rows are removed
-  duplicated_rows <- duplicated(lookup_table[c(1, 2)])
+  duplicated_rows <- duplicated(lookup_table[,c(1, 2)])
   if (any(duplicated_rows)) warning("removing duplicated rows in `lookup_table`")
   lookup_table <- lookup_table[!duplicated_rows,]
   rm(duplicated_rows)
@@ -129,7 +130,7 @@ normalize_lookup_table <- function(lookup_table, values_colnames, measure_colnam
 #' @export
 Lookup <- function(lookup_table, values_colnames, measure_colname, 
                    default_match = 0.0, default_nonmatch = Inf, 
-                   symmetric = FALSE, ignore_case = FALSE, ...) {
+                   symmetric = TRUE, ignore_case = FALSE, ...) {
   if (!is.data.frame(lookup_table)) 
     stop("`lookup_table` must be a data.frame")
   if (!is.character(measure_colname) || length(measure_colname) != 1)
