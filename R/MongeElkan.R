@@ -95,9 +95,9 @@ setClass("MongeElkan", contains = "StringMeasure",
 #' Problem: Algorithms and Applications. In \emph{KDD} (Vol. 2, pp. 267-270).
 #' 
 #' @export
-MongeElkan <- function(inner_measure = Levenshtein(similarity = TRUE), 
+MongeElkan <- function(inner_measure = Levenshtein(similarity = TRUE, normalize = TRUE), 
                        separator = "\\s+", agg_function = base::mean, 
-                       symmetrize = TRUE, ...) {
+                       symmetrize = FALSE, ...) {
   attrs <- c(as.list(environment()), list(...))
   attrs$distance <- inner_measure@distance
   attrs$symmetric <- inner_measure@symmetric && symmetrize
