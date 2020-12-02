@@ -13,9 +13,7 @@ public:
       double transposition = 1.0, bool normalize = false, bool similarity = false) : 
   Levenshtein<ForwardRange>(deletion, insertion, substitution, normalize, similarity),
   tra_weight_(transposition)
-  {
-    this->symmetric_ = this->symmetric_ && this->ins_weight_ == tra_weight_;
-  }
+  {}
 };
 
 

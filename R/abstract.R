@@ -25,7 +25,8 @@ setClass("Measure",
              errs <- c(errs, "`similarity` and `distance` cannot both be TRUE")
            if (length(object@tri_inequal) != 1) 
              errs <- c(errs, "`tri_inequal` must be a logical vector of length 1")
-           
+           if (object@tri_inequal & object@similarity)
+             errs <- c(errs, "`tri_inequal` cannot be TRUE when `similarity` is TRUE")
            ifelse(length(errs) == 0, TRUE, errs)
          })
 

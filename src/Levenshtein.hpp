@@ -22,7 +22,7 @@ public:
   del_weight_(deletion), 
   sub_weight_(substitution)
   {
-    this->symmetric_ = (insertion == deletion) && (insertion == substitution);
+    this->symmetric_ = insertion == deletion;
   } 
   
   double eval(const ForwardRange& x, const ForwardRange& y) const;

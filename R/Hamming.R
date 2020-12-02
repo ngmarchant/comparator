@@ -4,7 +4,8 @@ NULL
 def_attr_hamming <- list(
   normalize = FALSE,
   symmetric = TRUE,
-  distance = TRUE
+  distance = TRUE,
+  tri_inequal = TRUE
 )
 
 attrs <- attributes(getClassDef("StringMeasure")@prototype)[-1]
@@ -23,8 +24,10 @@ setClass("Hamming", contains = c("StringMeasure", "CppMeasure"),
              errs <- c(errs, "`symmetric` must be TRUE")
            if (!(object@similarity | object@distance))
              errs <- c(errs, "one of `similarity` or `distance` must be TRUE")
-           if (object@tri_inequal)
-             errs <- c(errs, "`tri_inequal` must be FALSE")
+           if (object@tri_inequal & object@normalize)
+             errs <- c(errs, "`tri_inequal` must be FALSE when `normalize` is TRUE")
+           if (!object@tri_inequal & !object@normalize)
+             errs <- c(errs, "`tri_inequal` must be TRUE when `normalize` is FALSE")
            ifelse(length(errs) == 0, TRUE, errs)
          })
 
@@ -47,6 +50,7 @@ Hamming <- function(normalize = FALSE, similarity = FALSE, ignore_case = FALSE,
   attrs <- c(as.list(environment()), list(...))
   attrs$similarity <- similarity
   attrs$distance <- !similarity
+  attrs$tri_inequal <- !similarity & !normalize
   arguments <- list("Hamming", ".Data" = elementwise_cpp_builder("Hamming", attrs))
   arguments <- append(arguments, attrs)
   do.call("new", arguments)

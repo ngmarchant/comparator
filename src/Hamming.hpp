@@ -37,10 +37,10 @@ double Hamming<ForwardRange>::eval(const ForwardRange& x, const ForwardRange& y)
   }
 
   if (this->normalize_) {
-    if (nx == 0) {
-      result = 0.0;
+    if (nx != ny) {
+      result = 1.0;
     } else {
-      result = result / nx;
+      result = nx == 0 ? 0 : result / nx;
     }
   }
   

@@ -26,15 +26,15 @@ setClass("Levenshtein", contains = c("StringMeasure", "CppMeasure"),
                                     def_attr_levenshtein)),
          validity = function(object) {
            errs <- character()
-           equal_weights <- object@deletion == object@insertion && object@deletion == object@substitution
-           if (!object@symmetric & equal_weights)
-             errs <- c(errs, "`symmetric` must be TRUE when equal weights are used")
-           if (object@symmetric & !equal_weights)
-             errs <- c(errs, "`symmetric` must be FALSE when unequal weights are used")
-           if (!object@tri_inequal & equal_weights & object@distance)
-             errs <- c(errs, "`tri_inequal` must be TRUE when equal weights are used and `distance` is TRUE")
-           if (object@tri_inequal & !equal_weights)
-             errs <- c(errs, "`tri_inequal` must be FALSE when unequal weights are used")
+           symmetric_weights <- object@deletion == object@insertion
+           if (!object@symmetric & symmetric_weights)
+             errs <- c(errs, "`symmetric` must be TRUE when operations and their inverses have equal weights")
+           if (object@symmetric & !symmetric_weights)
+             errs <- c(errs, "`symmetric` must be FALSE when operations and their inverses do not have equal weights")
+           if (!object@tri_inequal & symmetric_weights & object@distance)
+             errs <- c(errs, "`tri_inequal` must be TRUE when operations and their inverses have equal weights and `distance` is TRUE")
+           if (object@tri_inequal & !symmetric_weights)
+             errs <- c(errs, "`tri_inequal` must be FALSE when operations and their inverses do not have equal weights")
            if (object@deletion < 0 | length(object@deletion) != 1)
              errs <- c(errs, "`deletion` must be a non-negative numeric vector of length 1")
            if (object@insertion < 0 | length(object@insertion) != 1)
@@ -82,11 +82,10 @@ Levenshtein <- function(deletion = 1.0, insertion = 1.0, substitution = 1.0,
                         normalize = FALSE, similarity = FALSE, 
                         ignore_case = FALSE, use_bytes = FALSE, ...) {
   attrs <- c(as.list(environment()), list(...))
-  same_weights <- all(deletion == insertion, deletion == substitution)
   attrs$similarity <- similarity
   attrs$distance <- !similarity
-  attrs$symmetric <- same_weights
-  attrs$tri_inequal <- same_weights & !similarity
+  attrs$symmetric <- deletion == insertion
+  attrs$tri_inequal <- deletion == insertion & !similarity
   arguments <- list("Levenshtein", ".Data" = elementwise_cpp_builder("Levenshtein", attrs))
   arguments <- append(arguments, attrs)
   do.call("new", arguments)

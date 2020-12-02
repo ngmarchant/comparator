@@ -35,12 +35,11 @@ setClass("OSA", contains = c("StringMeasure", "CppMeasure"),
              errs <- c(errs, "`substitution` must be a non-negative numeric vector of length 1")
            if (object@transposition < 0 || length(object@transposition) != 1)
              errs <- c(errs, "`transposition` must be a non-negative numeric vector of length 1")
-           equal_weights <- object@deletion == object@insertion && 
-             object@deletion == object@substitution && object@deletion == object@transposition
-           if (!object@symmetric && equal_weights)
-             errs <- c(errs, "`symmetric` must be TRUE when equal weights are used")
-           if (object@symmetric && !equal_weights)
-             errs <- c(errs, "`symmetric` must be FALSE when unequal weights are used")
+           symmetric_weights <- object@deletion == object@insertion
+           if (!object@symmetric && symmetric_weights)
+             errs <- c(errs, "`symmetric` must be TRUE when operations and their inverses have equal weights")
+           if (object@symmetric && !symmetric_weights)
+             errs <- c(errs, "`symmetric` must be FALSE when operations and their inverses do not have equal weights")
            if (length(object@normalize) != 1)
              errs <- c(errs, "`normalize` must be a logical vector of length 1")
            if (!(object@similarity | object@distance))
@@ -84,10 +83,9 @@ OSA <- function(deletion = 1.0, insertion = 1.0, substitution = 1.0,
                 transposition = 1.0, normalize = FALSE, similarity = FALSE, 
                 ignore_case = FALSE, use_bytes = FALSE, ...) {
   attrs <- c(as.list(environment()), list(...))
-  same_weights <- all(deletion == insertion, deletion == substitution, deletion == transposition)
   attrs$similarity <- similarity
   attrs$distance <- !similarity
-  attrs$symmetric <- same_weights
+  attrs$symmetric <- insertion == deletion
   arguments <- list("OSA", ".Data" = elementwise_cpp_builder("OSA", attrs))
   arguments <- append(arguments, attrs)
   do.call("new", arguments)
