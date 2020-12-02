@@ -2,9 +2,11 @@
 % Please edit documentation in R/LCS.R
 \name{LCS}
 \alias{LCS}
-\title{Longest Common Substring (LCS) Distance}
+\title{Longest Common Subsequence (LCS) Distance}
 \usage{
 LCS(
+  deletion = 1,
+  insertion = 1,
   normalize = FALSE,
   similarity = FALSE,
   ignore_case = FALSE,
@@ -13,6 +15,12 @@ LCS(
 )
 }
 \arguments{
+\item{deletion}{positive cost associated with deletion of a character.
+Defaults to unit cost.}
+
+\item{insertion}{positive cost associated insertion of a character.
+Defaults to unit cost.}
+
 \item{normalize}{a logical. If TRUE, distances are normalized to the
 unit interval. Defaults to FALSE.}
 

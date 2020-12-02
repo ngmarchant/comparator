@@ -36,7 +36,9 @@ std::unique_ptr<Measure<V>> get_measure(const Rcpp::List& params) {
                                as<bool>(params["similarity"]));
   }
   if (classname == "LCS") {
-    return make_unique<LCS<V>>(as<bool>(params["normalize"]), 
+    return make_unique<LCS<V>>(as<double>(params["deletion"]), 
+                               as<double>(params["insertion"]),
+                               as<bool>(params["normalize"]), 
                                as<bool>(params["similarity"]));
   }
   stop("unrecognized measure name");
