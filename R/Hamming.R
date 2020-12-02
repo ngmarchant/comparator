@@ -24,16 +24,18 @@ setClass("Hamming", contains = c("StringMeasure", "CppMeasure"),
              errs <- c(errs, "`symmetric` must be TRUE")
            if (!(object@similarity | object@distance))
              errs <- c(errs, "one of `similarity` or `distance` must be TRUE")
-           if (object@tri_inequal & object@normalize)
-             errs <- c(errs, "`tri_inequal` must be FALSE when `normalize` is TRUE")
-           if (!object@tri_inequal & !object@normalize)
-             errs <- c(errs, "`tri_inequal` must be TRUE when `normalize` is FALSE")
+           if (object@tri_inequal & (object@normalize | object@similarity))
+             errs <- c(errs, "`tri_inequal` must be FALSE when `normalize` or `similarity` is TRUE")
+           if (!object@tri_inequal & !object@normalize & object@distance)
+             errs <- c(errs, "`tri_inequal` must be TRUE when `normalize` is FALSE and `distance` is TRUE")
            ifelse(length(errs) == 0, TRUE, errs)
          })
 
 #' Hamming Distance
 #' 
 #' @description TODO
+#' 
+#' @note Unlike other edit distances, this is not a metric if normalize is TRUE
 #'   
 #' @param normalize a logical. If TRUE, distances are normalized to the 
 #'   unit interval. Defaults to FALSE.

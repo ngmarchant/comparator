@@ -8,7 +8,7 @@ template<class ForwardRange>
 class Hamming : public NormalizableMeasure<ForwardRange> {
 public:
   Hamming(bool normalize = false, bool similarity = false) : 
-  NormalizableMeasure<ForwardRange>(normalize || similarity, true, !similarity, similarity) {} 
+  NormalizableMeasure<ForwardRange>(normalize, true, !similarity, similarity) {} 
   
   double eval(const ForwardRange& x, const ForwardRange& y) const override;
 };
@@ -36,15 +36,19 @@ double Hamming<ForwardRange>::eval(const ForwardRange& x, const ForwardRange& y)
     }
   }
 
+  if (this->similarity_) {
+    result = (nx == ny) ? nx - result : 0.0;
+  }
+
   if (this->normalize_) {
-    if (nx != ny) {
+    if (nx != ny && this->distance_) {
       result = 1.0;
+    } else if (nx == 0) {
+      result = this->distance_ ? 0.0 : 1.0;
     } else {
-      result = nx == 0 ? 0 : result / nx;
+      result = result / nx;
     }
   }
-  
-  if (this->similarity_) result = 1.0 - result;
   
   return result;
 }
