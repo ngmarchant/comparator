@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PairwiseMatrix.hpp"
+#include <Rcpp.h>
 
 template<class Range> 
 class Measure {
@@ -47,6 +48,39 @@ public:
 };
 
 
+// Returns false if the range x is comparable with another range, e.g. because it contains missing values. 
+template<class Range>
+bool is_incomparable(Range x) {
+  return false;
+}
+
+// Deal with incomparable NA values in R vectors
+template<int RTYPE>
+bool is_incomparable(Rcpp::internal::generic_proxy<RTYPE> x) {
+  SEXP xx(x);  
+  switch (TYPEOF(xx)) {
+  case INTSXP: {
+    Rcpp::IntegerVector y(xx);
+    return Rcpp::any(Rcpp::is_na(y));
+  }
+  case REALSXP: {
+    Rcpp::NumericVector y(xx);
+    return Rcpp::any(Rcpp::is_na(y));
+  }
+  // case STRSXP: {
+  //   CharacterVector y;
+  //   return Rcpp::any(Rcpp::is_na(y));
+  // }
+  case LGLSXP: {
+    Rcpp::LogicalVector y(xx);
+    return Rcpp::any(Rcpp::is_na(y));
+  }
+  default: {
+    return false;
+  }
+  }
+} 
+
 template <class RangeIterator>
 template <class ForwardIterator1, class ForwardIterator2>
 PairwiseMatrix Measure<RangeIterator>::pairwise(ForwardIterator1 first1, ForwardIterator1 last1, 
@@ -60,7 +94,11 @@ PairwiseMatrix Measure<RangeIterator>::pairwise(ForwardIterator1 first1, Forward
   while (first2 != last2) {
     curr1 = first1;
     while (curr1 != last1) {
-      *itresult = eval(*curr1, *first2);
+      if (is_incomparable(*curr1) || is_incomparable(*first2)) {
+        *itresult = R_NaReal;
+      } else {
+        *itresult = eval(*curr1, *first2);
+      }
       ++itresult;
       ++curr1;
     }
@@ -87,7 +125,11 @@ PairwiseMatrix Measure<RangeIterator>::pairwise(ForwardIterator first1,
       curr1 = first1;
       if (is_distance()) ++curr1; // only need to compute lower triangle
       while (curr1 != last1) {
-        *itresult = eval(*curr1, *first1);
+        if (is_incomparable(*curr1) || is_incomparable(*first1)) {
+          *itresult = R_NaReal;
+        } else {
+          *itresult = eval(*curr1, *first1);
+        }
         ++itresult;
         ++curr1;
       }
@@ -123,7 +165,11 @@ std::vector<double> Measure<RangeIterator>::elementwise(ForwardIterator1 first1,
   ForwardIterator2 curr2 = first2;
   while (first1 != last1) {
     if (curr2 == last2) curr2 = first2; // recycle
-    *itresult = eval(*first1, *curr2);
+    if (is_incomparable(*first1) || is_incomparable(*curr2)) {
+      *itresult = R_NaReal;
+    } else {
+      *itresult = eval(*first1, *curr2);
+    }
     ++itresult;
     ++curr2;
     ++first1;

@@ -1,7 +1,6 @@
-#include <Rcpp.h>
 #include "Measures.hpp"
-#include "IMeasures.hpp"
 #include "util.hpp"
+#include "IMeasures.hpp"
 
 using namespace Rcpp;
 
