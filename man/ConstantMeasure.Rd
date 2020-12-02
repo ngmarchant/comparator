@@ -7,7 +7,11 @@
 ConstantMeasure(constant = 0, ...)
 }
 \arguments{
-\item{constant}{a non-negative numeric constant}
+\item{constant}{a non-negative numeric vector of length 1. Defaults to zero.}
+}
+\value{
+A \code{ConstantMeasure} instance is returned, which is an S4 class inheriting
+from \code{\linkS4class{StringMeasure}}.
 }
 \description{
 A trivial string measure that returns a constant for any pair of values.

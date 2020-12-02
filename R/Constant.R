@@ -39,7 +39,11 @@ setClass("ConstantMeasure", contains = "StringMeasure",
 #' @description 
 #' A trivial string measure that returns a constant for any pair of values.
 #' 
-#' @param constant a non-negative numeric constant
+#' @param constant a non-negative numeric vector of length 1. Defaults to zero.
+#' 
+#' @return 
+#' A `ConstantMeasure` instance is returned, which is an S4 class inheriting 
+#' from [`StringMeasure-class`].
 #' 
 #' @export
 ConstantMeasure <- function(constant = 0.0, ...) {

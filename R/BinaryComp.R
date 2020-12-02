@@ -1,7 +1,7 @@
 #' @include StringMeasure.R PairwiseMatrix.R
 
 def_attr_bincomp <- list(
-  disagree = 1.0,
+  score = 1.0,
   symmetric = TRUE,
   distance = TRUE
 )
@@ -16,23 +16,23 @@ elementwise_bincomp_builder <- function(attrs) {
       y <- tolower(y)
     }
     if (attrs$distance) {
-      ifelse(x == y, 0, attrs$disagree)
+      ifelse(x == y, 0, attrs$score)
     } else {
-      ifelse(x == y, attrs$disagree, 0)
+      ifelse(x == y, attrs$score, 0)
     }
   }
 }
 
 setClass("BinaryComp", contains = "StringMeasure", 
-         slots = c(disagree = "numeric"), 
+         slots = c(score = "numeric"), 
          prototype = do.call(structure, 
                              append(c(.Data = elementwise_bincomp_builder(attrs)), def_attr_bincomp)),
          validity = function(object) {
            errs <- character()
-           if (length(object@disagree) != 1)
-             errs <- c(errs, "`disagree` must be a numeric vector of length 1")
-           if (object@disagree <= 0)
-             errs <- c(errs, "`disagree` must be positive")
+           if (length(object@score) != 1)
+             errs <- c(errs, "`score` must be a numeric vector of length 1")
+           if (object@score <= 0)
+             errs <- c(errs, "`score` must be positive")
            if (!object@symmetric)
              errs <- c(errs, "`symmetric` must be TRUE")
            if (!(object@similarity | object@distance))
@@ -47,18 +47,30 @@ setClass("BinaryComp", contains = "StringMeasure",
 #' 
 #' @description 
 #' Compares a pair of strings based on whether they are in exact agreement or 
-#' not. Behaves as a distance measure by default.
+#' not.
 #' 
-#' @param disagree positive distance to return if the pair of strings are not 
-#'   identical. Defaults to 1.0.
+#' @details If `similarity = FALSE` (default) the measure behaves like a 
+#' distance. When \eqn{x = y} the measure returns distance 0.0, and when 
+#' \eqn{x \neq y} the measure returns `score`.
+#' 
+#' If `similarity = TRUE` the measure behaves like a similarity. When 
+#' \eqn{x = y} the measure returns `score`, and when \eqn{x \neq y} the 
+#' measure returns 0.0.
+#' 
+#' @param score a numeric of length 1. Positive distance to return if the 
+#'   pair of strings are not identical. Defaults to 1.0.
 #' @param similarity a logical. If TRUE, similarities are returned instead of 
-#'   distances. Specifically `disagree` is returned if the strings agree, 
+#'   distances. Specifically `score` is returned if the strings agree, 
 #'   and 0.0 is returned otherwise.
 #' @param ignore_case a logical. If TRUE, case is ignored when comparing the 
 #'   strings.
+#'   
+#' @return 
+#' A `BinaryComp` instance is returned, which is an S4 class inheriting from 
+#' [`StringMeasure-class`].
 #' 
 #' @export
-BinaryComp <- function(disagree = 1.0, similarity = FALSE, ignore_case = FALSE, ...) {
+BinaryComp <- function(score = 1.0, similarity = FALSE, ignore_case = FALSE, ...) {
   attrs <- c(as.list(environment()), list(...))
   attrs$distance <- !similarity
   attrs$similarity <- similarity
@@ -77,9 +89,9 @@ setMethod(pairwise, signature = c(measure = "BinaryComp", x = "vector", y = "vec
             scores <- matrix(x, nrow=length(x), ncol=length(y))
             scores <- sweep(scores, 2, y, FUN = "==")
             if (measure@distance) {
-              scores <- ifelse(scores, 0, measure@disagree)
+              scores <- ifelse(scores, 0, measure@score)
             } else {
-              scores <- ifelse(scores, measure@disagree, 0)
+              scores <- ifelse(scores, measure@score, 0)
             }
             if (!return_matrix) scores <- as.PairwiseMatrix(scores)
             scores
