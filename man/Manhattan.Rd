@@ -6,6 +6,37 @@
 \usage{
 Manhattan(...)
 }
+\value{
+A \code{Manhattan} instance is returned, which is an S4 class inheriting
+from \code{\linkS4class{NumericMeasure}}.
+}
 \description{
-TODO
+The Manhattan distance (a.k.a. L-1 distance) between two vectors \eqn{x} and
+\eqn{y} is the sum of the absolute differences of their Cartesian
+coordinates:
+\deqn{Manhattan(x,y) = \sum_{i = 1}^{n} |x_i - q_i|.}
+}
+\note{
+The Manhattan distance is a special case of the \code{\link{Minkowski}}
+distance with \eqn{p = 1}.
+}
+\examples{
+## Distance between two vectors
+x <- c(0, 1, 0, 1, 0)
+y <- seq_len(5)
+Manhattan()(x, y)
+
+## Distance between rows (elementwise) of two matrices
+measure <- Manhattan()
+x <- matrix(rnorm(25), nrow = 5)
+y <- matrix(rnorm(5), nrow = 1)
+elementwise(measure, x, y)
+
+## Distance between rows (pairwise) of two matrices
+pairwise(measure, x, y)
+
+}
+\seealso{
+Other numeric measures include \code{\link{Euclidean}}, \code{\link{Minkowski}} and
+\code{\link{Chebyshev}}.
 }

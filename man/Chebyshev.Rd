@@ -6,6 +6,37 @@
 \usage{
 Chebyshev(...)
 }
+\value{
+A \code{Chebyshev} instance is returned, which is an S4 class inheriting
+from \code{\linkS4class{NumericMeasure}}.
+}
 \description{
-TODO
+The Chebyshev distance (a.k.a. L-∞ distance or ) between two vectors \eqn{x}
+and \eqn{y} is the greatest of the absolute differences between each
+coordinate:
+\deqn{Chebyshev(x,y) = \max_i |x_i - q_i|.}
+}
+\note{
+The Chebyshev distance is a limiting case of the \code{\link{Minkowski}}
+distance where \eqn{p \to \infty}{p -> Inf}.
+}
+\examples{
+## Distance between two vectors
+x <- c(0, 1, 0, 1, 0)
+y <- seq_len(5)
+Chebyshev()(x, y)
+
+## Distance between rows (elementwise) of two matrices
+measure <- Chebyshev()
+x <- matrix(rnorm(25), nrow = 5)
+y <- matrix(rnorm(5), nrow = 1)
+elementwise(measure, x, y)
+
+## Distance between rows (pairwise) of two matrices
+pairwise(measure, x, y)
+
+}
+\seealso{
+Other numeric measures include \code{\link{Manhattan}}, \code{\link{Euclidean}} and
+\code{\link{Minkowski}}.
 }

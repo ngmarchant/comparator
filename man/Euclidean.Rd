@@ -6,6 +6,37 @@
 \usage{
 Euclidean(...)
 }
+\value{
+A \code{Euclidean} instance is returned, which is an S4 class inheriting
+from \code{\linkS4class{NumericMeasure}}.
+}
 \description{
-TODO
+The Euclidean distance (a.k.a. L-2 distance) between two vectors \eqn{x} and
+\eqn{y} is the square root of the sum of the squared differences of the
+Cartesian coordinates:
+\deqn{Euclidean(x, y) = \sqrt(\sum_{i = 1}^{n} (x_i - q_i)^2.}
+}
+\note{
+The Euclidean distance is a special case of the \code{\link{Minkowski}}
+distance with \eqn{p = 2}.
+}
+\examples{
+## Distance between two vectors
+x <- c(0, 1, 0, 1, 0)
+y <- seq_len(5)
+Euclidean()(x, y)
+
+## Distance between rows (elementwise) of two matrices
+measure <- Euclidean()
+x <- matrix(rnorm(25), nrow = 5)
+y <- matrix(rnorm(5), nrow = 1)
+elementwise(measure, x, y)
+
+## Distance between rows (pairwise) of two matrices
+pairwise(measure, x, y)
+
+}
+\seealso{
+Other numeric measures include \code{\link{Manhattan}}, \code{\link{Minkowski}} and
+\code{\link{Chebyshev}}.
 }

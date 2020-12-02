@@ -7,9 +7,38 @@
 Minkowski(p = 2, ...)
 }
 \arguments{
-\item{p}{TODO}
+\item{p}{a positive numeric specifying the order of the distance. Defaults
+to 2 (Euclidean distance). If \code{p < 1} the Minkowski distance does not
+satisfy the triangle inequality and is therefore not a proper distance
+metric.}
+}
+\value{
+A \code{Minkowski} instance is returned, which is an S4 class inheriting
+from \code{\linkS4class{NumericMeasure}}.
 }
 \description{
-Compares a pair of strings based on whether they are in exact agreement or
-not. Behaves as a distance measure by default.
+The Minkowski distance (a.k.a. L-p distance) between two vectors \eqn{x} and
+\eqn{y} is the p-th root of the sum of the absolute differences of their
+Cartesian coordinates raised to the p-th power:
+\deqn{Minkowski(x,y) = (\sum_{i = 1}^{n} |x_i - q_i|^p)^{1/p}.}
+}
+\examples{
+## Distance between two vectors
+x <- c(0, 1, 0, 1, 0)
+y <- seq_len(5)
+Minkowski()(x, y)
+
+## Distance between rows (elementwise) of two matrices
+measure <- Minkowski()
+x <- matrix(rnorm(25), nrow = 5)
+y <- matrix(rnorm(5), nrow = 1)
+elementwise(measure, x, y)
+
+## Distance between rows (pairwise) of two matrices
+pairwise(measure, x, y)
+
+}
+\seealso{
+Other numeric measures include \code{\link{Manhattan}}, \code{\link{Euclidean}} and
+\code{\link{Chebyshev}}.
 }

@@ -33,3 +33,18 @@ setClass("NumericMeasure",
            errs <- character()
            ifelse(length(errs) == 0, TRUE, errs)
          })
+
+#' @export
+setMethod(elementwise, signature = c(measure = "NumericMeasure", x = "matrix", y = "matrix"), 
+          function(measure, x, y, ...) {
+            # Using the fact that the elementwise measure is stored in the .Data slot
+            measure(x, y)
+          }
+)
+
+#' @export
+setMethod(pairwise, signature = c(measure = "NumericMeasure", x = "matrix", y = "missing"), 
+          function(measure, x, y, return_matrix, ...) {
+            pairwise(measure, x, NULL, return_matrix)
+          }
+)

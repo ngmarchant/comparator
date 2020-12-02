@@ -18,7 +18,12 @@ elementwise_chebyshev_builder <- function(attrs) {
     if (is.null(dim(y))) dim(y) <- c(1, length(x))
     mode(x) <- "numeric"
     mode(y) <- "numeric"
-    # TODO: recycling
+    # recycle as needed if one matrix has fewer rows than the other
+    if (nrow(x) < nrow(y)) {
+      x <- x[rep_len(seq_len(nrow(x)), nrow(y)),]
+    } else if (nrow(x) > nrow(y)) {
+      y <- y[rep_len(seq_len(nrow(y)), nrow(x)),]
+    }
     result <- dist(x, y, method="Chebyshev", by_rows = TRUE, pairwise=TRUE)
     as.numeric(result)
   }
@@ -45,7 +50,36 @@ setClass("Chebyshev", contains = "NumericMeasure",
 #' Chebyshev Distance
 #' 
 #' @description 
-#' TODO
+#' The Chebyshev distance (a.k.a. L-∞ distance or ) between two vectors \eqn{x} 
+#' and \eqn{y} is the greatest of the absolute differences between each 
+#' coordinate: 
+#' \deqn{Chebyshev(x,y) = \max_i |x_i - q_i|.}
+#' 
+#' @return 
+#' A `Chebyshev` instance is returned, which is an S4 class inheriting 
+#' from [`NumericMeasure-class`].
+#' 
+#' @note The Chebyshev distance is a limiting case of the [`Minkowski`] 
+#' distance where \eqn{p \to \infty}{p -> Inf}.
+#' 
+#' @seealso 
+#' Other numeric measures include [`Manhattan`], [`Euclidean`] and 
+#' [`Minkowski`].
+#' 
+#' @examples 
+#' ## Distance between two vectors
+#' x <- c(0, 1, 0, 1, 0)
+#' y <- seq_len(5)
+#' Chebyshev()(x, y)
+#' 
+#' ## Distance between rows (elementwise) of two matrices
+#' measure <- Chebyshev()
+#' x <- matrix(rnorm(25), nrow = 5)
+#' y <- matrix(rnorm(5), nrow = 1)
+#' elementwise(measure, x, y)
+#' 
+#' ## Distance between rows (pairwise) of two matrices
+#' pairwise(measure, x, y)
 #' 
 #' @export
 Chebyshev <- function(...) {
@@ -57,7 +91,7 @@ Chebyshev <- function(...) {
 
 #' @importFrom proxy dist as.matrix
 #' @export
-setMethod(pairwise, signature = c(measure = "Chebyshev", x = "vector", y = "vector"), 
+setMethod(pairwise, signature = c(measure = "Chebyshev", x = "matrix", y = "matrix"), 
           function(measure, x, y, return_matrix, ...) {
             # proxy::dist expects rows, not vectors
             if (is.null(dim(x))) dim(x) <- c(1, length(x))
@@ -76,7 +110,7 @@ setMethod(pairwise, signature = c(measure = "Chebyshev", x = "vector", y = "vect
 
 #' @importFrom proxy dist as.matrix
 #' @export
-setMethod(pairwise, signature = c(measure = "Chebyshev", x = "vector", y = "NULL"), 
+setMethod(pairwise, signature = c(measure = "Chebyshev", x = "matrix", y = "NULL"), 
           function(measure, x, y, return_matrix, ...) {
             if (is.null(dim(x))) dim(x) <- c(1, length(x))
             mode(x) <- "numeric"
