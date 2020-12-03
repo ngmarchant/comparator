@@ -36,13 +36,17 @@ measure unchanged when multiplied by this one.}
 compared is in \code{vocab}. Defaults to 1.0, which would leave another
 measure unchanged when multiplied by this one.}
 
-\item{ignore_case}{a logical. If TRUE, case is ignored when computing the
-distance/similarity.}
+\item{ignore_case}{a logical. If TRUE, case is ignored when comparing the
+strings.}
+}
+\value{
+An \code{InVocabulary} instance is returned, which is an S4 class inheriting from
+\code{\linkS4class{StringMeasure}}.
 }
 \description{
-This measure compares strings using a reference vocabulary. Different scores
-are returned depending on whether both/one/neither of the strings are
-in the reference vocabulary.
+This measure compares a pair of strings \eqn{x} and \eqn{y} using a
+reference vocabulary. Different scores are returned depending on whether
+both/one/neither of \eqn{x} and \eqn{y} are in the reference vocabulary.
 }
 \details{
 This measure is not intended to serve as a useful comparison
@@ -55,4 +59,19 @@ configured to down-weight the similarity of distinct (known) names like
 deceptively similar in terms of edit distance. The normalized Levenshtein
 similarity for these two names is 75\%, but their similarity can be
 reduced to 53\% if multiplied by this measure with the default settings.
+}
+\examples{
+## Compare names with possible typos using a reference of known names
+known_names <- c("Roberto", "Umberto", "Alberto", "Emberto", "Norberto", "Humberto")
+m1 <- InVocabulary(known_names)
+m2 <- Levenshtein(similarity = TRUE, normalize = TRUE)
+x <- "Emberto"
+y <- c("Enberto", "Umberto")
+# "Emberto" and "Umberto" are likely to refer to distinct people (since 
+# they are known distinct names) so their Levenshtein similarity is 
+# downweighted to 0.61. "Emberto" and "Enberto" may refer to the same 
+# person (likely typo), so their Levenshtein similarity of 0.87 is not 
+# downweighted.
+similarities <- m1(x, y) * m2(x, y)
+
 }

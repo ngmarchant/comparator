@@ -24,15 +24,71 @@ Defaults to unit cost.}
 \item{normalize}{a logical. If TRUE, distances are normalized to the
 unit interval. Defaults to FALSE.}
 
-\item{similarity}{a logical. If TRUE, similarity scores on the unit interval
-are returned instead of distances. Defaults to FALSE.}
+\item{similarity}{a logical. If TRUE, similarity scores are returned
+instead of distances. Defaults to FALSE.}
 
-\item{ignore_case}{a logical. If TRUE, case is ignored when computing the
-distance. Defaults to FALSE.}
+\item{ignore_case}{a logical. If TRUE, case is ignored when comparing the
+strings.}
 
-\item{use_bytes}{a logical. If TRUE, the measure is computed byte-by-byte
+\item{use_bytes}{a logical. If TRUE, strings are compared byte-by-byte
 rather than character-by-character.}
 }
+\value{
+A \code{LCS} instance is returned, which is an S4 class inheriting from
+\code{\linkS4class{StringMeasure}}.
+}
 \description{
-#TODO
+The Longest Common Subsequence (LCS) distance between two strings \eqn{x}
+and \eqn{y} is the minimum cost of single-character operations (insertions,
+and deletions) required to transform  \eqn{x} into \eqn{y}. The LCS
+similarity is more commonly used, which can be interpreted as the length
+of the longest subsequence common to \eqn{x} and \eqn{y}.
+}
+\details{
+An LCS similarity is returned if \code{similarity = TRUE}, which
+is defined as
+\deqn{sim(x, y) = \frac{w_d |x| + w_i |y| - dist(x, y)}{2},}{sim(x, y) = (w_d |x| + w_i |y| - dist(x, y))/2}
+where \eqn{|x|}, \eqn{|y|} are the number of characters in \eqn{x} and
+\eqn{y} respectively, \eqn{dist} is the LCS distance, \eqn{w_d}
+is the cost of a deletion and \eqn{w_i} is the cost of an insertion.
+
+Normalization of the LCS distance/similarity to the unit interval
+is also supported by setting \code{normalize = TRUE}. The normalization approach
+follows Yujian and Bo (2007), and ensures that the distance remains a metric
+when the costs of insertion \eqn{w_i} and deletion \eqn{w_d} are equal.
+The normalized distance \eqn{dist_n} is defined as
+\deqn{dist_n(x, y) = \frac{2 dist(x, y)}{w_d |x| + w_i |y| + dist(x, y)},}{dist_n(x, y) = 2 · dist(x, y) / (w_d |x| + w_i |y| + dist(x, y)),}
+and the normalized similarity \eqn{sim_n} is defined as
+\deqn{sim_n(x, y) = 1 - dist_n(x, y) = \frac{sim(x, y)}{w_d |x| + w_i |y| - sim(x, y)}.}{sim_n(x, y) = 1 - dist_n(x, y) = sim(x, y) / (w_d |x| + w_i |y| - sim(x, y)).}
+}
+\note{
+If the costs of deletion and insertion are equal, this measure is
+symmetric in \eqn{x} and \eqn{y}. In addition, the normalized and
+unnormalized distances satisfy the properties of a metric.
+}
+\examples{
+## There are no common substrings of size 3 for the following example, 
+## however there are two common substrings of size 2: "AC" and "BC". 
+## Hence the LCS similarity is 2.
+x <- "ABCDA"; y <- "BAC"
+LCS(similarity = TRUE)(x, y)
+
+## Levenshtein distance reduces to LCS distance when the cost of 
+## substitution is high
+x <- "ABC"; y <- "AAA"
+LCS()(x, y) == Levenshtein(substitution = 100)(x, y)
+
+}
+\references{
+Bergroth, L., Hakonen, H., & Raita, T. (2000), "A survey of longest common
+subsequence algorithms", \emph{Proceedings Seventh International Symposium
+on String Processing and Information Retrieval (SPIRE'00)}, 39-48.
+
+Yujian, L. & Bo, L. (2007), "A Normalized Levenshtein Distance Metric",
+\emph{IEEE Transactions on Pattern Analysis and Machine Intelligence}
+\strong{29}, 1091–1095.
+}
+\seealso{
+Other edit-based measures include \code{\link{Hamming}}, \code{\link{Levenshtein}},
+\code{\link{OSA}} and \code{\link{DamerauLevenshtein}}.
 }

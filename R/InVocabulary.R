@@ -74,20 +74,21 @@ setClass("InVocabulary", contains = c("StringMeasure"),
 #' In-Vocabulary Measure
 #' 
 #' @description
-#' This measure compares strings using a reference vocabulary. Different scores 
-#' are returned depending on whether both/one/neither of the strings are 
-#' in the reference vocabulary.
+#' This measure compares a pair of strings \eqn{x} and \eqn{y} using a 
+#' reference vocabulary. Different scores are returned depending on whether 
+#' both/one/neither of \eqn{x} and \eqn{y} are in the reference vocabulary.
 #' 
-#' @details This measure is not intended to serve as a useful comparison 
-#'   measure on its own. Rather, it is intended to produce multiplicative 
-#'   factors which can be applied to another similarity/distance measure. 
-#'   It is particularly useful for comparing names when a reference list 
-#'   (vocabulary) of known names is available. For example, it can be 
-#'   configured to down-weight the similarity of distinct (known) names like 
-#'   "Roberto" and "Umberto" which are semantically very different, but 
-#'   deceptively similar in terms of edit distance. The normalized Levenshtein 
-#'   similarity for these two names is 75%, but their similarity can be 
-#'   reduced to 53% if multiplied by this measure with the default settings.
+#' @details 
+#' This measure is not intended to serve as a useful comparison 
+#' measure on its own. Rather, it is intended to produce multiplicative 
+#' factors which can be applied to another similarity/distance measure. 
+#' It is particularly useful for comparing names when a reference list 
+#' (vocabulary) of known names is available. For example, it can be 
+#' configured to down-weight the similarity of distinct (known) names like 
+#' "Roberto" and "Umberto" which are semantically very different, but 
+#' deceptively similar in terms of edit distance. The normalized Levenshtein 
+#' similarity for these two names is 75%, but their similarity can be 
+#' reduced to 53% if multiplied by this measure with the default settings.
 #' 
 #' @param vocab a vector containing in-vocabulary (known) strings. Any strings 
 #'   not in this vector are out-of-vocabulary (unknown).
@@ -105,8 +106,26 @@ setClass("InVocabulary", contains = c("StringMeasure"),
 #' @param none_in score to return if none of the pair of values being 
 #'   compared is in `vocab`. Defaults to 1.0, which would leave another 
 #'   measure unchanged when multiplied by this one.
-#' @param ignore_case a logical. If TRUE, case is ignored when computing the 
-#'   distance/similarity.
+#' @param ignore_case a logical. If TRUE, case is ignored when comparing the 
+#'   strings.
+#' 
+#' @return
+#' An `InVocabulary` instance is returned, which is an S4 class inheriting from 
+#' [`StringMeasure-class`].
+#' 
+#' @examples
+#' ## Compare names with possible typos using a reference of known names
+#' known_names <- c("Roberto", "Umberto", "Alberto", "Emberto", "Norberto", "Humberto")
+#' m1 <- InVocabulary(known_names)
+#' m2 <- Levenshtein(similarity = TRUE, normalize = TRUE)
+#' x <- "Emberto"
+#' y <- c("Enberto", "Umberto")
+#' # "Emberto" and "Umberto" are likely to refer to distinct people (since 
+#' # they are known distinct names) so their Levenshtein similarity is 
+#' # downweighted to 0.61. "Emberto" and "Enberto" may refer to the same 
+#' # person (likely typo), so their Levenshtein similarity of 0.87 is not 
+#' # downweighted.
+#' similarities <- m1(x, y) * m2(x, y)
 #' 
 #' @export
 InVocabulary <- function(vocab, both_in_distinct = 0.7, both_in_same = 1.0, 

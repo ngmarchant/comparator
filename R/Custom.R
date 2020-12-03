@@ -17,7 +17,8 @@ setClass("CustomMeasure", contains = "Measure",
 #' Custom Measure
 #' 
 #' @description 
-#' TODO
+#' This function constructs a `Measure-class` instance from a user-specified 
+#' function. 
 #' 
 #' @param measure a vectorized function that takes a pair of vectors x and y 
 #'   and returns a vector of elementwise distances/similarities.
@@ -29,6 +30,20 @@ setClass("CustomMeasure", contains = "Measure",
 #'   Defaults to FALSE.
 #' @param tri_inequal whether the measure satisfies the triangle inequality. 
 #'   Defaults to FALSE.
+#' 
+#' @return
+#' A `CustomMeasure` instance is returned, which is an S4 class inheriting from 
+#' [`Measure-class`].
+#' 
+#' @examples
+#' \dontrun{
+#' ## Use a measure from the stringdist package
+#' f <- function(x, y) stringdist::stringdist(x, y, method="soundex")
+#' # Construct a Measure instance
+#' measure <- CustomMeasure(f, symmetric = TRUE, distance = TRUE, tri_inequal = FALSE)
+#' x <- c("John", "Johnny", "George", "Sally")
+#' pairwise(measure, x)
+#' }
 #' 
 #' @export
 CustomMeasure <- function(measure, symmetric = FALSE, distance = FALSE, 
@@ -46,7 +61,7 @@ setMethod(pairwise, signature = c(measure = "CustomMeasure", x = "vector", y = "
           function(measure, x, y, return_matrix, ...) {
             scores <- matrix(0.0, nrow = length(x), ncol = length(y))
             for (i in seq_along(x)) {
-              scores[i,] <- measure(x, y)
+              scores[i,] <- measure(x[i], y)
             }
             if (!return_matrix) scores <- as.PairwiseMatrix(scores)
             scores

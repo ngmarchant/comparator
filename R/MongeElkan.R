@@ -75,24 +75,74 @@ setClass("MongeElkan", contains = "StringMeasure",
 #' Monge-Elkan Measure
 #' 
 #' @description 
-#' TODO A hybrid string measure. Token- and character-based. 
+#' The Monge-Elkan measure is a hybrid token-character measure for comparing 
+#' a pair of multi-token (multi-word) strings \eqn{x} and \eqn{y}. It uses an 
+#' internal character-based measure to compute similarity scores between pairs 
+#' of tokens in \eqn{x} and \eqn{y}, then takes the average of the maximum 
+#' score for each token in \eqn{x}.
 #' 
 #' @details
-#' TODO
-#' \deqn{\mathrm{sim_MongeElkan}(v_1, v_2) = \frac{1}{|v_1|} \sum_{i = 1}^{|v_1|} \max_{j} \mathrm{sim.inner}(v_{1,i}, v_{2,j})}
-#' {sim_MongeElkan(v1,v2) = 1/|v1| Σ_i{ max_j sim.inner(v1_i, v2_j) }}
+#' Given two token vectors \eqn{x} and \eqn{y}, the Monge-Elkan measure is 
+#' defined as:
+#' \deqn{\mathrm{ME}(x, y) = \frac{1}{|x|} \sum_{i = 1}^{|x|} \max_j \mathrm{sim}(x_i, y_j)}{ME(x, y) = 1/|x| Σ_i{ max_j sim(x_i, y_j) }}
+#' where \eqn{x_i} is the i-th token (string) in \eqn{x}, \eqn{|x|} is the 
+#' number of tokens in \eqn{x} and \eqn{\mathrm{sim}}{sim} is an internal 
+#' character-based similarity measure. 
 #' 
-#' @param inner_measure inner string measure of class [`StringMeasure-class`]. 
-#'   Defaults to [`Levenshtein`] similarity.
+#' A generalization of the original Monge-Elkan measure is implemented here, 
+#' which allows for internal distance measures in place of similarity measures, 
+#' and/or more general aggregation functions in place of the arithmetic mean. 
+#' The generalized Monge-Elkan measure is defined as:
+#' \deqn{\mathrm{ME}(x, y) = \mathrm{agg}(\mathrm{opt}_j \mathrm{inner}(x_i, y_j))}{ME(x, y) = agg(opt_j inner(x_i, y_j))}
+#' where \eqn{\mathrm{inner}}{inner} is an internal distance or similarity 
+#' measure, \eqn{\mathrm{opt}} is \eqn{\max}{max} if 
+#' \eqn{\mathrm{inner}}{inner} is a similarity measure or \eqn{\min}{min} if 
+#' it is a distance measure, and \eqn{\mathrm{agg}}{agg} is an aggregation 
+#' function which takes a vector of scores for each token in \eqn{x} and 
+#' returns a scalar.
+#' 
+#' By default, the Monge-Elkan measure is asymmetric in its arguments \eqn{x} 
+#' and \eqn{y}. If `symmetrize = TRUE`, a symmetric version of the measure 
+#' is obtained as follows
+#' \deqn{\mathrm{ME}_sym(x, y) = \mathrm{opt} (\mathrm{ME}(x, y), \mathrm{ME}(y, x))}{ME_sym(x, y) = opt(ME(x, y), ME(y, x))}
+#' where \eqn{\mathrm{opt}} is defined above.
+#' 
+#' @param inner_measure internal string measure of class 
+#'   [`StringMeasure-class`]. Defaults to [`Levenshtein`] similarity.
 #' @param separator separator for tokens/words. Defaults to whitespace.
-#' @param agg_function aggregation function to use when aggregating inner 
-#'   similarities/distances between tokens. Defaults to arithmetic mean. 
-#'   Harmonic mean may be a better choice for normalized similarity measures.
+#' @param agg_function aggregation function to use when aggregating internal 
+#'   similarities/distances between tokens. Defaults to [`mean`], 
+#'   however [`hmean`] may be a better choice for normalized similarity 
+#'   measures.
 #' @param symmetrize logical indicating whether to use a symmetrized version 
 #'   of the Monge-Elkan measure. Defaults to FALSE.
-#'   
-#' @references Monge, A. E., & Elkan, C. (1996, August). The Field Matching 
-#' Problem: Algorithms and Applications. In \emph{KDD} (Vol. 2, pp. 267-270).
+#' 
+#' @return
+#' A `MongeElkan` instance is returned, which is an S4 class inheriting from 
+#' [`StringMeasure-class`].
+#' 
+#' @references 
+#' Monge, A. E., & Elkan, C. (1996), "The Field Matching 
+#' Problem: Algorithms and Applications", In \emph{Proceedings of the Second 
+#' International Conference on Knowledge Discovery and Data Mining (KDD'96)},
+#' pp. 267-270.
+#' 
+#' Jimenez, S., Becerra, C., Gelbukh, A., & Gonzalez, F. (2009), "Generalized 
+#' Monge-Elkan Method for Approximate Text String Comparison", In 
+#' \emph{Computational Linguistics and Intelligent Text Processing}, 
+#' pp. 559-570.
+#' 
+#' @examples
+#' ## Compare names with heterogenous representations
+#' x <- "The University of California - San Diego"
+#' y <- "Univ. Calif. San Diego"
+#' MongeElkan()(x, y)
+#' 
+#' ## The symmetrized variant is arguably more appropriate for this example
+#' MongeElkan(symmetrize = TRUE)(x, y) 
+#' 
+#' ## Using a different internal measure changes the result
+#' MongeElkan(inner_measure = BinaryComp(), symmetrize=TRUE)(x, y)
 #' 
 #' @export
 MongeElkan <- function(inner_measure = Levenshtein(similarity = TRUE, normalize = TRUE), 

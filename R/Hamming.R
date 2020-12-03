@@ -33,19 +33,55 @@ setClass("Hamming", contains = c("StringMeasure", "CppMeasure"),
 
 #' Hamming Distance
 #' 
-#' @description TODO
+#' @description The Hamming distance between two strings of equal length is 
+#' the number of positions where the corresponding characters differ. It 
+#' can be viewed as a type of edit distance where the only permitted operation 
+#' is character substitution.
 #' 
-#' @note Unlike other edit distances, this is not a metric if normalize is TRUE
-#'   
-#' @param normalize a logical. If TRUE, distances are normalized to the 
-#'   unit interval. Defaults to FALSE.
-#' @param similarity a logical. If TRUE, similarity scores on the unit interval 
-#'   are returned instead of distances. Defaults to FALSE. 
-#' @param ignore_case a logical. If TRUE, case is ignored when computing the 
-#'   distance. Defaults to FALSE.
-#' @param use_bytes a logical. If TRUE, the measure is computed byte-by-byte 
+#' @details When the input strings \eqn{x} and \eqn{y} are of different 
+#' lengths (\eqn{|x| \neq |y|}{x ≠ y}), the Hamming distance is defined to 
+#' be \eqn{\infty}{∞}.
+#' 
+#' A Hamming similarity is returned if `similarity = TRUE`. When 
+#' \eqn{|x| = |y|} the similarity is defined as follows:
+#' \deqn{sim(x, y) = |x| - dist(x, y),}
+#' where \eqn{sim} is the Hamming similarity and \eqn{dist} is the Hamming 
+#' distance. When \eqn{|x| \neq |y|}{x ≠ y} the similarity is defined to be 0.
+#' 
+#' Normalization of the Hamming distance/similarity to the unit interval is 
+#' also supported by setting `normalize = TRUE`. The raw distance/similarity 
+#' is divided by the length of the string \eqn{|x| = |y|}. If 
+#' \eqn{|x| \neq |y|}{x ≠ y} the normalized distance is defined to be 1, 
+#' while the normalized similarity is defined to be 0.
+#' 
+#' @note While the unnormalized Hamming distance is a metric, the normalized 
+#' variant is not as it does not satisfy the triangle inequality.
+#' 
+#' @param normalize a logical. If TRUE, distances/similarities are normalized 
+#'   to the unit interval. Defaults to FALSE.
+#' @param similarity a logical. If TRUE, similarity scores are returned 
+#'   instead of distances. Defaults to FALSE. 
+#' @param ignore_case a logical. If TRUE, case is ignored when comparing the 
+#'   strings.
+#' @param use_bytes a logical. If TRUE, strings are compared byte-by-byte 
 #'   rather than character-by-character.
-#'
+#' 
+#' @return 
+#' A `Hamming` instance is returned, which is an S4 class inheriting from 
+#' [`StringMeasure-class`].
+#' 
+#' @examples
+#' ## Compare US ZIP codes
+#' x <- "90001"
+#' y <- "90209"
+#' m1 <- Hamming()                                     # unnormalized distance
+#' m2 <- Hamming(similarity = TRUE, normalize = TRUE)  # normalized similarity
+#' m1(x, y)
+#' m2(x, y)
+#' 
+#' @seealso Other edit-based measures include [`LCS`], [`Levenshtein`], 
+#' [`OSA`] and [`DamerauLevenshtein`].
+#' 
 #' @export
 Hamming <- function(normalize = FALSE, similarity = FALSE, ignore_case = FALSE, 
                     use_bytes = FALSE, ...) {

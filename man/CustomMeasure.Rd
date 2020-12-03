@@ -29,6 +29,22 @@ Defaults to FALSE.}
 \item{tri_inequal}{whether the measure satisfies the triangle inequality.
 Defaults to FALSE.}
 }
+\value{
+A \code{CustomMeasure} instance is returned, which is an S4 class inheriting from
+\code{\linkS4class{Measure}}.
+}
 \description{
-TODO
+This function constructs a \code{Measure-class} instance from a user-specified
+function.
+}
+\examples{
+\dontrun{
+## Use a measure from the stringdist package
+f <- function(x, y) stringdist::stringdist(x, y, method="soundex")
+# Construct a Measure instance
+measure <- CustomMeasure(f, symmetric = TRUE, distance = TRUE, tri_inequal = FALSE)
+x <- c("John", "Johnny", "George", "Sally")
+pairwise(measure, x)
+}
+
 }

@@ -37,8 +37,6 @@ pairwise_cpp_builder <- function(measure_name, attrs, return_matrix, second_arg 
   }
 }
 
-#' Pairwise
-#' 
 #' @export
 setMethod(pairwise, signature = c(measure = "CppMeasure", x = "vector", y = "vector"), 
           function(measure, x, y, return_matrix, ...) {
