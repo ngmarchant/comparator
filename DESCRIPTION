@@ -27,7 +27,6 @@ Collate:
     'Chebyshev.R'
     'Constant.R'
     'CppMeasure.R'
-    'Custom.R'
     'Levenshtein.R'
     'DamerauLevenshtein.R'
     'Minkowski.R'

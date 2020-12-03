@@ -1,7 +1,7 @@
 #' @include Measure.R
 NULL
 
-#' Virtual String Measure Class 
+#' String Measure Class 
 #' 
 #' @description This class represents a measure for comparing pairs of strings.
 #' 
@@ -23,7 +23,7 @@ NULL
 #'   byte-by-byte rather than character-by-character.
 #' 
 #' @export
-setClass("StringMeasure", 
+StringMeasure <- setClass("StringMeasure", 
          slots = c(
            ignore_case = "logical", 
            use_bytes = "logical"
@@ -37,7 +37,7 @@ setClass("StringMeasure",
            ignore_case = FALSE,
            use_bytes = FALSE
          ),
-         contains = c("VIRTUAL", "Measure"), 
+         contains = c("Measure"), 
          validity = function(object) {
            errs <- character()
            if (length(object@ignore_case) != 1)

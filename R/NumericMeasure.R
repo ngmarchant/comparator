@@ -1,7 +1,7 @@
 #' @include Measure.R
 NULL
 
-#' Virtual Numeric Measure Class 
+#' Numeric Measure Class 
 #' 
 #' @description This class represents a measure for comparing pairs of 
 #'   numeric vectors.
@@ -20,7 +20,7 @@ NULL
 #'   `distance = TRUE` and `symmetric = TRUE`.
 #' 
 #' @export
-setClass("NumericMeasure", 
+NumericMeasure <- setClass("NumericMeasure", 
          prototype = structure(
            .Data = function(x, y) 0,
            symmetric = FALSE,
@@ -28,7 +28,7 @@ setClass("NumericMeasure",
            similarity = FALSE,
            tri_inequal = FALSE
          ),
-         contains = c("VIRTUAL", "Measure"), 
+         contains = c("Measure"), 
          validity = function(object) {
            errs <- character()
            ifelse(length(errs) == 0, TRUE, errs)
