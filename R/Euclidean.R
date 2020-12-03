@@ -27,7 +27,7 @@ setClass("Euclidean", contains = "Minkowski",
 #' 
 #' @return 
 #' A `Euclidean` instance is returned, which is an S4 class inheriting 
-#' from [`NumericMeasure-class`].
+#' from [`Minkowski`].
 #' 
 #' @seealso 
 #' Other numeric measures include [`Manhattan`], [`Minkowski`] and 
@@ -49,7 +49,7 @@ setClass("Euclidean", contains = "Minkowski",
 #' pairwise(measure, x, y)
 #' 
 #' @export
-Euclidean <- function(...) {
+Euclidean <- function() {
   attrs <- list(p = 2)
   arguments <- list("Euclidean", ".Data" = elementwise_minkowski_builder(attrs))
   arguments <- append(arguments, attrs)

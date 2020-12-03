@@ -4,7 +4,7 @@
 \alias{Minkowski}
 \title{Minkowski Distance}
 \usage{
-Minkowski(p = 2, ...)
+Minkowski(p = 2)
 }
 \arguments{
 \item{p}{a positive numeric specifying the order of the distance. Defaults

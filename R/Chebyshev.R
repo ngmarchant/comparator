@@ -82,20 +82,19 @@ setClass("Chebyshev", contains = "NumericMeasure",
 #' pairwise(measure, x, y)
 #' 
 #' @export
-Chebyshev <- function(...) {
-  attrs <- c(as.list(environment()), list(...))
+Chebyshev <- function() {
+  attrs <- c(as.list(environment()))
   arguments <- list("Chebyshev", ".Data" = elementwise_chebyshev_builder(attrs))
   arguments <- append(arguments, attrs)
   do.call("new", arguments)
 }
 
 #' @importFrom proxy dist as.matrix
-#' @export
+#' @describeIn pairwise Specialization for [`Chebyshev`] where `x` and `y` 
+#' matrices of rows (interpreted as vectors) to compare. If `x` any `y` do 
+#' not have the same number of rows, rows are recycled in the smaller matrix. 
 setMethod(pairwise, signature = c(measure = "Chebyshev", x = "matrix", y = "matrix"), 
           function(measure, x, y, return_matrix, ...) {
-            # proxy::dist expects rows, not vectors
-            if (is.null(dim(x))) dim(x) <- c(1, length(x))
-            if (is.null(dim(y))) dim(y) <- c(1, length(x))
             mode(x) <- "numeric"
             mode(y) <- "numeric"
             scores <- dist(x, y, method="Chebyshev", pairwise = FALSE, by_rows = TRUE)
@@ -109,17 +108,17 @@ setMethod(pairwise, signature = c(measure = "Chebyshev", x = "matrix", y = "matr
 )
 
 #' @importFrom proxy dist as.matrix
-#' @export
+#' @describeIn pairwise Specialization for [`Minkowski`] where `x` is a matrix 
+#' of rows (interpreted as vectors) to compare among themselves.
 setMethod(pairwise, signature = c(measure = "Chebyshev", x = "matrix", y = "NULL"), 
           function(measure, x, y, return_matrix, ...) {
-            if (is.null(dim(x))) dim(x) <- c(1, length(x))
             mode(x) <- "numeric"
             scores <- dist(x, y=NULL, method="Chebyshev", pairwise = FALSE, by_rows = TRUE)
             if (return_matrix) {
               as.matrix(scores)
             } else {
               scores <- unclass(scores)
-              Dim <- rep_len(attr(temp, "Size"), 2)
+              Dim <- rep_len(attr(scores, "Size"), 2)
               as.PairwiseMatrix(scores, Dim, FALSE)
             }
           }

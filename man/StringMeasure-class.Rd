@@ -3,7 +3,8 @@
 \docType{class}
 \name{StringMeasure-class}
 \alias{StringMeasure-class}
-\title{Virtual String Measure Class}
+\alias{StringMeasure}
+\title{String Measure Class}
 \description{
 This class represents a measure for comparing pairs of strings.
 }

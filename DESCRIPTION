@@ -39,7 +39,7 @@ Collate:
     'MongeElkan.R'
     'OSA.R'
     'RcppExports.R'
-    'generalised_mean.R'
+    'generalized_mean.R'
     'strcompr.R'
     'util.R'
 Suggests: 

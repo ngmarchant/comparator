@@ -8,8 +8,7 @@ MongeElkan(
   inner_measure = Levenshtein(similarity = TRUE, normalize = TRUE),
   separator = "\\\\s+",
   agg_function = base::mean,
-  symmetrize = FALSE,
-  ...
+  symmetrize = FALSE
 )
 }
 \arguments{

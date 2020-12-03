@@ -10,8 +10,7 @@ LCS(
   normalize = FALSE,
   similarity = FALSE,
   ignore_case = FALSE,
-  use_bytes = FALSE,
-  ...
+  use_bytes = FALSE
 )
 }
 \arguments{

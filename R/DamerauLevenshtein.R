@@ -72,7 +72,7 @@ setClass("DamerauLevenshtein", contains = "Levenshtein",
 #' 
 #' @return 
 #' A `DamerauLevenshtein` instance is returned, which is an S4 class inheriting 
-#' from [`StringMeasure-class`].
+#' from [`Levenshtein`].
 #' 
 #' @references 
 #' Boytsov, L. (2011), "Indexing methods for approximate dictionary searching: 
@@ -100,11 +100,12 @@ setClass("DamerauLevenshtein", contains = "Levenshtein",
 #' @seealso Other edit-based measures include [`Hamming`], [`LCS`], 
 #' [`Levenshtein`] and [`OSA`].
 #' 
+#' @rdname DamerauLevenshtein
 #' @export
 DamerauLevenshtein <- function(deletion = 1.0, insertion = 1.0, substitution = 1.0, 
                                transposition = 1.0, normalize = FALSE, similarity = FALSE, 
-                               ignore_case = FALSE, use_bytes = FALSE, ...) {
-  attrs <- c(as.list(environment()), list(...))
+                               ignore_case = FALSE, use_bytes = FALSE) {
+  attrs <- c(as.list(environment()))
   attrs$similarity <- similarity
   attrs$distance <- !similarity
   attrs$symmetric <- deletion == insertion

@@ -4,7 +4,7 @@
 \alias{Chebyshev}
 \title{Chebyshev Distance}
 \usage{
-Chebyshev(...)
+Chebyshev()
 }
 \value{
 A \code{Chebyshev} instance is returned, which is an S4 class inheriting

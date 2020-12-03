@@ -46,14 +46,15 @@ setClass("ConstantMeasure", contains = "StringMeasure",
 #' from [`StringMeasure-class`].
 #' 
 #' @export
-ConstantMeasure <- function(constant = 0.0, ...) {
-  attrs <- c(as.list(environment()), list(...))
+ConstantMeasure <- function(constant = 0.0) {
+  attrs <- c(as.list(environment()))
   arguments <- list("ConstantMeasure", ".Data" = elementwise_const_builder(attrs))
   arguments <- append(arguments, attrs)
   do.call("new", arguments)
 }
 
 #' @export
+#' @describeIn pairwise Specialization for [`ConstantMeasure`] where `x` and `y` are vectors of strings to compare
 setMethod(pairwise, signature = c(measure = "ConstantMeasure", x = "vector", y = "vector"), 
           function(measure, x, y, return_matrix, ...) {
             scores <- matrix(measure@constant, nrow=length(x), ncol=length(y))
@@ -63,6 +64,7 @@ setMethod(pairwise, signature = c(measure = "ConstantMeasure", x = "vector", y =
 )
 
 #' @export
+#' @describeIn pairwise Specialization for [`ConstantMeasure`] where `x` is a vector of strings to compare among themselves
 setMethod(pairwise, signature = c(measure = "ConstantMeasure", x = "vector", y = "NULL"), 
           function(measure, x, y, return_matrix, ...) {
             if (!return_matrix) warning("`return_matrix = FALSE` is not supported")

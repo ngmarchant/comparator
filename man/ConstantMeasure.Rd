@@ -4,7 +4,7 @@
 \alias{ConstantMeasure}
 \title{Constant Measure}
 \usage{
-ConstantMeasure(constant = 0, ...)
+ConstantMeasure(constant = 0)
 }
 \arguments{
 \item{constant}{a non-negative numeric vector of length 1. Defaults to zero.}

@@ -46,3 +46,15 @@ StringMeasure <- setClass("StringMeasure",
              errs <- c(errs, "`use_bytes` must be a logical vector of length 1")
            ifelse(length(errs) == 0, TRUE, errs)
          })
+
+#' @describeIn pairwise Specialization for [`StringMeasure`] where `x` and `y` are vectors of strings to compare
+setMethod(pairwise, signature = c(measure = "StringMeasure", x = "vector", y = "vector"), 
+          function(measure, x, y, return_matrix, ...) {
+            scores <- matrix(0.0, nrow = length(x), ncol = length(y))
+            for (i in seq_along(x)) {
+              scores[i,] <- measure(x[i], y)
+            }
+            if (!return_matrix) scores <- as.PairwiseMatrix(scores)
+            scores
+          }
+)

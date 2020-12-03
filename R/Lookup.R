@@ -152,7 +152,7 @@ normalize_lookup_table <- function(lookup_table, values_colnames, measure_colnam
 #' @export
 Lookup <- function(lookup_table, values_colnames, measure_colname, 
                    default_match = 0.0, default_nonmatch = NA_real_, 
-                   symmetric = TRUE, ignore_case = FALSE, ...) {
+                   symmetric = TRUE, ignore_case = FALSE) {
   if (!is.data.frame(lookup_table)) 
     stop("`lookup_table` must be a data.frame")
   if (!is.character(measure_colname) || length(measure_colname) != 1)
@@ -177,7 +177,7 @@ Lookup <- function(lookup_table, values_colnames, measure_colname,
   do.call("new", arguments)
 }
 
-#' @export
+#' @describeIn pairwise Specialization for a [`Lookup`] where `x` and `y` are vectors of strings to compare
 setMethod(pairwise, signature = c(measure = "Lookup", x = "vector", y = "vector"), 
           function(measure, x, y, return_matrix, ...) {
             if (measure@ignore_case) {
@@ -213,12 +213,12 @@ setMethod(pairwise, signature = c(measure = "Lookup", x = "vector", y = "vector"
             if (return_matrix) {
               matrix(pairs$value, nrow = length(x), ncol = length(y))
             } else {
-              as.PairwiseMatrix(pairs$value, c(length(x), length(y)), TRUE)
+              PairwiseMatrix(.Data = pairs$value, Dim = c(length(x), length(y)), Diag = TRUE)
             }
           }
 )
 
-#' @export
+#' @describeIn pairwise Specialization for [`Lookup`] where `x` is a vector of strings to compare among themselves
 setMethod(pairwise, signature = c(measure = "Lookup", x = "vector", y = "NULL"), 
           function(measure, x, y, return_matrix, ...) {
             if (!return_matrix) warning("`return_matrix = FALSE` is not supported")

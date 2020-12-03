@@ -70,8 +70,8 @@ setClass("BinaryComp", contains = "StringMeasure",
 #' [`StringMeasure-class`].
 #' 
 #' @export
-BinaryComp <- function(score = 1.0, similarity = FALSE, ignore_case = FALSE, ...) {
-  attrs <- c(as.list(environment()), list(...))
+BinaryComp <- function(score = 1.0, similarity = FALSE, ignore_case = FALSE) {
+  attrs <- c(as.list(environment()))
   attrs$distance <- !similarity
   attrs$similarity <- similarity
   arguments <- list("BinaryComp", ".Data" = elementwise_bincomp_builder(attrs))
@@ -79,7 +79,7 @@ BinaryComp <- function(score = 1.0, similarity = FALSE, ignore_case = FALSE, ...
   do.call("new", arguments)
 }
 
-#' @export
+#' @describeIn pairwise Specialization for [`ConstantMeasure`] where `x` and `y` are vectors of strings to compare
 setMethod(pairwise, signature = c(measure = "BinaryComp", x = "vector", y = "vector"), 
           function(measure, x, y, return_matrix, ...) {
             if (measure@ignore_case) {
@@ -98,7 +98,7 @@ setMethod(pairwise, signature = c(measure = "BinaryComp", x = "vector", y = "vec
           }
 )
 
-#' @export
+#' @describeIn pairwise Specialization for [`BinaryComp`] where `x` is a vector of strings to compare among themselves
 setMethod(pairwise, signature = c(measure = "BinaryComp", x = "vector", y = "NULL"), 
           # TODO: don't return full matrix since dist is symmetric
           function(measure, x, y, return_matrix, ...) {

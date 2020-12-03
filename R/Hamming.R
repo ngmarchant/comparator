@@ -84,8 +84,8 @@ setClass("Hamming", contains = c("StringMeasure", "CppMeasure"),
 #' 
 #' @export
 Hamming <- function(normalize = FALSE, similarity = FALSE, ignore_case = FALSE, 
-                    use_bytes = FALSE, ...) {
-  attrs <- c(as.list(environment()), list(...))
+                    use_bytes = FALSE) {
+  attrs <- c(as.list(environment()))
   attrs$similarity <- similarity
   attrs$distance <- !similarity
   attrs$tri_inequal <- !similarity & !normalize

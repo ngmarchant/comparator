@@ -27,7 +27,7 @@ setClass("Manhattan", contains = "Minkowski",
 #' 
 #' @return 
 #' A `Manhattan` instance is returned, which is an S4 class inheriting 
-#' from [`NumericMeasure-class`].
+#' from [`Minkowski`].
 #' 
 #' @seealso 
 #' Other numeric measures include [`Euclidean`], [`Minkowski`] and 
@@ -49,7 +49,7 @@ setClass("Manhattan", contains = "Minkowski",
 #' pairwise(measure, x, y)
 #' 
 #' @export
-Manhattan <- function(...) {
+Manhattan <- function() {
   attrs <- list(p = 1)
   arguments <- list("Manhattan", ".Data" = elementwise_minkowski_builder(attrs))
   arguments <- append(arguments, attrs)

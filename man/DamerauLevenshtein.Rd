@@ -12,8 +12,7 @@ DamerauLevenshtein(
   normalize = FALSE,
   similarity = FALSE,
   ignore_case = FALSE,
-  use_bytes = FALSE,
-  ...
+  use_bytes = FALSE
 )
 }
 \arguments{
@@ -43,7 +42,7 @@ rather than character-by-character.}
 }
 \value{
 A \code{DamerauLevenshtein} instance is returned, which is an S4 class inheriting
-from \code{\linkS4class{StringMeasure}}.
+from \code{\link{Levenshtein}}.
 }
 \description{
 The Damerau-Levenshtein distance between two strings \eqn{x} and \eqn{y} is

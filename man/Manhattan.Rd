@@ -4,11 +4,11 @@
 \alias{Manhattan}
 \title{Manhattan Distance}
 \usage{
-Manhattan(...)
+Manhattan()
 }
 \value{
 A \code{Manhattan} instance is returned, which is an S4 class inheriting
-from \code{\linkS4class{NumericMeasure}}.
+from \code{\link{Minkowski}}.
 }
 \description{
 The Manhattan distance (a.k.a. L-1 distance) between two vectors \eqn{x} and

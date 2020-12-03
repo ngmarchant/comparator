@@ -3,19 +3,22 @@
 \docType{class}
 \name{PairwiseMatrix-class}
 \alias{PairwiseMatrix-class}
+\alias{PairwiseMatrix}
 \alias{as.PairwiseMatrix}
 \alias{as.PairwiseMatrix,matrix-method}
-\alias{as.PairwiseMatrix,numeric-method}
 \alias{as.matrix,PairwiseMatrix-method}
 \title{Pairwise Similarity/Distance Matrix}
 \usage{
-as.PairwiseMatrix(.Data, ...)
+as.PairwiseMatrix(x, ...)
 
-\S4method{as.PairwiseMatrix}{matrix}(.Data, ...)
-
-\S4method{as.PairwiseMatrix}{numeric}(.Data, Dim, Diag, ...)
+\S4method{as.PairwiseMatrix}{matrix}(x, ...)
 
 \S4method{as.matrix}{PairwiseMatrix}(x, ...)
+}
+\arguments{
+\item{x}{an \R object.}
+
+\item{...}{additional arguments to be passed to methods.}
 }
 \description{
 Represents a pairwise similarity or distance matrix.
@@ -26,6 +29,15 @@ may be symmetric if the corresponding similarity/distance measure is
 symmetric. In this case, entries in the upper triangle and/or along the
 diagonal may not be stored in memory, since they are redundant.
 }
+\section{Functions}{
+\itemize{
+\item \code{as.PairwiseMatrix}: Convert an R object \code{x} to a \code{PairwiseMatrix}.
+
+\item \code{as.PairwiseMatrix,matrix-method}: Convert an ordinary \code{\link{matrix}} \code{x} to a \code{PairwiseMatrix}.
+
+\item \code{as.matrix,PairwiseMatrix-method}: Convert a \code{PairwiseMatrix} \code{x} to an ordinary \code{\link{matrix}}.
+}}
+
 \section{Slots}{
 
 \describe{

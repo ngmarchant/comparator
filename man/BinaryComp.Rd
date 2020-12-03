@@ -4,7 +4,7 @@
 \alias{BinaryComp}
 \title{Binary Comparison Measure}
 \usage{
-BinaryComp(score = 1, similarity = FALSE, ignore_case = FALSE, ...)
+BinaryComp(score = 1, similarity = FALSE, ignore_case = FALSE)
 }
 \arguments{
 \item{score}{a numeric of length 1. Positive distance to return if the

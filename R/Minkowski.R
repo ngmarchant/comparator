@@ -94,8 +94,8 @@ setClass("Minkowski", contains = "NumericMeasure",
 #' pairwise(measure, x, y)
 #' 
 #' @export
-Minkowski <- function(p = 2.0, ...) {
-  attrs <- c(as.list(environment()), list(...))
+Minkowski <- function(p = 2.0) {
+  attrs <- c(as.list(environment()))
   attrs$tri_inequal <- p >= 1
   arguments <- list("Minkowski", ".Data" = elementwise_minkowski_builder(attrs))
   arguments <- append(arguments, attrs)
@@ -103,12 +103,11 @@ Minkowski <- function(p = 2.0, ...) {
 }
 
 #' @importFrom proxy dist as.matrix
-#' @export
+#' @describeIn pairwise Specialization for a [`Minkowski`] where `x` and `y` 
+#' matrices of rows (interpreted as vectors) to compare. If `x` any `y` do 
+#' not have the same number of rows, rows are recycled in the smaller matrix. 
 setMethod(pairwise, signature = c(measure = "Minkowski", x = "matrix", y = "matrix"), 
           function(measure, x, y, return_matrix, ...) {
-            # proxy::dist expects rows, not vectors
-            if (is.null(dim(x))) dim(x) <- c(1, length(x))
-            if (is.null(dim(y))) dim(y) <- c(1, length(x))
             mode(x) <- "numeric"
             mode(y) <- "numeric"
             p <- measure@p
@@ -127,10 +126,10 @@ setMethod(pairwise, signature = c(measure = "Minkowski", x = "matrix", y = "matr
 )
 
 #' @importFrom proxy dist as.matrix
-#' @export
+#' @describeIn pairwise Specialization for [`Minkowski`] where `x` is a matrix 
+#' of rows (interpreted as vectors) to compare among themselves.
 setMethod(pairwise, signature = c(measure = "Minkowski", x = "matrix", y = "NULL"), 
           function(measure, x, y, return_matrix, ...) {
-            if (is.null(dim(x))) dim(x) <- c(1, length(x))
             mode(x) <- "numeric"
             p <- measure@p
             if (is.infinite(p)) {
@@ -142,7 +141,7 @@ setMethod(pairwise, signature = c(measure = "Minkowski", x = "matrix", y = "NULL
               as.matrix(score)
             } else {
               score <- unclass(score)
-              Dim <- rep_len(attr(temp, "Size"), 2)
+              Dim <- rep_len(attr(score, "Size"), 2)
               as.PairwiseMatrix(score, Dim, FALSE)
             }
           }

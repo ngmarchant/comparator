@@ -129,14 +129,14 @@ setClass("InVocabulary", contains = c("StringMeasure"),
 #' 
 #' @export
 InVocabulary <- function(vocab, both_in_distinct = 0.7, both_in_same = 1.0, 
-                         one_in = 1.0, none_in = 1.0, ignore_case = FALSE, ...) {
-  attrs <- c(as.list(environment()), list(...))
+                         one_in = 1.0, none_in = 1.0, ignore_case = FALSE) {
+  attrs <- c(as.list(environment()))
   arguments <- list("InVocabulary", ".Data" = elementwise_invocab_builder(attrs))
   arguments <- append(arguments, attrs)
   do.call("new", arguments)
 }
 
-#' @export
+#' @describeIn pairwise Specialization for [`InVocabulary`] where `x` and `y` are vectors of strings to compare
 setMethod(pairwise, signature = c(measure = "InVocabulary", x = "vector", y = "vector"), 
           function(measure, x, y, return_matrix, ...) {
             vocab <- measure@vocab
@@ -153,8 +153,8 @@ setMethod(pairwise, signature = c(measure = "InVocabulary", x = "vector", y = "v
             both_in <- matrix(x_known, nrow=length(x), ncol=length(y))
             both_in <- sweep(both_in, 2, y_known, FUN = "&")  
             
-            distinct <- matrix(v1, nrow=length(v1), ncol=length(v2))
-            distinct <- sweep(distinct, 2, v2, FUN = "!=")  
+            distinct <- matrix(x, nrow=length(x), ncol=length(y))
+            distinct <- sweep(distinct, 2, y, FUN = "!=")  
             
             scores <- matrix(measure@none_in, nrow =length(x), ncol = length(y))
             scores[x_known | y_known] <- measure@one_in
@@ -166,7 +166,7 @@ setMethod(pairwise, signature = c(measure = "InVocabulary", x = "vector", y = "v
           }
 )
 
-#' @export
+#' @describeIn pairwise Specialization for [`InVocabulary`] where `x` is a vector of strings to compare among themselves
 setMethod(pairwise, signature = c(measure = "InVocabulary", x = "vector", y = "NULL"), 
           function(measure, x, y, return_matrix, ...) {
             if (!return_matrix) warning("`return_matrix = FALSE` is not supported")

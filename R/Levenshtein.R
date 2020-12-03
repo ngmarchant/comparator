@@ -118,8 +118,8 @@ setClass("Levenshtein", contains = c("StringMeasure", "CppMeasure"),
 #' @export
 Levenshtein <- function(deletion = 1.0, insertion = 1.0, substitution = 1.0, 
                         normalize = FALSE, similarity = FALSE, 
-                        ignore_case = FALSE, use_bytes = FALSE, ...) {
-  attrs <- c(as.list(environment()), list(...))
+                        ignore_case = FALSE, use_bytes = FALSE) {
+  attrs <- c(as.list(environment()))
   attrs$similarity <- similarity
   attrs$distance <- !similarity
   attrs$symmetric <- deletion == insertion

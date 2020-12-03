@@ -4,11 +4,11 @@
 \alias{Euclidean}
 \title{Euclidean Distance}
 \usage{
-Euclidean(...)
+Euclidean()
 }
 \value{
 A \code{Euclidean} instance is returned, which is an S4 class inheriting
-from \code{\linkS4class{NumericMeasure}}.
+from \code{\link{Minkowski}}.
 }
 \description{
 The Euclidean distance (a.k.a. L-2 distance) between two vectors \eqn{x} and

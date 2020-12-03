@@ -3,7 +3,8 @@
 \docType{class}
 \name{NumericMeasure-class}
 \alias{NumericMeasure-class}
-\title{Virtual Numeric Measure Class}
+\alias{NumericMeasure}
+\title{Numeric Measure Class}
 \description{
 This class represents a measure for comparing pairs of
 numeric vectors.

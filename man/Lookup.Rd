@@ -11,8 +11,7 @@ Lookup(
   default_match = 0,
   default_nonmatch = NA_real_,
   symmetric = TRUE,
-  ignore_case = FALSE,
-  ...
+  ignore_case = FALSE
 )
 }
 \arguments{

@@ -147,8 +147,8 @@ setClass("MongeElkan", contains = "StringMeasure",
 #' @export
 MongeElkan <- function(inner_measure = Levenshtein(similarity = TRUE, normalize = TRUE), 
                        separator = "\\s+", agg_function = base::mean, 
-                       symmetrize = FALSE, ...) {
-  attrs <- c(as.list(environment()), list(...))
+                       symmetrize = FALSE) {
+  attrs <- c(as.list(environment()))
   attrs$distance <- inner_measure@distance
   attrs$symmetric <- inner_measure@symmetric && symmetrize
   attrs$distance <- inner_measure@distance
@@ -163,7 +163,7 @@ MongeElkan <- function(inner_measure = Levenshtein(similarity = TRUE, normalize 
   do.call("new", arguments)
 }
 
-#' @export
+#' @describeIn pairwise Specialization for [`MongeElkan`] where `x` and `y` are vectors of strings to compare
 setMethod(pairwise, signature = c(measure = "MongeElkan", x = "vector", y = "vector"), 
           function(measure, x, y, return_matrix, ...) {
             # Tokenize
@@ -186,7 +186,7 @@ setMethod(pairwise, signature = c(measure = "MongeElkan", x = "vector", y = "vec
           }
 )
 
-#' @export
+#' @describeIn pairwise Specialization for [`MongeElkan`] where `x` is a vector of strings to compare among themselves
 setMethod(pairwise, signature = c(measure = "MongeElkan", x = "vector", y = "NULL"), 
           function(measure, x, y, return_matrix, ...) {
             if (!return_matrix) warning("`return_matrix = FALSE` is not supported")

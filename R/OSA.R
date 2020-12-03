@@ -137,8 +137,8 @@ setClass("OSA", contains = c("StringMeasure", "CppMeasure"),
 #' @export
 OSA <- function(deletion = 1.0, insertion = 1.0, substitution = 1.0, 
                 transposition = 1.0, normalize = FALSE, similarity = FALSE, 
-                ignore_case = FALSE, use_bytes = FALSE, ...) {
-  attrs <- c(as.list(environment()), list(...))
+                ignore_case = FALSE, use_bytes = FALSE) {
+  attrs <- c(as.list(environment()))
   attrs$similarity <- similarity
   attrs$distance <- !similarity
   attrs$symmetric <- insertion == deletion

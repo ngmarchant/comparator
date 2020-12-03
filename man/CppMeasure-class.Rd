@@ -3,7 +3,9 @@
 \docType{class}
 \name{CppMeasure-class}
 \alias{CppMeasure-class}
-\title{Trait for a measure with an implementation in C++}
+\title{Virtual Class for a Measure with a C++ Implementation}
 \description{
-Trait for a measure with an implementation in C++
+This class serves as a trait which is possessed by measures that have a
+C++ implementation. Measures without this trait are implemented in R,
+and may be slower to execute.
 }

@@ -15,9 +15,8 @@
 #' @slot Diag logical indicating whether the diagonal entries are stored in 
 #'   `.Data`.
 #' 
-#' @rdname PairwiseMatrix-class 
-#' @export
-setClass("PairwiseMatrix", 
+#' @export PairwiseMatrix
+PairwiseMatrix <- setClass("PairwiseMatrix", 
          slots = c(Dim = "integer",
                    Diag = "logical"), 
          prototype = structure(
@@ -44,24 +43,18 @@ setClass("PairwiseMatrix",
            ifelse(length(errs) == 0, TRUE, errs)
          })
 
-#' @rdname PairwiseMatrix-class 
+
+#' @describeIn PairwiseMatrix-class Convert an R object `x` to a `PairwiseMatrix`.
+#' @param x an \R object.
+#' @param ... additional arguments to be passed to methods.
 #' @export
-setGeneric("as.PairwiseMatrix", function(.Data, ...) standardGeneric("as.PairwiseMatrix"))
+setGeneric("as.PairwiseMatrix", function(x, ...) standardGeneric("as.PairwiseMatrix"))
 
 
-#' @rdname PairwiseMatrix-class 
-#' @export
-setMethod(as.PairwiseMatrix, signature = c(.Data = "matrix"), 
-          function(.Data, ...) {
-            new("PairwiseMatrix", .Data = as.vector(.Data), Dim = dim(.Data), Diag = TRUE)
-          }
-)
-
-#' @rdname PairwiseMatrix-class 
-#' @export
-setMethod(as.PairwiseMatrix, signature = c(.Data = "numeric"), 
-          function(.Data, Dim, Diag, ...) {
-            new("PairwiseMatrix", .Data = as.vector(.Data), Dim = dim, Diag = diag)
+#' @describeIn PairwiseMatrix-class Convert an ordinary [`matrix`] `x` to a `PairwiseMatrix`.
+setMethod(as.PairwiseMatrix, signature = c(x = "matrix"), 
+          function(x, ...) {
+            new("PairwiseMatrix", .Data = as.vector(x), Dim = dim(x), Diag = TRUE)
           }
 )
 
@@ -72,6 +65,6 @@ as.matrix.PairwiseMatrix <- function (x, ...) {
   return(m)
 }
 
-#' @rdname PairwiseMatrix-class 
+#' @describeIn PairwiseMatrix-class Convert a `PairwiseMatrix` `x` to an ordinary [`matrix`].
 #' @export
 setMethod("as.matrix", "PairwiseMatrix", as.matrix.PairwiseMatrix)

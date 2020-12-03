@@ -10,8 +10,7 @@ InVocabulary(
   both_in_same = 1,
   one_in = 1,
   none_in = 1,
-  ignore_case = FALSE,
-  ...
+  ignore_case = FALSE
 )
 }
 \arguments{
