@@ -13,7 +13,7 @@ test_that("Binary Comparison measure is correct when measuring similarity", {
 })
 
 test_that("Binary Comparison measure is correct when measuring disagreement score is non-default", {
-  measure <- BinaryComp(disagree = Inf)
+  measure <- BinaryComp(score = Inf)
   expect_equal(measure("Chen", "Chen"), 0)
   expect_equal(measure("Chen", "Cheng"), Inf)
 })
