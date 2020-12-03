@@ -13,7 +13,8 @@ Description: Provides similarity and distance measures for clustering and
     record linkage applications.
 License: GPL (>= 2)
 Imports: Rcpp (>= 1.0.5), 
-    proxy (>= 0.4)
+    proxy (>= 0.4),
+    methods
 LinkingTo: Rcpp
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
