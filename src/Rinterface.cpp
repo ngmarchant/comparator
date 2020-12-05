@@ -45,7 +45,16 @@ std::unique_ptr<Measure<V>> get_measure(const Rcpp::List& params) {
   }
   if (classname == "BinaryComp") {
     return make_unique<BinaryComp<V>>(as<double>(params["score"]), 
-                                      as<double>(params["similarity"]));
+                                      as<bool>(params["similarity"]));
+  }
+  if (classname == "JaroWinkler") {
+    return make_unique<JaroWinkler<V>>(as<double>(params["p"]), 
+                                       as<double>(params["threshold"]), 
+                                       as<int>(params["max_prefix"]), 
+                                       as<bool>(params["similarity"]));
+  }
+  if (classname == "Jaro") {
+    return make_unique<Jaro<V>>(as<bool>(params["similarity"]));
   }
   stop("unrecognized measure name");
   return make_unique<Hamming<V>>();

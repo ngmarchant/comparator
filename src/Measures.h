@@ -7,3 +7,5 @@
 #include "LCS.h"
 #include "Constant.h"
 #include "BinaryComp.h"
+#include "Jaro.h"
+#include "JaroWinkler.h"
