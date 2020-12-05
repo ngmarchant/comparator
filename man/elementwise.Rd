@@ -83,7 +83,7 @@ are vectors of strings to compare.
 \note{
 This function is not strictly necessary, as the \code{measure} itself is a
 function that returns elementwise vectors of scores. In other words,
-\code{measure(x, y)} is equivalent to \code{elementwise(measure, x, y)}.
+\code{measure(x, y, ...)} is equivalent to \code{elementwise(measure, x, y, ...)}.
 }
 \examples{
 ## Compute the absolute difference between two sets of scalar observations

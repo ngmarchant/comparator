@@ -131,7 +131,7 @@ setMethod(pairwise, signature = c(measure = "Measure", x = "ANY", y = "missing")
 #' @note 
 #' This function is not strictly necessary, as the `measure` itself is a 
 #' function that returns elementwise vectors of scores. In other words, 
-#' `measure(x, y)` is equivalent to `elementwise(measure, x, y)`.
+#' `measure(x, y, ...)` is equivalent to `elementwise(measure, x, y, ...)`.
 #' 
 #' @examples
 #' ## Compute the absolute difference between two sets of scalar observations

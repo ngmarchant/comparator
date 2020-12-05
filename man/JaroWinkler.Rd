@@ -66,7 +66,14 @@ Like the Jaro distance, the Jaro-Winkler distance is not a metric as
 it does not satisfy the identity axiom.
 }
 \examples{
+## Compare names
+JaroWinkler()("Martha", "Mathra")
+JaroWinkler()("Eileen", "Phyllis")
 
+## Reduce the threshold for boosting
+x <- "Matthew"
+y <- "Martin"
+JaroWinkler()(x, y) < JaroWinkler(threshold = 0.5)(x, y)
 
 }
 \references{

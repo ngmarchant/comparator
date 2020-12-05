@@ -53,6 +53,9 @@ identity axiom \eqn{dist(x,y) = 0 \Leftrightarrow x = y.}{dist(x, y) = 0 ⇔ x =
 
 }
 \examples{
+## Compare names
+Jaro()("Martha", "Mathra")
+Jaro()("Eileen", "Phyllis")
 
 }
 \references{
