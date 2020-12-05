@@ -1,19 +1,6 @@
 #' @include StringMeasure.R CppMeasure.R
 NULL
 
-def_attr_osa <- list(
-  deletion = 1.0,
-  insertion = 1.0, 
-  substitution = 1.0,
-  transposition = 1.0,
-  normalize = FALSE,
-  symmetric = TRUE,
-  distance = TRUE
-)
-
-attrs <- attributes(getClassDef("StringMeasure")@prototype)[-1]
-attrs[names(def_attr_osa)] <- def_attr_osa
-
 setClass("OSA", contains = c("StringMeasure", "CppMeasure"), 
          slots = c(
            deletion = "numeric", 
@@ -22,9 +9,16 @@ setClass("OSA", contains = c("StringMeasure", "CppMeasure"),
            transposition = "numeric",
            normalize = "logical"
          ),
-         prototype = do.call(structure, 
-                             append(c(.Data = elementwise_cpp_builder("OSA", attrs)), 
-                                    def_attr_osa)),
+         prototype = structure(
+           .Data = function(x, y, ...) elementwise(sys.function(), x, y, ...),
+           deletion = 1.0,
+           insertion = 1.0, 
+           substitution = 1.0,
+           transposition = 1.0,
+           normalize = FALSE,
+           symmetric = TRUE,
+           distance = TRUE
+         ),
          validity = function(object) {
            errs <- character()
            if (object@deletion < 0 || length(object@deletion) != 1)
@@ -138,11 +132,9 @@ setClass("OSA", contains = c("StringMeasure", "CppMeasure"),
 OSA <- function(deletion = 1.0, insertion = 1.0, substitution = 1.0, 
                 transposition = 1.0, normalize = FALSE, similarity = FALSE, 
                 ignore_case = FALSE, use_bytes = FALSE) {
-  attrs <- c(as.list(environment()))
-  attrs$similarity <- similarity
-  attrs$distance <- !similarity
-  attrs$symmetric <- insertion == deletion
-  arguments <- list("OSA", ".Data" = elementwise_cpp_builder("OSA", attrs))
-  arguments <- append(arguments, attrs)
-  do.call("new", arguments)
+  arguments <- c(as.list(environment()))
+  arguments$similarity <- similarity
+  arguments$distance <- !similarity
+  arguments$symmetric <- insertion == deletion
+  do.call("new", append("OSA", arguments))
 }

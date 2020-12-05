@@ -1,19 +1,6 @@
 #' @include StringMeasure.R CppMeasure.R
 NULL
 
-def_attr_levenshtein <- list(
-  deletion = 1.0,
-  insertion = 1.0, 
-  substitution = 1.0,
-  normalize = FALSE,
-  symmetric = TRUE,
-  distance = TRUE,
-  tri_inequal = TRUE
-)
-
-attrs <- attributes(getClassDef("StringMeasure")@prototype)[-1]
-attrs[names(def_attr_levenshtein)] <- def_attr_levenshtein
-
 setClass("Levenshtein", contains = c("StringMeasure", "CppMeasure"), 
          slots = c(
            deletion = "numeric", 
@@ -21,9 +8,16 @@ setClass("Levenshtein", contains = c("StringMeasure", "CppMeasure"),
            substitution = "numeric",
            normalize = "logical"
          ),
-         prototype = do.call(structure, 
-                             append(c(.Data = elementwise_cpp_builder("Levenshtein", attrs)), 
-                                    def_attr_levenshtein)),
+         prototype = structure(
+           .Data = function(x, y, ...) elementwise(sys.function(), x, y, ...),
+           deletion = 1.0,
+           insertion = 1.0, 
+           substitution = 1.0,
+           normalize = FALSE,
+           symmetric = TRUE,
+           distance = TRUE,
+           tri_inequal = TRUE
+         ), 
          validity = function(object) {
            errs <- character()
            symmetric_weights <- object@deletion == object@insertion
@@ -119,12 +113,10 @@ setClass("Levenshtein", contains = c("StringMeasure", "CppMeasure"),
 Levenshtein <- function(deletion = 1.0, insertion = 1.0, substitution = 1.0, 
                         normalize = FALSE, similarity = FALSE, 
                         ignore_case = FALSE, use_bytes = FALSE) {
-  attrs <- c(as.list(environment()))
-  attrs$similarity <- similarity
-  attrs$distance <- !similarity
-  attrs$symmetric <- deletion == insertion
-  attrs$tri_inequal <- deletion == insertion & !similarity
-  arguments <- list("Levenshtein", ".Data" = elementwise_cpp_builder("Levenshtein", attrs))
-  arguments <- append(arguments, attrs)
-  do.call("new", arguments)
+  arguments <- c(as.list(environment()))
+  arguments$similarity <- similarity
+  arguments$distance <- !similarity
+  arguments$symmetric <- deletion == insertion
+  arguments$tri_inequal <- deletion == insertion & !similarity
+  do.call("new", append("Levenshtein", arguments))
 }

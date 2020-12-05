@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PairwiseMatrix.hpp"
+#include "PairwiseMatrix.h"
 #include <Rcpp.h>
 
 template<class Range> 

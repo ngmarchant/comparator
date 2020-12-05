@@ -1,19 +1,6 @@
 #' @include StringMeasure.R Levenshtein.R
 NULL
 
-def_attr_me <- list(
-  separator = "\\s+",
-  inner_measure = Levenshtein(similarity = TRUE),
-  agg_function = base::mean,
-  inner_opt = base::max, 
-  symmetrize = FALSE,
-  symmetric = FALSE,
-  similarity = TRUE
-)
-
-attrs <- attributes(getClassDef("StringMeasure")@prototype)[-1]
-attrs[names(def_attr_me)] <- def_attr_me
-
 # Shared implementation for scoring of a single pair of values for 
 # sim_MongeElkan and dist_MongeElkan
 .impl_inner.MongeElkan <- function(t1, t2, inner_measure, inner_opt, agg_function, 
@@ -29,40 +16,22 @@ attrs[names(def_attr_me)] <- def_attr_me
   }
 }
 
-elementwise_me_builder <- function(attrs) {
-  function(x, y) {
-    # tokenize
-    tokens1 <- strsplit(x, attrs$separator)
-    tokens2 <- strsplit(y, attrs$separator)
-    
-    n <- max(length(tokens1), length(tokens2))
-    
-    # TODO: wrong. Want proper recycling
-    if (length(tokens1) < length(tokens2)) {
-      tokens1 <- rep(tokens1, times = length(tokens2))
-    } else if (length(tokens2) < length(tokens1)) {
-      tokens2 <- rep(tokens2, times = length(tokens1))
-    }
-    
-    out <- vector(mode = "numeric", length = n)
-    for (i in seq_len(n)) {
-      out[i] <- .impl_inner.MongeElkan(tokens1[[i]], tokens2[[i]], 
-                                       attrs$inner_measure, attrs$inner_opt, 
-                                       attrs$agg_function, attrs$symmetric)
-    }
-    
-    out
-  }
-}
-
 setClass("MongeElkan", contains = "StringMeasure", 
          slots = c(separator = "character",
                    inner_measure = "StringMeasure",
                    agg_function = "function", 
                    inner_opt = "function", 
                    symmetrize = "logical"), 
-         prototype = do.call(structure, 
-                             append(c(.Data = elementwise_me_builder(def_attr_me)), attrs)), 
+         prototype = structure(
+           .Data = function(x, y, ...) elementwise(sys.function(), x, y, ...),
+           separator = "\\s+",
+           inner_measure = Levenshtein(similarity = TRUE),
+           agg_function = base::mean,
+           inner_opt = base::max, 
+           symmetrize = FALSE,
+           symmetric = FALSE,
+           similarity = TRUE
+         ), 
          validity = function(object) {
            errs <- character()
            if (length(object@separator) != 1)
@@ -148,22 +117,49 @@ setClass("MongeElkan", contains = "StringMeasure",
 MongeElkan <- function(inner_measure = Levenshtein(similarity = TRUE, normalize = TRUE), 
                        separator = "\\s+", agg_function = base::mean, 
                        symmetrize = FALSE) {
-  attrs <- c(as.list(environment()))
-  attrs$distance <- inner_measure@distance
-  attrs$symmetric <- inner_measure@symmetric && symmetrize
-  attrs$distance <- inner_measure@distance
-  attrs$similarity <- inner_measure@similarity
+  arguments <- c(as.list(environment()))
+  arguments$distance <- inner_measure@distance
+  arguments$symmetric <- inner_measure@symmetric && symmetrize
+  arguments$distance <- inner_measure@distance
+  arguments$similarity <- inner_measure@similarity
   if (inner_measure@distance) {
-    attrs$inner_opt <- base::min
+    arguments$inner_opt <- base::min
   } else {
-    attrs$inner_opt <- base::max
+    arguments$inner_opt <- base::max
   }
-  arguments <- list("MongeElkan", ".Data" = elementwise_me_builder(attrs))
-  arguments <- append(arguments, attrs)
-  do.call("new", arguments)
+  do.call("new", append("MongeElkan", arguments))
 }
 
-#' @describeIn pairwise Specialization for [`MongeElkan`] where `x` and `y` are vectors of strings to compare
+#' @describeIn elementwise Specialization for [`MongeElkan`] where `x` and `y` 
+#' are vectors of strings to compare.
+setMethod(elementwise, signature = c(measure = "MongeElkan", x = "vector", y = "vector"), 
+          function(measure, x, y, ...) {
+            # tokenize
+            tokens1 <- strsplit(x, measure@separator)
+            tokens2 <- strsplit(y, measure@separator)
+            
+            n <- max(length(tokens1), length(tokens2))
+            
+            # TODO: wrong. Want proper recycling
+            if (length(tokens1) < length(tokens2)) {
+              tokens1 <- rep(tokens1, times = length(tokens2))
+            } else if (length(tokens2) < length(tokens1)) {
+              tokens2 <- rep(tokens2, times = length(tokens1))
+            }
+            
+            out <- vector(mode = "numeric", length = n)
+            for (i in seq_len(n)) {
+              out[i] <- .impl_inner.MongeElkan(tokens1[[i]], tokens2[[i]], 
+                                               measure@inner_measure, measure@inner_opt, 
+                                               measure@agg_function, measure@symmetric)
+            }
+            out
+          }
+)
+
+
+#' @describeIn pairwise Specialization for [`MongeElkan`] where `x` and `y` are 
+#' vectors of strings to compare.
 setMethod(pairwise, signature = c(measure = "MongeElkan", x = "vector", y = "vector"), 
           function(measure, x, y, return_matrix, ...) {
             # Tokenize
@@ -186,7 +182,8 @@ setMethod(pairwise, signature = c(measure = "MongeElkan", x = "vector", y = "vec
           }
 )
 
-#' @describeIn pairwise Specialization for [`MongeElkan`] where `x` is a vector of strings to compare among themselves
+#' @describeIn pairwise Specialization for [`MongeElkan`] where `x` is a vector 
+#' of strings to compare among themselves.
 setMethod(pairwise, signature = c(measure = "MongeElkan", x = "vector", y = "NULL"), 
           function(measure, x, y, return_matrix, ...) {
             if (!return_matrix) warning("`return_matrix = FALSE` is not supported")

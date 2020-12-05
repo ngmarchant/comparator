@@ -2,7 +2,7 @@
 
 #include <numeric>
 #include <limits>
-#include "IMeasures.hpp"
+#include "IMeasures.h"
 
 template<class ForwardRange>
 class Hamming : public NormalizableMeasure<ForwardRange> {

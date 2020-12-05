@@ -1,44 +1,14 @@
 #' @include NumericMeasure.R PairwiseMatrix.R
 
-def_attr_minkowski <- list(
-  p = 2.0,
-  symmetric = TRUE,
-  distance = TRUE, 
-  tri_inequal = TRUE
-)
-
-attrs <- attributes(getClassDef("NumericMeasure")@prototype)[-1]
-attrs[names(def_attr_minkowski)] <- def_attr_minkowski
-
-#' @importFrom proxy dist
-#' @noRd
-elementwise_minkowski_builder <- function(attrs) {
-  function(x, y) {
-    # proxy::dist expects rows, not vectors
-    if (is.null(dim(x))) dim(x) <- c(1, length(x))
-    if (is.null(dim(y))) dim(y) <- c(1, length(x))
-    mode(x) <- "numeric"
-    mode(y) <- "numeric"
-    # recycle as needed if one matrix has fewer rows than the other
-    if (nrow(x) < nrow(y)) {
-      x <- x[rep_len(seq_len(nrow(x)), nrow(y)),]
-    } else if (nrow(x) > nrow(y)) {
-      y <- y[rep_len(seq_len(nrow(y)), nrow(x)),]
-    }
-    p <- attrs$p
-    if (is.infinite(p)) {
-      result <- dist(x, y, method="Chebyshev", by_rows = TRUE, pairwise=TRUE)
-    } else {
-      result <- dist(x, y, method="Minkowski", p=p, by_rows = TRUE, pairwise=TRUE)
-    }
-    as.numeric(result)
-  }
-}
-
 setClass("Minkowski", contains = "NumericMeasure", 
          slots = c(p = "numeric"), 
-         prototype = do.call(structure, 
-                             append(c(.Data = elementwise_minkowski_builder(attrs)), def_attr_minkowski)),
+         prototype = structure(
+           .Data = function(x, y, ...) elementwise(sys.function(), x, y, ...),
+           p = 2.0,
+           symmetric = TRUE,
+           distance = TRUE, 
+           tri_inequal = TRUE
+         ),
          validity = function(object) {
            errs <- character()
            if (!object@symmetric)
@@ -95,17 +65,38 @@ setClass("Minkowski", contains = "NumericMeasure",
 #' 
 #' @export
 Minkowski <- function(p = 2.0) {
-  attrs <- c(as.list(environment()))
-  attrs$tri_inequal <- p >= 1
-  arguments <- list("Minkowski", ".Data" = elementwise_minkowski_builder(attrs))
-  arguments <- append(arguments, attrs)
-  do.call("new", arguments)
+  arguments <- c(as.list(environment()))
+  arguments$tri_inequal <- p >= 1
+  do.call("new", append("Minkowski", arguments))
 }
 
 #' @importFrom proxy dist as.matrix
 #' @describeIn pairwise Specialization for a [`Minkowski`] where `x` and `y` 
-#' matrices of rows (interpreted as vectors) to compare. If `x` any `y` do 
-#' not have the same number of rows, rows are recycled in the smaller matrix. 
+#' matrices of rows (interpreted as vectors) to compare. 
+setMethod(elementwise, signature = c(measure = "Minkowski", x = "matrix", y = "matrix"), 
+          function(measure, x, y, ...) {
+            mode(x) <- "numeric"
+            mode(y) <- "numeric"
+            # recycle as needed if one matrix has fewer rows than the other
+            if (nrow(x) < nrow(y)) {
+              x <- x[rep_len(seq_len(nrow(x)), nrow(y)),]
+            } else if (nrow(x) > nrow(y)) {
+              y <- y[rep_len(seq_len(nrow(y)), nrow(x)),]
+            }
+            p <- measure@p
+            if (is.infinite(p)) {
+              result <- dist(x, y, method="Chebyshev", by_rows = TRUE, pairwise=TRUE)
+            } else {
+              result <- dist(x, y, method="Minkowski", p=p, by_rows = TRUE, pairwise=TRUE)
+            }
+            as.numeric(result)
+          }
+)
+
+
+#' @importFrom proxy dist as.matrix
+#' @describeIn pairwise Specialization for a [`Minkowski`] where `x` and `y` 
+#' matrices of rows (interpreted as vectors) to compare. 
 setMethod(pairwise, signature = c(measure = "Minkowski", x = "matrix", y = "matrix"), 
           function(measure, x, y, return_matrix, ...) {
             mode(x) <- "numeric"

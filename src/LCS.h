@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IMeasures.hpp"
+#include "IMeasures.h"
 #include <vector>
 
 using Mat = std::vector<std::vector<double> >;

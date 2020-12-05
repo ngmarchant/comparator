@@ -1,7 +1,9 @@
 #pragma once
 
-#include "Hamming.hpp"
-#include "DamerauLevenshtein.hpp"
-#include "Levenshtein.hpp"
-#include "OSA.hpp"
-#include "LCS.hpp"
+#include "Hamming.h"
+#include "DamerauLevenshtein.h"
+#include "Levenshtein.h"
+#include "OSA.h"
+#include "LCS.h"
+#include "Constant.h"
+#include "BinaryComp.h"

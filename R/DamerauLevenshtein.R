@@ -1,18 +1,12 @@
 #' @include Levenshtein.R
 NULL
 
-def_attr_dl <- list(
-  transposition = 1.0
-)
-
-attrs <- attributes(getClassDef("Levenshtein")@prototype)[-1]
-attrs[names(def_attr_dl)] <- def_attr_dl
-
 setClass("DamerauLevenshtein", contains = "Levenshtein", 
          slots = c(transposition = "numeric"),
-         prototype = do.call(structure, 
-                             append(c(.Data = elementwise_cpp_builder("DamerauLevenshtein", attrs)), 
-                                    def_attr_dl)),
+         prototype = structure(
+           .Data = function(x, y, ...) elementwise(sys.function(), x, y, ...),
+           transposition = 1.0
+         ),
          validity = function(object) {
            errs <- character()
            # Other validity checks are taken care of in Levenshtein
@@ -105,12 +99,10 @@ setClass("DamerauLevenshtein", contains = "Levenshtein",
 DamerauLevenshtein <- function(deletion = 1.0, insertion = 1.0, substitution = 1.0, 
                                transposition = 1.0, normalize = FALSE, similarity = FALSE, 
                                ignore_case = FALSE, use_bytes = FALSE) {
-  attrs <- c(as.list(environment()))
-  attrs$similarity <- similarity
-  attrs$distance <- !similarity
-  attrs$symmetric <- deletion == insertion
-  attrs$tri_inequal <- deletion == insertion & !similarity
-  arguments <- list("DamerauLevenshtein", ".Data" = elementwise_cpp_builder("DamerauLevenshtein", attrs))
-  arguments <- append(arguments, attrs)
-  do.call("new", arguments)
+  arguments <- c(as.list(environment()))
+  arguments$similarity <- similarity
+  arguments$distance <- !similarity
+  arguments$symmetric <- deletion == insertion
+  arguments$tri_inequal <- deletion == insertion & !similarity
+  do.call("new", append("DamerauLevenshtein", arguments))
 }

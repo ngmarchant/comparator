@@ -1,24 +1,18 @@
 #' @include StringMeasure.R  CppMeasure.R
 NULL
 
-def_attr_lcs <- list(
-  normalize = FALSE,
-  symmetric = TRUE,
-  distance = TRUE, 
-  tri_inequal = TRUE
-)
-
-attrs <- attributes(getClassDef("StringMeasure")@prototype)[-1]
-attrs[names(def_attr_lcs)] <- def_attr_lcs
-
 setClass("LCS", contains = c("StringMeasure", "CppMeasure"), 
          slots = c(
            deletion = "numeric", 
            insertion = "numeric", 
            normalize = "logical"),
-         prototype = do.call(structure, 
-                             append(c(.Data = elementwise_cpp_builder("LCS", attrs)), 
-                                    def_attr_lcs)),
+         prototype = structure(
+           .Data = function(x, y, ...) elementwise(sys.function(), x, y, ...),
+           normalize = FALSE,
+           symmetric = TRUE,
+           distance = TRUE, 
+           tri_inequal = TRUE
+         ), 
          validity = function(object) {
            errs <- character()
            symmetric_weights <- object@deletion == object@insertion
@@ -117,12 +111,10 @@ setClass("LCS", contains = c("StringMeasure", "CppMeasure"),
 #' @export
 LCS <- function(deletion = 1.0, insertion = 1.0, normalize = FALSE, similarity = FALSE, 
                 ignore_case = FALSE, use_bytes = FALSE) {
-  attrs <- c(as.list(environment()))
-  attrs$similarity <- similarity
-  attrs$distance <- !similarity
-  attrs$symmetric <- deletion == insertion
-  attrs$tri_inequal <- deletion == insertion & !similarity
-  arguments <- list("LCS", ".Data" = elementwise_cpp_builder("LCS", attrs))
-  arguments <- append(arguments, attrs)
-  do.call("new", arguments)
+  arguments <- c(as.list(environment()))
+  arguments$similarity <- similarity
+  arguments$distance <- !similarity
+  arguments$symmetric <- deletion == insertion
+  arguments$tri_inequal <- deletion == insertion & !similarity
+  do.call("new", append("LCS", arguments))
 }

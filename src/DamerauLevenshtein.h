@@ -1,6 +1,6 @@
 #pragma once
 
-#include "OSA.hpp"
+#include "OSA.h"
 #include <vector>
 #include <unordered_map>
 

@@ -34,16 +34,33 @@ NumericMeasure <- setClass("NumericMeasure",
            ifelse(length(errs) == 0, TRUE, errs)
          })
 
-# #' @describeIn elementwise Specialization for [`NumericMeasure`] where `x` and 
-# #' `y` are matrices of rows (interpreted as vectors) to compare elementwise. 
-# #' If one of the matrices has fewer rows than the other, the rows in the 
-# #' smaller matrix are recycled following standard `R` behavior. 
-# setMethod(elementwise, signature = c(measure = "NumericMeasure", x = "matrix", y = "matrix"), 
-#           function(measure, x, y, ...) {
-#             # Using the fact that the elementwise measure is stored in the .Data slot
-#             measure(x, y)
-#           }
-# )
+#' @describeIn elementwise Specialization for [`NumericMeasure`] where `x` is a 
+#' matrix of rows (interpreted as vectors) to compare with a vector `y`. 
+setMethod(elementwise, signature = c(measure = "NumericMeasure", x = "matrix", y = "vector"),
+          function(measure, x, y, ...) {
+            dim(y) <- c(1, length(y))
+            elementwise(measure, x, y, ...)
+          }
+)
+
+#' @describeIn elementwise Specialization for [`NumericMeasure`] where `x` is a 
+#' vector to compare with a matrix `y` of rows (interpreted as vectors).
+setMethod(elementwise, signature = c(measure = "NumericMeasure", x = "vector", y = "matrix"),
+          function(measure, x, y, ...) {
+            dim(x) <- c(1, length(x))
+            elementwise(measure, x, y, ...)
+          }
+)
+
+#' @describeIn elementwise Specialization for [`NumericMeasure`] where `x` and `y` 
+#' are vectors to compare.
+setMethod(elementwise, signature = c(measure = "NumericMeasure", x = "vector", y = "vector"),
+          function(measure, x, y, ...) {
+            dim(x) <- c(1, length(x))
+            dim(y) <- c(1, length(y))
+            elementwise(measure, x, y, ...)
+          }
+)
 
 #' @describeIn pairwise Specialization for [`NumericMeasure`] where `x` is a 
 #' matrix of rows (interpreted as vectors) to compare with a vector `y`. 

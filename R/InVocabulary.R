@@ -1,43 +1,6 @@
 #' @include StringMeasure.R PairwiseMatrix.R
 NULL
 
-def_attr_invocab <- list(
-  vocab = character(),
-  both_in_distinct = 0.7, 
-  both_in_same = 1.0, 
-  one_in = 1.0, 
-  none_in = 1.0,
-  symmetric = TRUE
-)
-
-attrs <- attributes(getClassDef("StringMeasure")@prototype)[-1]
-attrs[names(def_attr_invocab)] <- def_attr_invocab
-
-elementwise_invocab_builder <- function(attrs) {
-  function(x, y) {
-    vocab <- attrs$vocab
-    
-    if (attrs$ignore_case) {
-      x <- tolower(x)
-      y <- tolower(y)
-      vocab <- tolower(vocab)
-    }
-    
-    x_known <- x %in% vocab
-    y_known <- y %in% vocab
-    
-    distinct <- x != y
-    both_in <- x_known & y_known
-    
-    out <- rep_len(attrs$none_in, length(x))
-    out[x_known | y_known] <- attrs$one_in
-    out[both_in] <- attrs$both_in_same
-    out[both_in & distinct] <- attrs$both_in_distinct
-    
-    out
-  }
-}
-
 setClass("InVocabulary", contains = c("StringMeasure"), 
          slots = c(
            vocab = "character",
@@ -46,9 +9,15 @@ setClass("InVocabulary", contains = c("StringMeasure"),
            one_in = "numeric", 
            none_in = "numeric"
          ),
-         prototype = do.call(structure, 
-                             append(c(.Data = elementwise_invocab_builder(attrs)), 
-                                    def_attr_invocab)),
+         prototype = structure(
+           .Data = function(x, y, ...) elementwise(sys.function(), x, y, ...),
+           vocab = character(),
+           both_in_distinct = 0.7, 
+           both_in_same = 1.0, 
+           one_in = 1.0, 
+           none_in = 1.0,
+           symmetric = TRUE
+         ),
          validity = function(object) {
            errs <- character()
            if (length(object@both_in_distinct) != 1)
@@ -130,13 +99,40 @@ setClass("InVocabulary", contains = c("StringMeasure"),
 #' @export
 InVocabulary <- function(vocab, both_in_distinct = 0.7, both_in_same = 1.0, 
                          one_in = 1.0, none_in = 1.0, ignore_case = FALSE) {
-  attrs <- c(as.list(environment()))
-  arguments <- list("InVocabulary", ".Data" = elementwise_invocab_builder(attrs))
-  arguments <- append(arguments, attrs)
-  do.call("new", arguments)
+  arguments <- c(as.list(environment()))
+  do.call("new", append("InVocabulary", arguments))
 }
 
-#' @describeIn pairwise Specialization for [`InVocabulary`] where `x` and `y` are vectors of strings to compare
+#' @describeIn elementwise Specialization for [`InVocabulary`] where `x` and 
+#' `y` are vectors of strings to compare.
+setMethod(elementwise, signature = c(measure = "InVocabulary", x = "vector", y = "vector"), 
+          function(measure, x, y, ...) {
+            vocab <- measure@vocab
+            
+            if (measure@ignore_case) {
+              x <- tolower(x)
+              y <- tolower(y)
+              vocab <- tolower(vocab)
+            }
+            
+            x_known <- x %in% vocab
+            y_known <- y %in% vocab
+            
+            distinct <- x != y
+            both_in <- x_known & y_known
+            
+            out <- rep_len(measure@none_in, length(x))
+            out[x_known | y_known] <- measure@one_in
+            out[both_in] <- measure@both_in_same
+            out[both_in & distinct] <- measure@both_in_distinct
+            
+            out
+          }
+)
+
+
+#' @describeIn pairwise Specialization for [`InVocabulary`] where `x` and `y` 
+#' are vectors of strings to compare.
 setMethod(pairwise, signature = c(measure = "InVocabulary", x = "vector", y = "vector"), 
           function(measure, x, y, return_matrix, ...) {
             vocab <- measure@vocab
@@ -166,7 +162,8 @@ setMethod(pairwise, signature = c(measure = "InVocabulary", x = "vector", y = "v
           }
 )
 
-#' @describeIn pairwise Specialization for [`InVocabulary`] where `x` is a vector of strings to compare among themselves
+#' @describeIn pairwise Specialization for [`InVocabulary`] where `x` is a 
+#' vector of strings to compare among themselves.
 setMethod(pairwise, signature = c(measure = "InVocabulary", x = "vector", y = "NULL"), 
           function(measure, x, y, return_matrix, ...) {
             if (!return_matrix) warning("`return_matrix = FALSE` is not supported")

@@ -1,38 +1,13 @@
 #' @include NumericMeasure.R PairwiseMatrix.R
 
-def_attr_chebyshev <- list(
-  symmetric = TRUE,
-  distance = TRUE, 
-  tri_inequal = TRUE
-)
-
-attrs <- attributes(getClassDef("NumericMeasure")@prototype)[-1]
-attrs[names(def_attr_chebyshev)] <- def_attr_chebyshev
-
-#' @importFrom proxy dist
-#' @noRd
-elementwise_chebyshev_builder <- function(attrs) {
-  function(x, y) {
-    # proxy::dist expects rows, not vectors
-    if (is.null(dim(x))) dim(x) <- c(1, length(x))
-    if (is.null(dim(y))) dim(y) <- c(1, length(x))
-    mode(x) <- "numeric"
-    mode(y) <- "numeric"
-    # recycle as needed if one matrix has fewer rows than the other
-    if (nrow(x) < nrow(y)) {
-      x <- x[rep_len(seq_len(nrow(x)), nrow(y)),]
-    } else if (nrow(x) > nrow(y)) {
-      y <- y[rep_len(seq_len(nrow(y)), nrow(x)),]
-    }
-    result <- dist(x, y, method="Chebyshev", by_rows = TRUE, pairwise=TRUE)
-    as.numeric(result)
-  }
-}
-
 setClass("Chebyshev", contains = "NumericMeasure", 
          slots = c(p = "numeric"), 
-         prototype = do.call(structure, 
-                             append(c(.Data = elementwise_chebyshev_builder(attrs)), def_attr_chebyshev)),
+         prototype = structure(
+           .Data = function(x, y, ...) elementwise(sys.function(), x, y, ...),
+           symmetric = TRUE,
+           distance = TRUE, 
+           tri_inequal = TRUE
+         ),
          validity = function(object) {
            errs <- character()
            if (!object@symmetric)
@@ -83,16 +58,32 @@ setClass("Chebyshev", contains = "NumericMeasure",
 #' 
 #' @export
 Chebyshev <- function() {
-  attrs <- c(as.list(environment()))
-  arguments <- list("Chebyshev", ".Data" = elementwise_chebyshev_builder(attrs))
-  arguments <- append(arguments, attrs)
-  do.call("new", arguments)
+  arguments <- c(as.list(environment()))
+  do.call("new", append("Chebyshev", arguments))
 }
+
+#' @importFrom proxy dist
+#' @describeIn elementwise Specialization for [`Chebyshev`] where `x` and `y` 
+#' matrices of rows (interpreted as vectors) to compare. If `x` any `y` do 
+#' not have the same number of rows, rows are recycled in the smaller matrix. 
+setMethod(elementwise, signature = c(measure = "Chebyshev", x = "matrix", y = "matrix"),
+          function(measure, x, y, ...) {
+            mode(x) <- "numeric"
+            mode(y) <- "numeric"
+            # recycle as needed if one matrix has fewer rows than the other
+            if (nrow(x) < nrow(y)) {
+              x <- x[rep_len(seq_len(nrow(x)), nrow(y)),]
+            } else if (nrow(x) > nrow(y)) {
+              y <- y[rep_len(seq_len(nrow(y)), nrow(x)),]
+            }
+            result <- dist(x, y, method="Chebyshev", by_rows = TRUE, pairwise=TRUE)
+            as.numeric(result)
+          }
+)
 
 #' @importFrom proxy dist as.matrix
 #' @describeIn pairwise Specialization for [`Chebyshev`] where `x` and `y` 
-#' matrices of rows (interpreted as vectors) to compare. If `x` any `y` do 
-#' not have the same number of rows, rows are recycled in the smaller matrix. 
+#' matrices of rows (interpreted as vectors) to compare. 
 setMethod(pairwise, signature = c(measure = "Chebyshev", x = "matrix", y = "matrix"), 
           function(measure, x, y, return_matrix, ...) {
             mode(x) <- "numeric"

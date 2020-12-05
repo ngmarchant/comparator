@@ -1,32 +1,13 @@
-#' @include StringMeasure.R PairwiseMatrix.R
+#' @include StringMeasure.R PairwiseMatrix.R CppMeasure.R
 
-def_attr_bincomp <- list(
-  score = 1.0,
-  symmetric = TRUE,
-  distance = TRUE
-)
-
-attrs <- attributes(getClassDef("StringMeasure")@prototype)[-1]
-attrs[names(def_attr_bincomp)] <- def_attr_bincomp
-
-elementwise_bincomp_builder <- function(attrs) {
-  function(x, y) {
-    if (attrs$ignore_case) {
-      x <- tolower(x)
-      y <- tolower(y)
-    }
-    if (attrs$distance) {
-      ifelse(x == y, 0, attrs$score)
-    } else {
-      ifelse(x == y, attrs$score, 0)
-    }
-  }
-}
-
-setClass("BinaryComp", contains = "StringMeasure", 
+setClass("BinaryComp", contains = c("StringMeasure", "CppMeasure"), 
          slots = c(score = "numeric"), 
-         prototype = do.call(structure, 
-                             append(c(.Data = elementwise_bincomp_builder(attrs)), def_attr_bincomp)),
+         prototype = structure(
+           .Data = function(x, y, ...) elementwise(sys.function(), x, y, ...),
+           score = 1.0,
+           symmetric = TRUE,
+           distance = TRUE
+         ),
          validity = function(object) {
            errs <- character()
            if (length(object@score) != 1)
@@ -71,38 +52,8 @@ setClass("BinaryComp", contains = "StringMeasure",
 #' 
 #' @export
 BinaryComp <- function(score = 1.0, similarity = FALSE, ignore_case = FALSE) {
-  attrs <- c(as.list(environment()))
-  attrs$distance <- !similarity
-  attrs$similarity <- similarity
-  arguments <- list("BinaryComp", ".Data" = elementwise_bincomp_builder(attrs))
-  arguments <- append(arguments, attrs)
-  do.call("new", arguments)
+  arguments <- c(as.list(environment()))
+  arguments$distance <- !similarity
+  arguments$similarity <- similarity
+  do.call("new", append("BinaryComp", arguments))
 }
-
-#' @describeIn pairwise Specialization for [`ConstantMeasure`] where `x` and `y` are vectors of strings to compare
-setMethod(pairwise, signature = c(measure = "BinaryComp", x = "vector", y = "vector"), 
-          function(measure, x, y, return_matrix, ...) {
-            if (measure@ignore_case) {
-              x <- tolower(x)
-              y <- tolower(y)
-            }
-            scores <- matrix(x, nrow=length(x), ncol=length(y))
-            scores <- sweep(scores, 2, y, FUN = "==")
-            if (measure@distance) {
-              scores <- ifelse(scores, 0, measure@score)
-            } else {
-              scores <- ifelse(scores, measure@score, 0)
-            }
-            if (!return_matrix) scores <- as.PairwiseMatrix(scores)
-            scores
-          }
-)
-
-#' @describeIn pairwise Specialization for [`BinaryComp`] where `x` is a vector of strings to compare among themselves
-setMethod(pairwise, signature = c(measure = "BinaryComp", x = "vector", y = "NULL"), 
-          # TODO: don't return full matrix since dist is symmetric
-          function(measure, x, y, return_matrix, ...) {
-            if (!return_matrix) warning("`return_matrix = FALSE` is not supported")
-            pairwise(measure, x, x, TRUE)
-          }
-)

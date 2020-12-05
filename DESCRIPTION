@@ -20,14 +20,14 @@ RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
 Collate: 
-    'PairwiseMatrix.R'
     'Measure.R'
+    'CppMeasure.R'
+    'PairwiseMatrix.R'
     'StringMeasure.R'
     'BinaryComp.R'
     'NumericMeasure.R'
     'Chebyshev.R'
     'Constant.R'
-    'CppMeasure.R'
     'Levenshtein.R'
     'DamerauLevenshtein.R'
     'Minkowski.R'

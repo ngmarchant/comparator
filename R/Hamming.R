@@ -1,21 +1,16 @@
 #' @include StringMeasure.R CppMeasure.R
 NULL
 
-def_attr_hamming <- list(
-  normalize = FALSE,
-  symmetric = TRUE,
-  distance = TRUE,
-  tri_inequal = TRUE
-)
-
-attrs <- attributes(getClassDef("StringMeasure")@prototype)[-1]
-attrs[names(def_attr_hamming)] <- def_attr_hamming
-
 setClass("Hamming", contains = c("StringMeasure", "CppMeasure"), 
          slots = c(constant = "numeric", 
                    normalize = "logical"), 
-         prototype = do.call(structure, 
-                             append(c(.Data = elementwise_cpp_builder("Hamming", attrs)), def_attr_hamming)),
+         prototype = structure(
+           .Data = function(x, y, ...) elementwise(sys.function(), x, y, ...),
+           normalize = FALSE,
+           symmetric = TRUE,
+           distance = TRUE,
+           tri_inequal = TRUE
+         ),
          validity = function(object) {
            errs <- character()
            if (length(object@normalize) != 1)
@@ -85,11 +80,9 @@ setClass("Hamming", contains = c("StringMeasure", "CppMeasure"),
 #' @export
 Hamming <- function(normalize = FALSE, similarity = FALSE, ignore_case = FALSE, 
                     use_bytes = FALSE) {
-  attrs <- c(as.list(environment()))
-  attrs$similarity <- similarity
-  attrs$distance <- !similarity
-  attrs$tri_inequal <- !similarity & !normalize
-  arguments <- list("Hamming", ".Data" = elementwise_cpp_builder("Hamming", attrs))
-  arguments <- append(arguments, attrs)
-  do.call("new", arguments)
+  arguments <- c(as.list(environment()))
+  arguments$similarity <- similarity
+  arguments$distance <- !similarity
+  arguments$tri_inequal <- !similarity & !normalize
+  do.call("new", append("Hamming", arguments))
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Levenshtein.hpp"
+#include "Levenshtein.h"
 #include <vector>
 
 template<class ForwardRange>

@@ -1,10 +1,8 @@
 #' @include PairwiseMatrix.R Minkowski.R
 
-attrs <- attributes(getClassDef("Minkowski")@prototype)[-1]
-
 setClass("Manhattan", contains = "Minkowski", 
          prototype = structure(
-           .Data = elementwise_minkowski_builder(attrs)
+           .Data = function(x, y, ...) elementwise(sys.function(), x, y, ...)
          ),
          validity = function(object) {
            errs <- character()
@@ -50,8 +48,6 @@ setClass("Manhattan", contains = "Minkowski",
 #' 
 #' @export
 Manhattan <- function() {
-  attrs <- list(p = 1)
-  arguments <- list("Manhattan", ".Data" = elementwise_minkowski_builder(attrs))
-  arguments <- append(arguments, attrs)
-  do.call("new", arguments)
+  arguments <- list(p = 1)
+  do.call("new", append("Manhattan", arguments))
 }

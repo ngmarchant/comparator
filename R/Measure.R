@@ -35,8 +35,9 @@ setClass("Measure",
          contains = c("VIRTUAL", "function"), 
          validity = function(object) {
            errs <- character()
-           if (length(formals(object@.Data)) != 2) 
-             errs <- c(errs, "`.Data` must have exactly two arguments")
+           # TODO: enable after refactor
+           #if (length(formals(object@.Data)) != 3) 
+           #  errs <- c(errs, "`.Data` must have exactly three arguments")
            if (length(object@symmetric) != 1) 
              errs <- c(errs, "`symmetric` must be a logical vector of length 1")
            if (length(object@distance) != 1) 
@@ -152,10 +153,10 @@ setMethod(pairwise, signature = c(measure = "Measure", x = "ANY", y = "missing")
 setGeneric("elementwise", function(measure, x, y, ...) standardGeneric("elementwise"), 
            signature = c("measure", "x", "y"))
 
-#' @describeIn elementwise Calls `measure(x, y)` for any `x` and `y`
-setMethod(elementwise, signature = c(measure = "Measure", x = "ANY", y = "ANY"), 
-          function(measure, x, y, ...) {
-            # Using the fact that the elementwise measure is stored in the .Data slot
-            measure(x, y)
-          }
-)
+# #' @describeIn elementwise Calls `measure(x, y)` for any `x` and `y`
+# setMethod(elementwise, signature = c(measure = "Measure", x = "ANY", y = "ANY"), 
+#           function(measure, x, y, ...) {
+#             # Using the fact that the elementwise measure is stored in the .Data slot
+#             measure(x, y)
+#           }
+# )

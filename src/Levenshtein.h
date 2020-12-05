@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LCS.hpp"
+#include "LCS.h"
 #include <vector>
 
 template<class ForwardRange>

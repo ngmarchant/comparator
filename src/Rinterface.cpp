@@ -1,6 +1,6 @@
-#include "Measures.hpp"
-#include "util.hpp"
-#include "IMeasures.hpp"
+#include "Measures.h"
+#include "util.h"
+#include "IMeasures.h"
 
 using namespace Rcpp;
 
@@ -39,6 +39,13 @@ std::unique_ptr<Measure<V>> get_measure(const Rcpp::List& params) {
                                as<double>(params["insertion"]),
                                as<bool>(params["normalize"]), 
                                as<bool>(params["similarity"]));
+  }
+  if (classname == "Constant") {
+    return make_unique<Constant<V>>(as<double>(params["constant"]));
+  }
+  if (classname == "BinaryComp") {
+    return make_unique<BinaryComp<V>>(as<double>(params["score"]), 
+                                      as<double>(params["similarity"]));
   }
   stop("unrecognized measure name");
   return make_unique<Hamming<V>>();
