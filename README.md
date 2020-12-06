@@ -19,7 +19,7 @@ implemented in C/C++ to ensure fast performance.
 #### Edit-based:
 
   - `Levenshtein()`: Levenshtein distance/similarity
-  - `DamerauLevenshtein()` Damearu-Levenshtein distance/similarity
+  - `DamerauLevenshtein()` Damerau-Levenshtein distance/similarity
   - `Hamming()`: Hamming distance/similarity
   - `OSA()`: Optimal String Alignment distance/similarity
   - `LCS()`: Longest Common Subsequence distance/similarity

@@ -63,7 +63,7 @@ returned as a measure of the distance between \eqn{x} and \eqn{y}. Other
 methods of aggregating the costs are supported by specifying a non-default
 \code{agg_function}.
 
-The optimisation problem---of finding the minimum total cost under the
+The optimization problem---of finding the minimum total cost under the
 allowed operations---is solved exactly using a linear sum assignment
 solver.
 }
