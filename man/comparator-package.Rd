@@ -9,6 +9,14 @@
 Provides similarity and distance measures for clustering and 
     record linkage applications.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/ngmarchant/comparator}
+  \item Report bugs at \url{https://github.com/ngmarchant/comparator/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Neil Marchant \email{ngmarchant@gmail.com}
 
