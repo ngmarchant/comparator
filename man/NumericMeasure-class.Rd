@@ -4,7 +4,7 @@
 \name{NumericMeasure-class}
 \alias{NumericMeasure-class}
 \alias{NumericMeasure}
-\title{Numeric Measure Class}
+\title{Virtual Numeric Measure Class}
 \description{
 This class represents a measure for comparing pairs of
 numeric vectors.

@@ -39,18 +39,18 @@ setClass("JaroWinkler", contains = "Jaro",
 #' The Jaro-Winkler similarity (computed when `similarity = TRUE`) is 
 #' defined in terms of the [`Jaro`] similarity. If the Jaro similarity 
 #' \eqn{sim_J(x,y)} between strings \eqn{x} and \eqn{y} exceeds a 
-#' user-specified threshold \eqn{0 \leq \tau \leq 1}{0 ≤ τ ≤ 1}, the similarity 
-#' score is boosted in proportion to the number of matching characters in the 
-#' prefixes of \eqn{x} and \eqn{y}. More precisely, the Jaro-Winkler similarity 
-#' is defined as:
-#' \deqn{sim_{JW}(x, y) = sim_J(x, y) + \min(c(x, y), l) p (1 - sim_J(x, y)),}{sim_{JW}(x, y) = sim_J(x, y) + min(c(x, y), l) p (1 - sim_J(x, y)),}
-#' where \eqn{c(x,y)} is the length of the common prefix, \eqn{l \geq 0}{l ≥ 0}
-#' is a user-specified upper bound on the prefix size, and \eqn{0 ≤ p ≤ 1/l} 
-#' is a scaling factor.
+#' user-specified threshold \eqn{0 \leq \tau \leq 1}{0 <= threshold <= 1}, 
+#' the similarity score is boosted in proportion to the number of matching 
+#' characters in the prefixes of \eqn{x} and \eqn{y}. More precisely, the 
+#' Jaro-Winkler similarity is defined as:
+#' \deqn{\mathrm{sim}_{JW}(x, y) = \mathrm{sim}_J(x, y) + \min(c(x, y), l) p (1 - \mathrm{sim}_J(x, y)),}{sim_{JW}(x, y) = sim_J(x, y) + min(c(x, y), l) p (1 - sim_J(x, y)),}
+#' where \eqn{c(x,y)} is the length of the common prefix, \eqn{l \geq 0}{l >= 0}
+#' is a user-specified upper bound on the prefix size, and 
+#' \eqn{0 \leq p \leq 1/l}{0 <= p <= 1/l} is a scaling factor.
 #' 
 #' The Jaro-Winkler distance is computed when `similarity = FALSE` and is 
 #' defined as 
-#' \deqn{dist_{JW}(x, y) = 1 - sim_{JW}(x, y).}
+#' \deqn{\mathrm{dist}_{JW}(x, y) = 1 - \mathrm{sim}_{JW}(x, y).}{dist_{JW}(x, y) = 1 - sim_{JW}(x, y).}
 #' 
 #' @note Like the Jaro distance, the Jaro-Winkler distance is not a metric as 
 #'   it does not satisfy the identity axiom.

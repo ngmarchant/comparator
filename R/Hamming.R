@@ -34,19 +34,20 @@ setClass("Hamming", contains = c("StringMeasure", "CppMeasure"),
 #' is character substitution.
 #' 
 #' @details When the input strings \eqn{x} and \eqn{y} are of different 
-#' lengths (\eqn{|x| \neq |y|}{x ≠ y}), the Hamming distance is defined to 
-#' be \eqn{\infty}{∞}.
+#' lengths (\eqn{|x| \neq |y|}{|x| != |y|}), the Hamming distance is defined 
+#' to be \eqn{\infty}{Inf}.
 #' 
 #' A Hamming similarity is returned if `similarity = TRUE`. When 
 #' \eqn{|x| = |y|} the similarity is defined as follows:
-#' \deqn{sim(x, y) = |x| - dist(x, y),}
+#' \deqn{\mathrm{sim}(x, y) = |x| - \mathrm{dist}(x, y),}{sim(x, y) = |x| - dist(x, y),}
 #' where \eqn{sim} is the Hamming similarity and \eqn{dist} is the Hamming 
-#' distance. When \eqn{|x| \neq |y|}{x ≠ y} the similarity is defined to be 0.
+#' distance. When \eqn{|x| \neq |y|}{|x| != |y|} the similarity is defined to 
+#' be 0.
 #' 
 #' Normalization of the Hamming distance/similarity to the unit interval is 
 #' also supported by setting `normalize = TRUE`. The raw distance/similarity 
 #' is divided by the length of the string \eqn{|x| = |y|}. If 
-#' \eqn{|x| \neq |y|}{x ≠ y} the normalized distance is defined to be 1, 
+#' \eqn{|x| \neq |y|}{|x| != |y|} the normalized distance is defined to be 1, 
 #' while the normalized similarity is defined to be 0.
 #' 
 #' @note While the unnormalized Hamming distance is a metric, the normalized 

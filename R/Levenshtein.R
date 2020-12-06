@@ -52,19 +52,20 @@ setClass("Levenshtein", contains = c("StringMeasure", "CppMeasure"),
 #' @details 
 #' A Levenshtein similarity is returned if `similarity = TRUE`, which 
 #' is defined as 
-#' \deqn{sim(x, y) = \frac{w_d |x| + w_i |y| - dist(x, y)}{2},}{sim(x, y) = (w_d |x| + w_i |y| - dist(x, y))/2}
+#' \deqn{\mathrm{sim}(x, y) = \frac{w_d |x| + w_i |y| - \mathrm{dist}(x, y)}{2},}{sim(x, y) = (w_d |x| + w_i |y| - dist(x, y))/2}
 #' where \eqn{|x|}, \eqn{|y|} are the number of characters in \eqn{x} and 
-#' \eqn{y} respectively, \eqn{dist} is the Levenshtein distance, \eqn{w_d} 
-#' is the cost of a deletion and \eqn{w_i} is the cost of an insertion.
+#' \eqn{y} respectively, \eqn{\mathrm{dist}}{dist} is the Levenshtein distance, 
+#' \eqn{w_d} is the cost of a deletion and \eqn{w_i} is the cost of an 
+#' insertion.
 #' 
 #' Normalization of the Levenshtein distance/similarity to the unit interval 
 #' is also supported by setting `normalize = TRUE`. The normalization approach 
 #' follows Yujian and Bo (2007), and ensures that the distance remains a metric 
 #' when the costs of insertion \eqn{w_i} and deletion \eqn{w_d} are equal. 
-#' The normalized distance \eqn{dist_n} is defined as
-#' \deqn{dist_n(x, y) = \frac{2 dist(x, y)}{w_d |x| + w_i |y| + dist(x, y)},}{dist_n(x, y) = 2 · dist(x, y) / (w_d |x| + w_i |y| + dist(x, y)),}
-#' and the normalized similarity \eqn{sim_n} is defined as 
-#' \deqn{sim_n(x, y) = 1 - dist_n(x, y) = \frac{sim(x, y)}{w_d |x| + w_i |y| - sim(x, y)}.}{sim_n(x, y) = 1 - dist_n(x, y) = sim(x, y) / (w_d |x| + w_i |y| - sim(x, y)).}
+#' The normalized distance \eqn{\mathrm{dist}_n}{dist_n} is defined as
+#' \deqn{\mathrm{dist}_n(x, y) = \frac{2 \mathrm{dist}(x, y)}{w_d |x| + w_i |y| + \mathrm{dist}(x, y)},}{dist_n(x, y) = 2 * dist(x, y) / (w_d |x| + w_i |y| + dist(x, y)),}
+#' and the normalized similarity \eqn{\mathrm{sim}_n}{sim_n} is defined as 
+#' \deqn{\mathrm{sim}_n(x, y) = 1 - \mathrm{dist}_n(x, y) = \frac{\mathrm{sim}(x, y)}{w_d |x| + w_i |y| - \mathrm{sim}(x, y)}.}{sim_n(x, y) = 1 - dist_n(x, y) = sim(x, y) / (w_d |x| + w_i |y| - sim(x, y)).}
 #' 
 #' @note 
 #' If the costs of deletion and insertion are equal, this measure is 

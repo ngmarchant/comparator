@@ -1,7 +1,7 @@
 #' @include Measure.R
 NULL
 
-#' String Measure Class 
+#' Virtual String Measure Class 
 #' 
 #' @description This class represents a measure for comparing pairs of strings.
 #' 
@@ -37,7 +37,7 @@ StringMeasure <- setClass("StringMeasure",
            ignore_case = FALSE,
            use_bytes = FALSE
          ),
-         contains = c("Measure"), 
+         contains = c("VIRTUAL", "Measure"), 
          validity = function(object) {
            errs <- character()
            if (length(object@ignore_case) != 1)

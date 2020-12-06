@@ -97,17 +97,17 @@ setClass("FuzzyTokenSet", contains = "StringMeasure",
 #' insertions, deletions and substitutions. The costs of the operations are 
 #' specified as follows:
 #' 
-#' * cost of deleting a token \eqn{a} from \eqn{x}: \eqn{w_d \times inner(a, "")}{w_d·inner(a, "")}
-#' * cost of inserting a token \eqn{b} in \eqn{y}: \eqn{w_i \times inner("", b)}{w_i·inner("", b)}
+#' * cost of deleting a token \eqn{a} from \eqn{x}: \eqn{w_d \times \mathrm{inner}(a, "")}{w_d * inner(a, "")}
+#' * cost of inserting a token \eqn{b} in \eqn{y}: \eqn{w_i \times \mathrm{inner}("", b)}{w_i * inner("", b)}
 #' * cost of substituting a token \eqn{a} in \eqn{x} for a token \eqn{b} 
-#' in \eqn{y}: \eqn{w_s \times inner(a, b)}{w_s·inner(a, b)}
+#' in \eqn{y}: \eqn{w_s \times \mathrm{inner}(a, b)}{w_s * inner(a, b)}
 #' 
-#' where \eqn{inner} is a user-specified internal string measure and 
-#' \eqn{w_d, w_i, w_s} are user-specified weights, referred to as `deletion`, 
-#' `insertion` and `substitution` in the parameter list. By default, the mean 
-#' cost of the optimal (cost-minimizing) set of operations is returned as a 
-#' measure of the distance between \eqn{x} and \eqn{y}. Other methods of 
-#' aggregating the costs are supported by specifying a non-default 
+#' where \eqn{\mathrm{inner}}{inner} is a user-specified internal string 
+#' measure and \eqn{w_d, w_i, w_s} are user-specified weights, referred to as 
+#' `deletion`, `insertion` and `substitution` in the parameter list. By 
+#' default, the mean cost of the optimal (cost-minimizing) set of operations is 
+#' returned as a measure of the distance between \eqn{x} and \eqn{y}. Other 
+#' methods of aggregating the costs are supported by specifying a non-default 
 #' `agg_function`.
 #' 
 #' The optimisation problem---of finding the minimum total cost under the 

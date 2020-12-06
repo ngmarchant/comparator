@@ -4,7 +4,7 @@
 \name{StringMeasure-class}
 \alias{StringMeasure-class}
 \alias{StringMeasure}
-\title{String Measure Class}
+\title{Virtual String Measure Class}
 \description{
 This class represents a measure for comparing pairs of strings.
 }

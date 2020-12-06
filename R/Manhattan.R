@@ -18,7 +18,7 @@ setClass("Manhattan", contains = "Minkowski",
 #' The Manhattan distance (a.k.a. L-1 distance) between two vectors \eqn{x} and 
 #' \eqn{y} is the sum of the absolute differences of their Cartesian 
 #' coordinates: 
-#' \deqn{Manhattan(x,y) = \sum_{i = 1}^{n} |x_i - q_i|.}
+#' \deqn{\mathrm{Manhattan}(x,y) = \sum_{i = 1}^{n} |x_i - y_i|.}{Manhattan(x,y) = sum_i { |x_i - y_i| }.}
 #' 
 #' @note The Manhattan distance is a special case of the [`Minkowski`] 
 #' distance with \eqn{p = 1}.

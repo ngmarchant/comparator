@@ -74,11 +74,11 @@ setClass("Measure",
 #' @return 
 #' If both `x` and `y` are specified, every object in `x` is compared with 
 #' every object in `y` using the measure, and the resulting scores are returned 
-#' in a `size(x) × size(y)` matrix. 
+#' in a `size(x)` by `size(y)` matrix. 
 #' 
 #' If only `x` is specified, then the objects in `x` are compared with 
 #' themselves using the measure, and the resulting scores are returned in a 
-#' `size(x) × size(y)` matrix. 
+#' `size(x)` by `size(y)` matrix. 
 #' 
 #' By default, the matrix is represented as an instance of the 
 #' [`PairwiseMatrix-class`] class, which is more space-efficient for symmetric 

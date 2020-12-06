@@ -27,7 +27,7 @@ setClass("Jaro", contains = c("StringMeasure", "CppMeasure"),
 #' 
 #' @details 
 #' When `similarity = TRUE` (default), the Jaro similarity is computed as
-#' \deqn{sim(x, y) = \frac{1}{3}\left(\frac{m}{|x|} + \frac{m}{|y|} + \frac{m - \lceil \frac{t}{2} \rceil}{m}\right)}{sim(x, y) = (1/3)(m/|x| + m/|y| + (m-⌊t/2⌋)/m)}
+#' \deqn{\mathrm{sim}(x, y) = \frac{1}{3}\left(\frac{m}{|x|} + \frac{m}{|y|} + \frac{m - \lfloor \frac{t}{2} \rfloor}{m}\right)}{sim(x, y) = (1/3)(m/|x| + m/|y| + (m-floor(t/2)/m)}
 #' where \eqn{m} is the number of "matching" characters (defined below), 
 #' \eqn{t} is the number of "transpositions", and \eqn{|x|,|y|} are the lengths 
 #' of the strings \eqn{x} and \eqn{y}. The similarity takes on values in the 
@@ -38,17 +38,18 @@ setClass("Jaro", contains = c("StringMeasure", "CppMeasure"),
 #' attempting to align the i-th character \eqn{x_i} with the first matching 
 #' character in \eqn{y}. When looking for matching characters in \eqn{y}, the 
 #' algorithm only considers previously un-matched characters within a window 
-#' \eqn{[max(0, i - w), min(|y|, i + w]} where \eqn{w = \left\lceil \frac{\max(|x|, |y|)}{2} \right\rceil - 1}{w = ⌊max(|x|, |y|)/2⌋ - 1}.
+#' \eqn{[\max(0, i - w), \min(|y|, i + w)]}{[max(0, i - w), min(|y|, i + w)]} 
+#' where \eqn{w = \left\lfloor \frac{\max(|x|, |y|)}{2} \right\rfloor - 1}{w = floor(max(|x|, |y|)/2) - 1}.
 #' The alignment process yields a subsequence of matching characters from 
 #' \eqn{x} and \eqn{y}. The number of "transpositions" \eqn{t} is defined to 
 #' be the number of positions in the subsequence of \eqn{x} which are 
 #' misaligned with the corresponding position in \eqn{y}.
 #' 
 #' When `similarity = FALSE`, the Jaro distance is computed as 
-#' \deqn{dist(x,y) = 1 - sim(x,y).}
+#' \deqn{\mathrm{dist}(x,y) = 1 - \mathrm{sim}(x,y).}{dist(x,y) = 1 - sim(x,y).}
 #' 
 #' @note The Jaro distance is not a metric, as it does not satisfy the 
-#'   identity axiom \eqn{dist(x,y) = 0 \Leftrightarrow x = y.}{dist(x, y) = 0 ⇔ x = y.}
+#'   identity axiom \eqn{\mathrm{dist}(x,y) = 0 \Leftrightarrow x = y.}{dist(x, y) = 0 <=> x = y.}
 #' 
 #' @param similarity a logical. If TRUE, similarity scores are returned 
 #'   (default), otherwise distances are returned (see definition under Details).

@@ -25,10 +25,10 @@ setClass("Chebyshev", contains = "NumericMeasure",
 #' Chebyshev Distance
 #' 
 #' @description 
-#' The Chebyshev distance (a.k.a. L-∞ distance or ) between two vectors \eqn{x} 
-#' and \eqn{y} is the greatest of the absolute differences between each 
+#' The Chebyshev distance (a.k.a. L-Inf distance or ) between two vectors 
+#' \eqn{x} and \eqn{y} is the greatest of the absolute differences between each 
 #' coordinate: 
-#' \deqn{Chebyshev(x,y) = \max_i |x_i - q_i|.}
+#' \deqn{\mathrm{Chebyshev}(x,y) = \max_i |x_i - y_i|.}{Chebyshev(x, y) = max_i |x_i - y_i|.}
 #' 
 #' @return 
 #' A `Chebyshev` instance is returned, which is an S4 class inheriting 

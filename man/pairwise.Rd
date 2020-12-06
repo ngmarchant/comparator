@@ -84,11 +84,11 @@ which is more space-efficient for symmetric measures. If TRUE, a standard
 \value{
 If both \code{x} and \code{y} are specified, every object in \code{x} is compared with
 every object in \code{y} using the measure, and the resulting scores are returned
-in a \verb{size(x) × size(y)} matrix.
+in a \code{size(x)} by \code{size(y)} matrix.
 
 If only \code{x} is specified, then the objects in \code{x} are compared with
 themselves using the measure, and the resulting scores are returned in a
-\verb{size(x) × size(y)} matrix.
+\code{size(x)} by \code{size(y)} matrix.
 
 By default, the matrix is represented as an instance of the
 \code{\linkS4class{PairwiseMatrix}} class, which is more space-efficient for symmetric

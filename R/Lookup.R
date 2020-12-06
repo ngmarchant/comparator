@@ -77,7 +77,7 @@ normalize_lookup_table <- function(lookup_table, values_colnames, measure_colnam
 #' (`measure_colname` below). If a pair of values \eqn{x} and \eqn{y} is 
 #' not in the lookup table, a default distance/similarity is returned 
 #' depending on whether \eqn{x = y} (`default_match` below) or 
-#' \eqn{x \neq y}{x ≠ y} (`default_nonmatch` below).
+#' \eqn{x \neq y}{x != y} (`default_nonmatch` below).
 #' 
 #' @param lookup_table data frame containing distances/similarities for 
 #'   pairs of values

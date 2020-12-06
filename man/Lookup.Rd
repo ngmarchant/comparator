@@ -52,7 +52,7 @@ and \eqn{y} (\code{values_colnames} below) and the distance/similarity
 (\code{measure_colname} below). If a pair of values \eqn{x} and \eqn{y} is
 not in the lookup table, a default distance/similarity is returned
 depending on whether \eqn{x = y} (\code{default_match} below) or
-\eqn{x \neq y}{x ≠ y} (\code{default_nonmatch} below).
+\eqn{x \neq y}{x != y} (\code{default_nonmatch} below).
 }
 \examples{
 ## Measure the distance between cities

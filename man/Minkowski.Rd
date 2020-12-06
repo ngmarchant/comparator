@@ -20,7 +20,7 @@ from \code{\linkS4class{NumericMeasure}}.
 The Minkowski distance (a.k.a. L-p distance) between two vectors \eqn{x} and
 \eqn{y} is the p-th root of the sum of the absolute differences of their
 Cartesian coordinates raised to the p-th power:
-\deqn{Minkowski(x,y) = (\sum_{i = 1}^{n} |x_i - q_i|^p)^{1/p}.}
+\deqn{\mathrm{Minkowski}(x,y) = \left(\sum_{i = 1}^{n} |x_i - y_i|^p\right)^{1/p}.}{Minkowski(x,y) = (sum_i { |x_i - y_i|^p })^(1/p).}
 }
 \examples{
 ## Distance between two vectors

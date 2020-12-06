@@ -18,7 +18,7 @@ setClass("Euclidean", contains = "Minkowski",
 #' The Euclidean distance (a.k.a. L-2 distance) between two vectors \eqn{x} and 
 #' \eqn{y} is the square root of the sum of the squared differences of the
 #' Cartesian coordinates: 
-#' \deqn{Euclidean(x, y) = \sqrt(\sum_{i = 1}^{n} (x_i - q_i)^2.}
+#' \deqn{\mathrm{Euclidean}(x, y) = \sqrt{\sum_{i = 1}^{n} (x_i - y_i)^2}.}{Euclidean(x, y) = sqrt(sum_i { (x_i - y_i)^2 })}
 #' 
 #' @note The Euclidean distance is a special case of the [`Minkowski`] 
 #' distance with \eqn{p = 2}.

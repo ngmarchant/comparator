@@ -39,7 +39,7 @@ score for each token in \eqn{x}.
 \details{
 Given two token vectors \eqn{x} and \eqn{y}, the Monge-Elkan measure is
 defined as:
-\deqn{\mathrm{ME}(x, y) = \frac{1}{|x|} \sum_{i = 1}^{|x|} \max_j \mathrm{sim}(x_i, y_j)}{ME(x, y) = 1/|x| Σ_i{ max_j sim(x_i, y_j) }}
+\deqn{\mathrm{ME}(x, y) = \frac{1}{|x|} \sum_{i = 1}^{|x|} \max_j \mathrm{sim}(x_i, y_j)}{ME(x, y) = 1/|x| sum_i{ max_j sim(x_i, y_j) }}
 where \eqn{x_i} is the i-th token (string) in \eqn{x}, \eqn{|x|} is the
 number of tokens in \eqn{x} and \eqn{\mathrm{sim}}{sim} is an internal
 character-based similarity measure.
@@ -48,9 +48,9 @@ A generalization of the original Monge-Elkan measure is implemented here,
 which allows for internal distance measures in place of similarity measures,
 and/or more general aggregation functions in place of the arithmetic mean.
 The generalized Monge-Elkan measure is defined as:
-\deqn{\mathrm{ME}(x, y) = \mathrm{agg}(\mathrm{opt}_j \mathrm{inner}(x_i, y_j))}{ME(x, y) = agg(opt_j inner(x_i, y_j))}
+\deqn{\mathrm{ME}(x, y) = \mathrm{agg}(\mathrm{opt}_j \ \mathrm{inner}(x_i, y_j))}{ME(x, y) = agg(opt_j inner(x_i, y_j))}
 where \eqn{\mathrm{inner}}{inner} is an internal distance or similarity
-measure, \eqn{\mathrm{opt}} is \eqn{\max}{max} if
+measure, \eqn{\mathrm{opt}}{opt} is \eqn{\max}{max} if
 \eqn{\mathrm{inner}}{inner} is a similarity measure or \eqn{\min}{min} if
 it is a distance measure, and \eqn{\mathrm{agg}}{agg} is an aggregation
 function which takes a vector of scores for each token in \eqn{x} and
@@ -59,8 +59,8 @@ returns a scalar.
 By default, the Monge-Elkan measure is asymmetric in its arguments \eqn{x}
 and \eqn{y}. If \code{symmetrize = TRUE}, a symmetric version of the measure
 is obtained as follows
-\deqn{\mathrm{ME}_sym(x, y) = \mathrm{opt} (\mathrm{ME}(x, y), \mathrm{ME}(y, x))}{ME_sym(x, y) = opt(ME(x, y), ME(y, x))}
-where \eqn{\mathrm{opt}} is defined above.
+\deqn{\mathrm{ME}_{sym}(x, y) = \mathrm{opt} \ \{\mathrm{ME}(x, y), \mathrm{ME}(y, x)\}}{ME_sym(x, y) = opt { ME(x, y), ME(y, x) }}
+where \eqn{\mathrm{opt}}{opt} is defined above.
 }
 \examples{
 ## Compare names with heterogenous representations
