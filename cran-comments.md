@@ -1,10 +1,14 @@
-Description of release. What has changed. No reverse dependencies.
+First release on CRAN.
 
 ## Test environments
-* macOS, R 4.0.1
 * Fedora 33, R 4.0.3
 * Windows 10, R 4.0.3
+* winbuilder (devel)
 
 ## R CMD check results
 
-0 errors | 0 warnings | 0 note
+Maintainer: 'Neil Marchant <ngmarchant@gmail.com>'
+  
+New submission
+
+0 errors | 0 warnings | 1 note
