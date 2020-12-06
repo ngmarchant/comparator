@@ -23,6 +23,8 @@ implemented in C/C++ to ensure fast performance.
   - `Hamming()`: Hamming distance/similarity
   - `OSA()`: Optimal String Alignment distance/similarity
   - `LCS()`: Longest Common Subsequence distance/similarity
+  - `Jaro()`: Jaro distance/similarity
+  - `JaroWinkler()`: Jaro-Winkler distance/similarity
 
 #### Token-based:
 
@@ -31,6 +33,7 @@ Not yet implemented.
 #### Hybrid token-character:
 
   - `MongeElkan()`: Monge-Elkan measure
+  - `FuzzyTokenSet()`: Fuzzy Token Set distance
 
 #### Other:
 
@@ -90,7 +93,7 @@ Pairwise comparisons are also supported using the following syntax:
 
 ``` r
 # compare each value in x with each value in y and return a similarity matrix
-pairwise(measure, x, y)
+pairwise(measure, x, y, return_matrix = TRUE)
 #>           [,1]      [,2]
 #> [1,] 0.6666667 0.6842105
 #> [2,] 0.5384615 1.0000000

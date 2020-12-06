@@ -103,7 +103,7 @@ Pairwise comparisons are also supported using the following syntax:
 
 ```{r pairwise}
 # compare each value in x with each value in y and return a similarity matrix
-pairwise(measure, x, y)
+pairwise(measure, x, y, return_matrix = TRUE)
 
 # compare the values in x pairwise and return a similarity matrix
 pairwise(measure, x, return_matrix = TRUE)
