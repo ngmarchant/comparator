@@ -35,6 +35,8 @@ to ensure fast performance.
 * `Hamming()`: Hamming distance/similarity
 * `OSA()`: Optimal String Alignment distance/similarity
 * `LCS()`: Longest Common Subsequence distance/similarity
+* `Jaro()`: Jaro distance/similarity
+* `JaroWinkler()`: Jaro-Winkler distance/similarity
 
 #### Token-based: 
 
@@ -43,6 +45,7 @@ Not yet implemented.
 #### Hybrid token-character:
 
 * `MongeElkan()`: Monge-Elkan measure
+* `FuzzyTokenSet()`: Fuzzy Token Set distance
 
 #### Other:
 

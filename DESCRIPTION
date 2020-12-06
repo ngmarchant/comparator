@@ -2,7 +2,7 @@ Package: comparator
 Type: Package
 Title: Similarity and Distance Measures in R
 Version: 0.1.0
-Date: 2020-11-22
+Date: 2020-12-06
 Authors@R: c(
     person(given = "Neil", 
            family = "Marchant", 
@@ -14,7 +14,8 @@ Description: Provides similarity and distance measures for clustering and
 License: GPL (>= 2)
 Imports: Rcpp (>= 1.0.5), 
     proxy (>= 0.4),
-    methods
+    methods,
+    clue (>= 0.3)
 LinkingTo: Rcpp
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
@@ -32,6 +33,7 @@ Collate:
     'DamerauLevenshtein.R'
     'Minkowski.R'
     'Euclidean.R'
+    'FuzzyTokenSet.R'
     'Hamming.R'
     'InVocabulary.R'
     'Jaro.R'

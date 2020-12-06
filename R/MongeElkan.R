@@ -140,7 +140,6 @@ setMethod(elementwise, signature = c(measure = "MongeElkan", x = "vector", y = "
             
             n <- max(length(tokens1), length(tokens2))
             
-            # TODO: wrong. Want proper recycling
             if (length(tokens1) < length(tokens2)) {
               tokens1 <- rep(tokens1, times = length(tokens2))
             } else if (length(tokens2) < length(tokens1)) {
