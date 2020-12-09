@@ -14,19 +14,19 @@ knitr::opts_chunk$set(
 library(comparator)
 ```
 
-# comparator: Similarity and Distance Measures in R
+# comparator: Comparison Functions for Clustering and Record Linkage
 
 <!-- badges: start -->
 <!-- badges: end -->
 
 comparator implements comparison functions for clustering and record linkage 
 applications. It includes functions for comparing strings, sequences and 
-numeric vectors. Where possible, measures are implemented in C/C++ to ensure 
-fast performance.
+numeric vectors. Where possible, comparators are implemented in C/C++ to 
+ensure fast performance.
 
-## Supported measures
+## Supported comparators
 
-### String measures:
+### String comparators:
 
 #### Edit-based:
 
@@ -55,7 +55,7 @@ Not yet implemented.
 * `BinaryComp()`: Compares strings based on whether they agree/disagree 
   exactly.
 
-### Numeric measures:
+### Numeric comparators:
 
 * `Euclidean()`: Euclidean (L-2) distance
 * `Manhattan()`: Manhattan (L-1) distance
@@ -90,7 +90,7 @@ comparator <- Levenshtein(similarity = TRUE, normalize = TRUE, ignore_case = TRU
 
 We can apply the comparator to character vectors element-wise as follows:
 
-```{r elementwise}
+```{r elementwise-str}
 x <- c("John Doe", "Jane Doe")
 y <- c("jonathon doe", "jane doe")
 elementwise(comparator, x, y)
@@ -101,7 +101,7 @@ comparator(x, y)
 
 This comparator is also defined on sequences:
 
-```{r elementwise}
+```{r elementwise-seq}
 x_seq <- list(c(1, 2, 1, 1), c(1, 2, 3, 4))
 y_seq <- list(c(4, 3, 2, 1), c(1, 2, 3, 1))
 elementwise(comparator, x_seq, y_seq)
