@@ -17,7 +17,7 @@ In addition, several improvements have been made in the resubmitted version (v0.
 * Add support for comparing sequences, represented as atomic vectors
 * Fix bug in `DamerauLevenshtein` that resulted in incorrect computation of transposition costs
 * Rename "Measure" to "Comparator" throughout
-* Reclassify `MongeElkan` and `FuzzyTokenSet` as token measures, which operate on lists of token vectors, rather than vectors of (pre-tokenized) strings
+* Reclassify `MongeElkan` and `FuzzyTokenSet` as token comparators, which operate on lists of token vectors, rather than vectors of (pre-tokenized) strings
 * Improve documentation
 
 ## Original comments
