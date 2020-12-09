@@ -5,11 +5,11 @@ sparse_to_full <- function(pmat) {
     .Call('_comparator_sparse_to_full', PACKAGE = 'comparator', pmat)
 }
 
-elementwisecpp <- function(x, y, attrs) {
-    .Call('_comparator_elementwise', PACKAGE = 'comparator', x, y, attrs)
+elementwisecpp <- function(x, y, m_S4) {
+    .Call('_comparator_elementwise', PACKAGE = 'comparator', x, y, m_S4)
 }
 
-pairwisecpp <- function(x, y_, attrs, full) {
-    .Call('_comparator_pairwise', PACKAGE = 'comparator', x, y_, attrs, full)
+pairwisecpp <- function(x, y_, m_S4, full) {
+    .Call('_comparator_pairwise', PACKAGE = 'comparator', x, y_, m_S4, full)
 }
 

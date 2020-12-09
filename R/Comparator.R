@@ -1,24 +1,25 @@
-#' Virtual Measure Class 
+#' Virtual Comparator Class 
 #' 
-#' @description This class represents a measure for comparing pairs of objects. 
-#'   It is the base class from which other types of measures (e.g. 
-#'   [`NumericMeasure-class`] and [`StringMeasure-class`]) are derived.
+#' @description This class represents a function for comparing pairs of 
+#'   objects. It is the base class from which other types of comparators (e.g. 
+#'   [`NumericComparator-class`] and [`StringComparator-class`]) are derived.
 #' 
 #' @slot .Data a function which takes a pair of arguments `x` and `y`, and 
-#'   returns the elementwise measure scores.
-#' @slot symmetric a logical of length 1. If TRUE, the measure is symmetric 
-#'   in its arguments---i.e. `measure(x, y)` is identical to `measure(y, x)`.
-#' @slot distance a logical of length 1. If `TRUE`, the measure produces  
-#'   distances and satisfies `measure(x, x) = 0`. The measure may not satisfy 
-#'   all of the properties of a distance metric.
-#' @slot similarity a logical of length 1. If `TRUE`, the measure produces 
+#'   returns the elementwise scores.
+#' @slot symmetric a logical of length 1. If TRUE, the comparator is symmetric 
+#'   in its arguments---i.e. `comparator(x, y)` is identical to 
+#'   `comparator(y, x)`.
+#' @slot distance a logical of length 1. If `TRUE`, the comparator produces  
+#'   distances and satisfies `comparator(x, x) = 0`. The comparator may not 
+#'   satisfy all of the properties of a distance metric.
+#' @slot similarity a logical of length 1. If `TRUE`, the comparator produces 
 #'   similarity scores.
-#' @slot tri_inequal a logical of length 1. If `TRUE`, the measure satisfies 
+#' @slot tri_inequal a logical of length 1. If `TRUE`, the comparator satisfies 
 #'   the triangle inequality. This is only possible (but not guaranteed) if 
 #'   `distance = TRUE` and `symmetric = TRUE`.
 #' 
 #' @export
-setClass("Measure", 
+setClass("Comparator", 
          slots = c(
            symmetric = "logical", 
            distance = "logical",
@@ -57,32 +58,32 @@ setClass("Measure",
 #' 
 #' @description 
 #' Computes pairwise similarities/distances between two collections of objects 
-#' (strings, vectors, etc.) using the provided measure.
+#' (strings, vectors, etc.) using the provided comparator.
 #' 
-#' @param measure a measure used to compare the objects, which is a sub-class 
-#'   of [`Measure-class`]. 
+#' @param comparator a comparator used to compare the objects, which is a 
+#'   sub-class of [`Comparator-class`]. 
 #' @param x,y a collection of objects to compare, typically stored as entries 
 #'   in an atomic vector, rows in a matrix, or entries in a list. The required 
-#'   format depends on the type of `measure`. `y` may be omitted or set to 
+#'   format depends on the type of `comparator`. `y` may be omitted or set to 
 #'   `NULL` to compare objects in `x`.
 #' @param return_matrix a logical of length 1. If FALSE (default), the pairwise 
 #'   similarities/distances will be returned as a [`PairwiseMatrix-class`] 
-#'   which is more space-efficient for symmetric measures. If TRUE, a standard 
-#'   [`matrix`] is returned instead.
+#'   which is more space-efficient for symmetric comparators. If TRUE, a 
+#'   standard [`matrix`] is returned instead.
 #' @param ... other parameters passed on to other methods.
 #' 
 #' @return 
 #' If both `x` and `y` are specified, every object in `x` is compared with 
-#' every object in `y` using the measure, and the resulting scores are returned 
-#' in a `size(x)` by `size(y)` matrix. 
+#' every object in `y` using the comparator, and the resulting scores are 
+#' returned in a `size(x)` by `size(y)` matrix. 
 #' 
 #' If only `x` is specified, then the objects in `x` are compared with 
-#' themselves using the measure, and the resulting scores are returned in a 
+#' themselves using the comparator, and the resulting scores are returned in a 
 #' `size(x)` by `size(y)` matrix. 
 #' 
 #' By default, the matrix is represented as an instance of the 
 #' [`PairwiseMatrix-class`] class, which is more space-efficient for symmetric 
-#' measures when `y` is not specified. However, if `return_matrix = TRUE`, 
+#' comparators when `y` is not specified. However, if `return_matrix = TRUE`, 
 #' the matrix is returned as an ordinary [`matrix`] instead.
 #' 
 #' @examples
@@ -94,17 +95,17 @@ setClass("Measure",
 #' 
 #' ## Computing the pairwise similarities among a set of strings
 #' x <- c("Benjamin", "Ben", "Benny", "Bne", "Benedict", "Benson")
-#' measure <- DamerauLevenshtein(similarity = TRUE, normalize = TRUE)
-#' pairwise(measure, x, return_matrix = TRUE)  # return an ordinary matrix
+#' comparator <- DamerauLevenshtein(similarity = TRUE, normalize = TRUE)
+#' pairwise(comparator, x, return_matrix = TRUE)  # return an ordinary matrix
 #' 
 #' @export
-setGeneric("pairwise", function(measure, x, y, return_matrix = FALSE, ...) standardGeneric("pairwise"), 
-           signature = c("measure", "x", "y"))
+setGeneric("pairwise", function(comparator, x, y, return_matrix = FALSE, ...) standardGeneric("pairwise"), 
+           signature = c("comparator", "x", "y"))
 
-#' @describeIn pairwise Compute a pairwise measure when `y` 
-setMethod(pairwise, signature = c(measure = "Measure", x = "ANY", y = "missing"), 
-          function(measure, x, y, return_matrix, ...) {
-            pairwise(measure, x, NULL, return_matrix)
+#' @describeIn pairwise Compute a pairwise comparator when `y` 
+setMethod(pairwise, signature = c(comparator = "Comparator", x = "ANY", y = "missing"), 
+          function(comparator, x, y, return_matrix, ...) {
+            pairwise(comparator, x, NULL, return_matrix)
           }
 )
 
@@ -112,26 +113,27 @@ setMethod(pairwise, signature = c(measure = "Measure", x = "ANY", y = "missing")
 #' 
 #' @description 
 #' Computes elementwise similarities/distances between two collections of 
-#' objects (strings, vectors, etc.) using the provided measure.
+#' objects (strings, vectors, etc.) using the provided comparator.
 #'
-#' @param measure a measure used to compare the objects, which is a sub-class 
-#'   of [`Measure-class`]. 
+#' @param comparator a comparator used to compare the objects, which is a 
+#'   sub-class of [`Comparator-class`]. 
 #' @param x,y a collection of objects to compare, typically stored as entries 
 #'   in an atomic vector, rows in a matrix, or entries in a list. The required 
-#'   format depends on the type of `measure`. If `x` and `y` do not contain 
+#'   format depends on the type of `comparator`. If `x` and `y` do not contain 
 #'   the same number of objects, the smaller collection is recycled according
 #'   to standard `R` behavior.
 #' @param ... other parameters passed on to other methods.
 #' 
 #' @return
 #' Every object in `x` is compared to every object in `y` elementwise 
-#' (with recycling) using the given measure , to produce a numeric vector of 
+#' (with recycling) using the given comparator, to produce a numeric vector of 
 #' scores of length \eqn{max{size(x), size(y)}}.
 #' 
 #' @note 
-#' This function is not strictly necessary, as the `measure` itself is a 
+#' This function is not strictly necessary, as the `comparator` itself is a 
 #' function that returns elementwise vectors of scores. In other words, 
-#' `measure(x, y, ...)` is equivalent to `elementwise(measure, x, y, ...)`.
+#' `comparator(x, y, ...)` is equivalent to 
+#' `elementwise(comparator, x, y, ...)`.
 #' 
 #' @examples
 #' ## Compute the absolute difference between two sets of scalar observations
@@ -150,13 +152,5 @@ setMethod(pairwise, signature = c(measure = "Measure", x = "ANY", y = "missing")
 #' elementwise(Levenshtein(), "Cora Zenovia", col.1)
 #' 
 #' @export
-setGeneric("elementwise", function(measure, x, y, ...) standardGeneric("elementwise"), 
-           signature = c("measure", "x", "y"))
-
-# #' @describeIn elementwise Calls `measure(x, y)` for any `x` and `y`
-# setMethod(elementwise, signature = c(measure = "Measure", x = "ANY", y = "ANY"), 
-#           function(measure, x, y, ...) {
-#             # Using the fact that the elementwise measure is stored in the .Data slot
-#             measure(x, y)
-#           }
-# )
+setGeneric("elementwise", function(comparator, x, y, ...) standardGeneric("elementwise"), 
+           signature = c("comparator", "x", "y"))

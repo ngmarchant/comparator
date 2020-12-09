@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IMeasures.h"
+#include "IComparator.h"
 #include <vector>
 #include <algorithm>
 
@@ -10,10 +10,10 @@ inline std::size_t operator "" _sz (unsigned long long int x)
 }
 
 template<class RandomAccessRange>
-class Jaro : public Measure<RandomAccessRange> {
+class Jaro : public Comparator<RandomAccessRange> {
 public:
   Jaro(bool similarity = true) : 
-  Measure<RandomAccessRange>(true, !similarity, similarity) {}
+  Comparator<RandomAccessRange>(true, !similarity, similarity) {}
   
   double eval(const RandomAccessRange& x, const RandomAccessRange& y) const;
 };

@@ -1,64 +1,82 @@
-#include "Measures.h"
+#include "Comparators.h"
 #include "util.h"
-#include "IMeasures.h"
+#include "IComparator.h"
 
 using namespace Rcpp;
 
+const static std::unordered_map<std::string,int> classname_to_int {
+  {"Hamming", 1},
+  {"DamerauLevenshtein", 2},
+  {"Levenshtein", 3},
+  {"OSA", 4},
+  {"LCS", 5},
+  {"Constant", 6},
+  {"BinaryComp", 7},
+  {"JaroWinkler", 8},
+  {"Jaro", 9},
+};
+
 template<class V>
-std::unique_ptr<Measure<V>> get_measure(const Rcpp::List& params) {
-  std::string classname = as<std::string>(params["class"]);
-  if (classname == "Hamming") {
-    return make_unique<Hamming<V>>(as<bool>(params["normalize"]), 
-                                   as<bool>(params["similarity"]));
+std::unique_ptr<Comparator<V>> get_comparator(const Rcpp::S4& m) {
+  std::string classname = as<std::string>(m.slot("class"));
+  int class_int = classname_to_int.count(classname) ? classname_to_int.at(classname) : 0;
+  switch (class_int) {
+  case 1: { // Hamming
+    return make_unique<Hamming<V>>(as<bool>(m.slot("normalize")), 
+                                   as<bool>(m.slot("similarity")));
   }
-  if (classname == "DamerauLevenshtein") {
-    return make_unique<DamerauLevenshtein<V>>(as<double>(params["deletion"]), 
-                                              as<double>(params["insertion"]),
-                                              as<double>(params["substitution"]), 
-                                              as<double>(params["transposition"]),
-                                              as<bool>(params["normalize"]), 
-                                              as<bool>(params["similarity"]));
+  case 2: { // DamerauLevenshtein
+    return make_unique<DamerauLevenshtein<V>>(as<double>(m.slot("deletion")), 
+                                              as<double>(m.slot("insertion")),
+                                              as<double>(m.slot("substitution")), 
+                                              as<double>(m.slot("transposition")),
+                                              as<bool>(m.slot("normalize")), 
+                                              as<bool>(m.slot("similarity")));
   }
-  if (classname == "Levenshtein") {
-    return make_unique<Levenshtein<V>>(as<double>(params["deletion"]), 
-                                       as<double>(params["insertion"]),
-                                       as<double>(params["substitution"]),
-                                       as<bool>(params["normalize"]), 
-                                       as<bool>(params["similarity"]));
+  case 3: { // Levenshtein
+    return make_unique<Levenshtein<V>>(as<double>(m.slot("deletion")), 
+                                       as<double>(m.slot("insertion")),
+                                       as<double>(m.slot("substitution")),
+                                       as<bool>(m.slot("normalize")), 
+                                       as<bool>(m.slot("similarity")));
   }
-  if (classname == "OSA") {
-    return make_unique<OSA<V>>(as<double>(params["deletion"]), 
-                               as<double>(params["insertion"]),
-                               as<double>(params["substitution"]), 
-                               as<double>(params["transposition"]), 
-                               as<bool>(params["normalize"]), 
-                               as<bool>(params["similarity"]));
+  case 4: { // OSA
+    return make_unique<OSA<V>>(as<double>(m.slot("deletion")), 
+                               as<double>(m.slot("insertion")),
+                               as<double>(m.slot("substitution")), 
+                               as<double>(m.slot("transposition")), 
+                               as<bool>(m.slot("normalize")), 
+                               as<bool>(m.slot("similarity")));
   }
-  if (classname == "LCS") {
-    return make_unique<LCS<V>>(as<double>(params["deletion"]), 
-                               as<double>(params["insertion"]),
-                               as<bool>(params["normalize"]), 
-                               as<bool>(params["similarity"]));
+  case 5: { // LCS
+    return make_unique<LCS<V>>(as<double>(m.slot("deletion")), 
+                               as<double>(m.slot("insertion")),
+                               as<bool>(m.slot("normalize")), 
+                               as<bool>(m.slot("similarity")));
   }
-  if (classname == "Constant") {
-    return make_unique<Constant<V>>(as<double>(params["constant"]));
+  case 6: { // Constant
+    return make_unique<Constant<V>>(as<double>(m.slot("constant")));
   }
-  if (classname == "BinaryComp") {
-    return make_unique<BinaryComp<V>>(as<double>(params["score"]), 
-                                      as<bool>(params["similarity"]));
+  case 7: { // BinaryComp
+    return make_unique<BinaryComp<V>>(as<double>(m.slot("score")), 
+                                      as<bool>(m.slot("similarity")));
   }
-  if (classname == "JaroWinkler") {
-    return make_unique<JaroWinkler<V>>(as<double>(params["p"]), 
-                                       as<double>(params["threshold"]), 
-                                       as<int>(params["max_prefix"]), 
-                                       as<bool>(params["similarity"]));
+  case 8: { // JaroWinkler
+    return make_unique<JaroWinkler<V>>(as<double>(m.slot("p")), 
+                                       as<double>(m.slot("threshold")), 
+                                       as<int>(m.slot("max_prefix")), 
+                                       as<bool>(m.slot("similarity")));
   }
-  if (classname == "Jaro") {
-    return make_unique<Jaro<V>>(as<bool>(params["similarity"]));
+  case 9: { // Jaro
+    return make_unique<Jaro<V>>(as<bool>(m.slot("similarity")));
   }
-  stop("unrecognized measure name");
-  return make_unique<Hamming<V>>();
+  default: {
+    stop("Unrecognized Comparator");
+    return make_unique<Constant<V>>();
+  }
+  }
 }
+
 
 // Convert incomplete representation of a PairwiseMatrix to a full representation
 // [[Rcpp::export]]
@@ -95,7 +113,7 @@ S4 pairwiseMatrix_to_S4(PairwiseMatrix& pmat) {
 }
 
 template<class V>
-S4 pairwise_impl(const Measure<V>* m, List& x, Nullable<List> y_, const LogicalVector& full) {
+S4 pairwise_impl(const Comparator<V>* m, List& x, Nullable<List> y_, const LogicalVector& full) {
   S4 out;
   if (y_.isNotNull()) {
     const List y(y_);
@@ -110,14 +128,14 @@ S4 pairwise_impl(const Measure<V>* m, List& x, Nullable<List> y_, const LogicalV
 }
 
 template<class V>
-NumericVector elementwise_impl(const Measure<V>* m, List& x, List& y) {
+NumericVector elementwise_impl(const Comparator<V>* m, List& x, List& y) {
   std::vector<double> evec = m->elementwise(x.begin(), x.end(), y.begin(), y.end());
   NumericVector out(evec.begin(), evec.end());
   return out;
 }
 
 // [[Rcpp::export(elementwisecpp)]]
-NumericVector elementwise(List& x, List& y, const List& attrs) {
+NumericVector elementwise(List& x, List& y, const S4& m_S4) {
   // Check inputs
   if (x.size() == 0) stop("`x` must be a non-empty list");
   if (y.size() == 0) stop("`y` must be a non-empty list");
@@ -127,28 +145,37 @@ NumericVector elementwise(List& x, List& y, const List& attrs) {
   
   // Resolve type of vectors. Assume type is the same for all vectors in the 
   // list.
-  int vec_type = TYPEOF(x0) == TYPEOF(y0) ? TYPEOF(x0) : STRSXP;
+  int vec_type = TYPEOF(x0);
+  if (TYPEOF(x0) != TYPEOF(y0)) {
+    if (TYPEOF(x0) == NILSXP && TYPEOF(y0) != NILSXP) { 
+      vec_type = TYPEOF(y0); 
+    } else if (TYPEOF(y0) == NILSXP && TYPEOF(x0) != NILSXP) { 
+      vec_type = TYPEOF(x0); 
+    } else {
+      vec_type = STRSXP;
+    }
+  }
   
   switch (vec_type) {
   case INTSXP: {
-    auto m = get_measure<IntegerVector>(attrs);
-    return elementwise_impl(m.get(), x, y);
+    auto comp = get_comparator<IntegerVector>(m_S4);
+    return elementwise_impl(comp.get(), x, y);
   }
   case REALSXP: {
-    auto m = get_measure<NumericVector>(attrs);
-    return elementwise_impl(m.get(), x, y);
+    auto comp = get_comparator<NumericVector>(m_S4);
+    return elementwise_impl(comp.get(), x, y);
   }
-  // case STRSXP: {
-  //   auto m = get_measure<CharacterVector>(attrs);
-  //   return elementwise_impl(m.get(), x, y);
-  // }
+  case STRSXP: {
+    auto comp = get_comparator<CharacterVector>(m_S4);
+    return elementwise_impl(comp.get(), x, y);
+  }
   case LGLSXP: {
-    auto m = get_measure<LogicalVector>(attrs);
-    return elementwise_impl(m.get(), x, y);
+    auto comp = get_comparator<LogicalVector>(m_S4);
+    return elementwise_impl(comp.get(), x, y);
   }
   case RAWSXP: {
-    auto m = get_measure<RawVector>(attrs);
-    return elementwise_impl(m.get(), x, y);
+    auto comp = get_comparator<RawVector>(m_S4);
+    return elementwise_impl(comp.get(), x, y);
   }
   default: {
     stop("encountered unsupported vector type");
@@ -159,7 +186,7 @@ NumericVector elementwise(List& x, List& y, const List& attrs) {
 }
 
 // [[Rcpp::export(pairwisecpp)]]
-S4 pairwise(List& x, Nullable<List> y_, const List& attrs, const LogicalVector& full) {
+S4 pairwise(List& x, Nullable<List> y_, const S4& m_S4, const LogicalVector& full) {
   // Check inputs
   if (x.size() == 0) stop("`x` must be a non-empty list");
   SEXP x0 = x[0];
@@ -180,24 +207,24 @@ S4 pairwise(List& x, Nullable<List> y_, const List& attrs, const LogicalVector& 
   
   switch (vec_type) {
   case INTSXP: {
-    auto m = get_measure<IntegerVector>(attrs);
-    return pairwise_impl(m.get(), x, y_, full);
+    auto comp = get_comparator<IntegerVector>(m_S4);
+    return pairwise_impl(comp.get(), x, y_, full);
   }
   case REALSXP: {
-    auto m = get_measure<NumericVector>(attrs);
-    return pairwise_impl(m.get(), x, y_, full);
+    auto comp = get_comparator<NumericVector>(m_S4);
+    return pairwise_impl(comp.get(), x, y_, full);
   }
-  // case STRSXP: {
-  //   auto& m = get_measure<CharacterVector>(attrs);
-  //   return pairwise_impl(m.get(), x, y_, full);
-  // }
+  case STRSXP: {
+    auto comp = get_comparator<CharacterVector>(m_S4);
+    return pairwise_impl(comp.get(), x, y_, full);
+  }
   case LGLSXP: {
-    auto m = get_measure<LogicalVector>(attrs);
-    return pairwise_impl(m.get(), x, y_, full);
+    auto comp = get_comparator<LogicalVector>(m_S4);
+    return pairwise_impl(comp.get(), x, y_, full);
   }
   case RAWSXP: {
-    auto m = get_measure<RawVector>(attrs);
-    return pairwise_impl(m.get(), x, y_, full);
+    auto comp = get_comparator<RawVector>(m_S4);
+    return pairwise_impl(comp.get(), x, y_, full);
   }
   default: {
     stop("encountered unsupported vector type");

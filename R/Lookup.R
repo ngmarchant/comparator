@@ -1,7 +1,7 @@
-#' @include StringMeasure.R
+#' @include StringComparator.R
 NULL
 
-setClass("Lookup", contains = c("StringMeasure"), 
+setClass("Lookup", contains = c("StringComparator"), 
          slots = c(
            lookup_table = "data.frame", 
            default_match = "numeric", 
@@ -9,17 +9,17 @@ setClass("Lookup", contains = c("StringMeasure"),
          ),
          prototype = structure(
            .Data = function(x, y, ...) elementwise(sys.function(), x, y, ...),
-           lookup_table = data.frame(key1 = character(), key2 = character(), value = numeric()),
+           lookup_table = data.frame(key1 = character(), key2 = character(), score = numeric()),
            default_match = 0.0, 
            default_nonmatch = Inf,
            symmetric = TRUE
          ), 
          validity = function(object) {
            errs <- character()
-           if (!all(colnames(object@lookup_table) == c("key1", "key2", "value")))
+           if (!all(colnames(object@lookup_table) == c("key1", "key2", "score")))
              errs <- c(errs, "`lookup_table` has unexpected colnames")
-           if (!is.numeric(object@lookup_table$value))
-             errs <- c(errs, "value column of `lookup_table` must be numeric")
+           if (!is.numeric(object@lookup_table$score))
+             errs <- c(errs, "score column of `lookup_table` must be numeric")
            if (length(object@default_match) != 1)
              errs <- c(errs, "`default_match` must be a numeric vector of length 1")
            if (length(object@default_nonmatch) != 1)
@@ -33,13 +33,13 @@ setClass("Lookup", contains = c("StringMeasure"),
 #' Helper function to normalize lookup table
 #' 
 #' @return Normalized lookup table where the values columns are named "key1" and 
-#'   "key2" and the measure column is named "value"
+#'   "key2" and the score column is named "score"
 #' @keywords internal
 #' @noRd
-normalize_lookup_table <- function(lookup_table, values_colnames, measure_colname, symmetric, ignore_case) {
+normalize_lookup_table <- function(lookup_table, values_colnames, score_colname, symmetric, ignore_case) {
   
-  lookup_table <- lookup_table[append(values_colnames, measure_colname)]
-  colnames(lookup_table) <- c("key1", "key2", "value")
+  lookup_table <- lookup_table[append(values_colnames, score_colname)]
+  colnames(lookup_table) <- c("key1", "key2", "score")
   
   if (ignore_case) {
     lookup_table[[1]] <- tolower(lookup_table[[1]])
@@ -65,16 +65,16 @@ normalize_lookup_table <- function(lookup_table, values_colnames, measure_colnam
 }
 
 
-#' Lookup Measure
+#' Lookup String Comparator
 #' 
 #' @description
-#' This measure compares a pair of strings \eqn{x} and \eqn{y} by retrieving 
-#' their distance/similarity from a provided lookup table. 
+#' Compares a pair of strings \eqn{x} and \eqn{y} by retrieving 
+#' their distance/similarity score from a provided lookup table. 
 #' 
 #' @details 
 #' The lookup table should contain three columns corresponding to \eqn{x}, 
 #' and \eqn{y} (`values_colnames` below) and the distance/similarity 
-#' (`measure_colname` below). If a pair of values \eqn{x} and \eqn{y} is 
+#' (`score_colname` below). If a pair of values \eqn{x} and \eqn{y} is 
 #' not in the lookup table, a default distance/similarity is returned 
 #' depending on whether \eqn{x = y} (`default_match` below) or 
 #' \eqn{x \neq y}{x != y} (`default_nonmatch` below).
@@ -83,13 +83,13 @@ normalize_lookup_table <- function(lookup_table, values_colnames, measure_colnam
 #'   pairs of values
 #' @param values_colnames character vector containing the colnames 
 #'   corresponding to pairs of values (e.g. strings) in `lookup_table`
-#' @param measure_colname name of column that contains distances/similarities 
+#' @param score_colname name of column that contains distances/similarities 
 #'   in `lookup_table`
 #' @param default_match distance/similarity to use if the pair of values 
 #'   match exactly and do not appear in `lookup_table`. Defaults to 0.0.
 #' @param default_nonmatch distance/similarity to use if the pair of values are 
 #'   not an exact match and do not appear in `lookup table`. Defaults to `NA`.
-#' @param symmetric whether the underlying distance/similarity measure is 
+#' @param symmetric whether the underlying distance/similarity scores are 
 #'   symmetric. If TRUE `lookup_table` need only contain entries for 
 #'   one of the two pairs---i.e. an entry for value pair \eqn{(y, x)} is not 
 #'   required if an entry for \eqn{(x, y)} is already present. 
@@ -98,7 +98,7 @@ normalize_lookup_table <- function(lookup_table, values_colnames, measure_colnam
 #' 
 #' @return 
 #' A `Lookup` instance is returned, which is an S4 class inheriting from 
-#' [`StringMeasure-class`].
+#' [`StringComparator-class`].
 #' 
 #' @examples
 #' ## Measure the distance between cities
@@ -106,20 +106,20 @@ normalize_lookup_table <- function(lookup_table, values_colnames, measure_colnam
 #'                            y = c("Sydney", "Brisbane", "Brisbane"), 
 #'                            dist = c(713.4, 1374.8, 732.5))
 #' 
-#' measure <- Lookup(lookup_table, c("x", "y"), "dist")
-#' measure("Sydney", "Melbourne")
-#' measure("Melbourne", "Perth")
+#' comparator <- Lookup(lookup_table, c("x", "y"), "dist")
+#' comparator("Sydney", "Melbourne")
+#' comparator("Melbourne", "Perth")
 #' 
 #' @export
-Lookup <- function(lookup_table, values_colnames, measure_colname, 
+Lookup <- function(lookup_table, values_colnames, score_colname, 
                    default_match = 0.0, default_nonmatch = NA_real_, 
                    symmetric = TRUE, ignore_case = FALSE) {
   if (!is.data.frame(lookup_table)) 
     stop("`lookup_table` must be a data.frame")
-  if (!is.character(measure_colname) || length(measure_colname) != 1)
-    stop("`measure_colname` must be a character vector of length 1")
-  if (!(measure_colname %in% colnames(lookup_table)))
-    stop("`measure_colname` doesn't exist in `lookup_table`")
+  if (!is.character(score_colname) || length(score_colname) != 1)
+    stop("`score_colname` must be a character vector of length 1")
+  if (!(score_colname %in% colnames(lookup_table)))
+    stop("`score_colname` doesn't exist in `lookup_table`")
   if (!is.character(values_colnames) || length(values_colnames) != 2)
     stop("`values_colnames` must be a character vector of length 2")
   if (!all(values_colnames %in% colnames(lookup_table)))
@@ -127,7 +127,7 @@ Lookup <- function(lookup_table, values_colnames, measure_colname,
   if (!is.logical(symmetric) || length(symmetric) != 1)
     stop("`symmetric` must be a logical of length 1")
   
-  lookup_table <- normalize_lookup_table(lookup_table, values_colnames, measure_colname, symmetric, ignore_case)
+  lookup_table <- normalize_lookup_table(lookup_table, values_colnames, score_colname, symmetric, ignore_case)
   
   arguments <- list(lookup_table = lookup_table, default_match = default_match, 
                     default_nonmatch = default_nonmatch, symmetric = symmetric, 
@@ -138,9 +138,9 @@ Lookup <- function(lookup_table, values_colnames, measure_colname,
 
 #' @describeIn elementwise Specialization for a [`Lookup`] where `x` and `y` 
 #' are vectors of strings to compare
-setMethod(elementwise, signature = c(measure = "Lookup", x = "vector", y = "vector"), 
-          function(measure, x, y, ...) {
-            if (measure@ignore_case) {
+setMethod(elementwise, signature = c(comparator = "Lookup", x = "vector", y = "vector"), 
+          function(comparator, x, y, ...) {
+            if (comparator@ignore_case) {
               x <- tolower(x)
               y <- tolower(y)
             }
@@ -149,34 +149,34 @@ setMethod(elementwise, signature = c(measure = "Lookup", x = "vector", y = "vect
             # workaround to preserve row-order
             pairs[['order']] <- seq_len(nrow(pairs))
             
-            # fill in distances/similarities for combinations using lookup table
-            pairs <- merge(pairs, measure@lookup_table, by=c("key1", "key2"), all.x=TRUE, all.y=FALSE)
+            # fill in scores for combinations using lookup table
+            pairs <- merge(pairs, comparator@lookup_table, by=c("key1", "key2"), all.x=TRUE, all.y=FALSE)
             pairs <- pairs[order(pairs[['order']]),]
             pairs[['order']] <- NULL
             
-            # fill in distances/similarities for exact matches that were not in the lookup table
+            # fill in scores for exact matches that were not in the lookup table
             both_observed <- !is.na(pairs$key1) & !is.na(pairs$key2)
-            if (!is.na(measure@default_match)) {
+            if (!is.na(comparator@default_match)) {
               exact_match <- (pairs$key1 == pairs$key2) & both_observed
-              pairs[exact_match & is.na(pairs$value), "value"] <- measure@default_match
+              pairs[exact_match & is.na(pairs$score), "score"] <- comparator@default_match
             }
             
             # fill any remaining NAs with default distance/similarity if given
-            if (!is.na(measure@default_nonmatch)) {
-              pairs[both_observed & is.na(pairs$value), "value"] <- measure@default_nonmatch
+            if (!is.na(comparator@default_nonmatch)) {
+              pairs[both_observed & is.na(pairs$score), "score"] <- comparator@default_nonmatch
             }
             
-            # return only the distances/similarities
-            pairs$value
+            # return only the scores
+            pairs$score
           }
 )
 
 
 #' @describeIn pairwise Specialization for a [`Lookup`] where `x` and `y` are 
 #' vectors of strings to compare
-setMethod(pairwise, signature = c(measure = "Lookup", x = "vector", y = "vector"), 
-          function(measure, x, y, return_matrix, ...) {
-            if (measure@ignore_case) {
+setMethod(pairwise, signature = c(comparator = "Lookup", x = "vector", y = "vector"), 
+          function(comparator, x, y, return_matrix, ...) {
+            if (comparator@ignore_case) {
               x <- tolower(x)
               y <- tolower(y)
             }
@@ -188,37 +188,37 @@ setMethod(pairwise, signature = c(measure = "Lookup", x = "vector", y = "vector"
             # workaround to preserve row-order
             pairs[['order']] <- seq_len(nrow(pairs))
             
-            # fill in distances for combinations using lookup table
-            pairs <- merge(pairs, measure@lookup_table, by=c("key1", "key2"), all.x=TRUE, all.y=FALSE)
+            # fill in scores for combinations using lookup table
+            pairs <- merge(pairs, comparator@lookup_table, by=c("key1", "key2"), all.x=TRUE, all.y=FALSE)
             pairs <- pairs[order(pairs[['order']]),]
             pairs[['order']] <- NULL
             
-            # fill in distances/similarities for exact matches that were not in the lookup table
+            # fill in scores for exact matches that were not in the lookup table
             both_observed <- !is.na(pairs$key1) & !is.na(pairs$key2)
-            if (!is.na(measure@default_match)) {
+            if (!is.na(comparator@default_match)) {
               exact_match <- (pairs$key1 == pairs$key2) & both_observed
-              pairs[exact_match & is.na(pairs$value), "value"] <- measure@default_match
+              pairs[exact_match & is.na(pairs$score), "score"] <- comparator@default_match
             }
             
-            # fill any remaining NAs with default distance/similarity if given
-            if (!is.na(measure@default_nonmatch)) {
-              pairs[both_observed & is.na(pairs$value), "value"] <- measure@default_nonmatch
+            # fill any remaining NAs with default score if given
+            if (!is.na(comparator@default_nonmatch)) {
+              pairs[both_observed & is.na(pairs$score), "score"] <- comparator@default_nonmatch
             }
             
-            # return only the distances/similarities
+            # return only the scores
             if (return_matrix) {
-              matrix(pairs$value, nrow = length(x), ncol = length(y))
+              matrix(pairs$score, nrow = length(x), ncol = length(y))
             } else {
-              PairwiseMatrix(.Data = pairs$value, Dim = c(length(x), length(y)), Diag = TRUE)
+              PairwiseMatrix(.Data = pairs$score, Dim = c(length(x), length(y)), Diag = TRUE)
             }
           }
 )
 
 #' @describeIn pairwise Specialization for [`Lookup`] where `x` is a vector of 
 #' strings to compare among themselves
-setMethod(pairwise, signature = c(measure = "Lookup", x = "vector", y = "NULL"), 
-          function(measure, x, y, return_matrix, ...) {
+setMethod(pairwise, signature = c(comparator = "Lookup", x = "vector", y = "NULL"), 
+          function(comparator, x, y, return_matrix, ...) {
             if (!return_matrix) warning("`return_matrix = FALSE` is not supported")
-            pairwise(measure, x, x, return_matrix)
+            pairwise(comparator, x, x, return_matrix)
           }
 )

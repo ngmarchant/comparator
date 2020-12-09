@@ -2,7 +2,7 @@
 % Please edit documentation in R/Hamming.R
 \name{Hamming}
 \alias{Hamming}
-\title{Hamming Distance}
+\title{Hamming String/Sequence Comparator}
 \usage{
 Hamming(
   normalize = FALSE,
@@ -18,7 +18,7 @@ to the unit interval. Defaults to FALSE.}
 \item{similarity}{a logical. If TRUE, similarity scores are returned
 instead of distances. Defaults to FALSE.}
 
-\item{ignore_case}{a logical. If TRUE, case is ignored when comparing the
+\item{ignore_case}{a logical. If TRUE, case is ignored when comparing
 strings.}
 
 \item{use_bytes}{a logical. If TRUE, strings are compared byte-by-byte
@@ -26,18 +26,18 @@ rather than character-by-character.}
 }
 \value{
 A \code{Hamming} instance is returned, which is an S4 class inheriting from
-\code{\linkS4class{StringMeasure}}.
+\code{\linkS4class{StringComparator}}.
 }
 \description{
-The Hamming distance between two strings of equal length is
-the number of positions where the corresponding characters differ. It
-can be viewed as a type of edit distance where the only permitted operation
-is character substitution.
+The Hamming distance between two strings/sequences of equal length is the
+number of positions where the corresponding characters/sequence elements
+differ. It can be viewed as a type of edit distance where the only
+permitted operation is substitution of characters/sequence elements.
 }
 \details{
-When the input strings \eqn{x} and \eqn{y} are of different
-lengths (\eqn{|x| \neq |y|}{|x| != |y|}), the Hamming distance is defined
-to be \eqn{\infty}{Inf}.
+When the input strings/sequences \eqn{x} and \eqn{y} are of
+different lengths (\eqn{|x| \neq |y|}{|x| != |y|}), the Hamming distance
+is defined to be \eqn{\infty}{Inf}.
 
 A Hamming similarity is returned if \code{similarity = TRUE}. When
 \eqn{|x| = |y|} the similarity is defined as follows:
@@ -48,7 +48,7 @@ be 0.
 
 Normalization of the Hamming distance/similarity to the unit interval is
 also supported by setting \code{normalize = TRUE}. The raw distance/similarity
-is divided by the length of the string \eqn{|x| = |y|}. If
+is divided by the length of the string/sequence \eqn{|x| = |y|}. If
 \eqn{|x| \neq |y|}{|x| != |y|} the normalized distance is defined to be 1,
 while the normalized similarity is defined to be 0.
 }
@@ -67,6 +67,6 @@ m2(x, y)
 
 }
 \seealso{
-Other edit-based measures include \code{\link{LCS}}, \code{\link{Levenshtein}},
+Other edit-based comparators include \code{\link{LCS}}, \code{\link{Levenshtein}},
 \code{\link{OSA}} and \code{\link{DamerauLevenshtein}}.
 }

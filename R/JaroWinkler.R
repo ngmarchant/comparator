@@ -27,15 +27,17 @@ setClass("JaroWinkler", contains = "Jaro",
            ifelse(length(errs) == 0, TRUE, errs)
          })
 
-#' Jaro-Winkler Measure
+#' Jaro-Winkler String/Sequence Comparator
 #' 
 #' @description
-#' The Jaro-Winkler measure is a variant of the [`Jaro`] measure which boosts 
-#' the similarity score for strings that match character-by-character in 
-#' the first part of each string. It was developed for comparing names 
-#' at the U.S. Census Bureau.
+#' The Jaro-Winkler comparator is a variant of the [`Jaro`] comparator which 
+#' boosts the similarity score for strings/sequences with matching prefixes. 
+#' It was developed for comparing names at the U.S. Census Bureau.
 #' 
 #' @details 
+#' For simplicity we assume `x` and `y` are strings in this section,
+#' however the comparator is also implemented for more general sequences.
+#' 
 #' The Jaro-Winkler similarity (computed when `similarity = TRUE`) is 
 #' defined in terms of the [`Jaro`] similarity. If the Jaro similarity 
 #' \eqn{sim_J(x,y)} between strings \eqn{x} and \eqn{y} exceeds a 
@@ -65,14 +67,14 @@ setClass("JaroWinkler", contains = "Jaro",
 #'   the prefix to consider for boosting. Defaults to 4 (characters).
 #' @param similarity a logical. If TRUE, similarity scores are returned 
 #'   (default), otherwise distances are returned (see definition under Details).
-#' @param ignore_case a logical. If TRUE, case is ignored when comparing the 
+#' @param ignore_case a logical. If TRUE, case is ignored when comparing  
 #'   strings.
 #' @param use_bytes a logical. If TRUE, strings are compared byte-by-byte 
 #'   rather than character-by-character.
 #' 
 #' @return 
 #' A `JaroWinkler` instance is returned, which is an S4 class inheriting from 
-#' [`StringMeasure-class`].
+#' [`StringComparator-class`].
 #' 
 #' @examples
 #' ## Compare names
@@ -85,7 +87,7 @@ setClass("JaroWinkler", contains = "Jaro",
 #' JaroWinkler()(x, y) < JaroWinkler(threshold = 0.5)(x, y)
 #'
 #' @seealso 
-#' This measure reduces to the [`Jaro`] measure when `max_prefix = 0L` 
+#' This comparator reduces to the [`Jaro`] comparator when `max_prefix = 0L` 
 #' or `threshold = 0.0`.
 #' 
 #' @references 

@@ -1,7 +1,7 @@
-#' @include StringMeasure.R CppMeasure.R
+#' @include StringComparator.R CppSeqComparator.R
 NULL
 
-setClass("Jaro", contains = c("StringMeasure", "CppMeasure"), 
+setClass("Jaro", contains = c("CppSeqComparator", "StringComparator"), 
          prototype = structure(
            .Data = function(x, y, ...) elementwise(sys.function(), x, y, ...),
            symmetric = TRUE,
@@ -18,26 +18,31 @@ setClass("Jaro", contains = c("StringMeasure", "CppMeasure"),
            ifelse(length(errs) == 0, TRUE, errs)
          })
 
-#' Jaro Measure
+#' Jaro String/Sequence Comparator
 #' 
 #' @description
-#' The Jaro measure compares a pair of strings based on the number of 
-#' greedily-aligned matching characters and transpositions. It was developed 
-#' for comparing names at the U.S. Census Bureau.
+#' Compares a pair of strings/sequences `x` and `y` based on the number of 
+#' greedily-aligned characters/sequence elements and the number of 
+#' transpositions. It was developed for comparing names at the U.S. Census 
+#' Bureau.
 #' 
 #' @details 
+#' For simplicity we assume `x` and `y` are strings in this section,
+#' however the comparator is also implemented for more general sequences.
+#' 
 #' When `similarity = TRUE` (default), the Jaro similarity is computed as
 #' \deqn{\mathrm{sim}(x, y) = \frac{1}{3}\left(\frac{m}{|x|} + \frac{m}{|y|} + \frac{m - \lfloor \frac{t}{2} \rfloor}{m}\right)}{sim(x, y) = (1/3)(m/|x| + m/|y| + (m-floor(t/2)/m)}
 #' where \eqn{m} is the number of "matching" characters (defined below), 
-#' \eqn{t} is the number of "transpositions", and \eqn{|x|,|y|} are the lengths 
-#' of the strings \eqn{x} and \eqn{y}. The similarity takes on values in the 
-#' range \eqn{[0, 1]}, where 1 corresponds to a perfect match.
+#' \eqn{t} is the number of "transpositions", and \eqn{|x|,|y|} are the 
+#' lengths of the strings \eqn{x} and \eqn{y}. The similarity takes on values 
+#' in the range \eqn{[0, 1]}, where 1 corresponds to a perfect match.
 #' 
 #' The number of "matching" characters \eqn{m} is computed using a greedy 
 #' alignment algorithm. The algorithm iterates over the characters in \eqn{x}, 
-#' attempting to align the i-th character \eqn{x_i} with the first matching 
-#' character in \eqn{y}. When looking for matching characters in \eqn{y}, the 
-#' algorithm only considers previously un-matched characters within a window 
+#' attempting to align the \eqn{i}-th character \eqn{x_i} with the first 
+#' matching character in \eqn{y}. When looking for matching characters in 
+#' \eqn{y}, the algorithm only considers previously un-matched characters 
+#' within a window 
 #' \eqn{[\max(0, i - w), \min(|y|, i + w)]}{[max(0, i - w), min(|y|, i + w)]} 
 #' where \eqn{w = \left\lfloor \frac{\max(|x|, |y|)}{2} \right\rfloor - 1}{w = floor(max(|x|, |y|)/2) - 1}.
 #' The alignment process yields a subsequence of matching characters from 
@@ -53,14 +58,14 @@ setClass("Jaro", contains = c("StringMeasure", "CppMeasure"),
 #' 
 #' @param similarity a logical. If TRUE, similarity scores are returned 
 #'   (default), otherwise distances are returned (see definition under Details).
-#' @param ignore_case a logical. If TRUE, case is ignored when comparing the 
+#' @param ignore_case a logical. If TRUE, case is ignored when comparing  
 #'   strings.
 #' @param use_bytes a logical. If TRUE, strings are compared byte-by-byte 
 #'   rather than character-by-character.
 #' 
 #' @return 
 #' A `Jaro` instance is returned, which is an S4 class inheriting from 
-#' [`StringMeasure-class`].
+#' [`StringComparator-class`].
 #' 
 #' @examples
 #' ## Compare names
@@ -68,8 +73,9 @@ setClass("Jaro", contains = c("StringMeasure", "CppMeasure"),
 #' Jaro()("Eileen", "Phyllis")
 #' 
 #' @seealso 
-#' The [`JaroWinkler`] measure modifies the [`Jaro`] measure by boosting the 
-#' similarity score for strings with high agreement between prefixes.
+#' The [`JaroWinkler`] comparator modifies the [`Jaro`] comparator by 
+#' boosting the similarity score for strings/sequences that have matching 
+#' prefixes.
 #' 
 #' @references 
 #' Jaro, M. A. (1989), "Advances in Record-Linkage Methodology as Applied to 

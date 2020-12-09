@@ -2,7 +2,7 @@
 % Please edit documentation in R/JaroWinkler.R
 \name{JaroWinkler}
 \alias{JaroWinkler}
-\title{Jaro-Winkler Measure}
+\title{Jaro-Winkler String/Sequence Comparator}
 \usage{
 JaroWinkler(
   p = 0.1,
@@ -28,7 +28,7 @@ the prefix to consider for boosting. Defaults to 4 (characters).}
 \item{similarity}{a logical. If TRUE, similarity scores are returned
 (default), otherwise distances are returned (see definition under Details).}
 
-\item{ignore_case}{a logical. If TRUE, case is ignored when comparing the
+\item{ignore_case}{a logical. If TRUE, case is ignored when comparing
 strings.}
 
 \item{use_bytes}{a logical. If TRUE, strings are compared byte-by-byte
@@ -36,15 +36,17 @@ rather than character-by-character.}
 }
 \value{
 A \code{JaroWinkler} instance is returned, which is an S4 class inheriting from
-\code{\linkS4class{StringMeasure}}.
+\code{\linkS4class{StringComparator}}.
 }
 \description{
-The Jaro-Winkler measure is a variant of the \code{\link{Jaro}} measure which boosts
-the similarity score for strings that match character-by-character in
-the first part of each string. It was developed for comparing names
-at the U.S. Census Bureau.
+The Jaro-Winkler comparator is a variant of the \code{\link{Jaro}} comparator which
+boosts the similarity score for strings/sequences with matching prefixes.
+It was developed for comparing names at the U.S. Census Bureau.
 }
 \details{
+For simplicity we assume \code{x} and \code{y} are strings in this section,
+however the comparator is also implemented for more general sequences.
+
 The Jaro-Winkler similarity (computed when \code{similarity = TRUE}) is
 defined in terms of the \code{\link{Jaro}} similarity. If the Jaro similarity
 \eqn{sim_J(x,y)} between strings \eqn{x} and \eqn{y} exceeds a
@@ -89,6 +91,6 @@ Winkler, W., McLaughlin G., Jaro M. and Lynch M. (1994), \href{https://web.archi
 Version 2. United States Census Bureau.
 }
 \seealso{
-This measure reduces to the \code{\link{Jaro}} measure when \code{max_prefix = 0L}
+This comparator reduces to the \code{\link{Jaro}} comparator when \code{max_prefix = 0L}
 or \code{threshold = 0.0}.
 }

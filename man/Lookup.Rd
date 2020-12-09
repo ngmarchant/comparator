@@ -2,12 +2,12 @@
 % Please edit documentation in R/Lookup.R
 \name{Lookup}
 \alias{Lookup}
-\title{Lookup Measure}
+\title{Lookup String Comparator}
 \usage{
 Lookup(
   lookup_table,
   values_colnames,
-  measure_colname,
+  score_colname,
   default_match = 0,
   default_nonmatch = NA_real_,
   symmetric = TRUE,
@@ -21,7 +21,7 @@ pairs of values}
 \item{values_colnames}{character vector containing the colnames
 corresponding to pairs of values (e.g. strings) in \code{lookup_table}}
 
-\item{measure_colname}{name of column that contains distances/similarities
+\item{score_colname}{name of column that contains distances/similarities
 in \code{lookup_table}}
 
 \item{default_match}{distance/similarity to use if the pair of values
@@ -30,7 +30,7 @@ match exactly and do not appear in \code{lookup_table}. Defaults to 0.0.}
 \item{default_nonmatch}{distance/similarity to use if the pair of values are
 not an exact match and do not appear in \verb{lookup table}. Defaults to \code{NA}.}
 
-\item{symmetric}{whether the underlying distance/similarity measure is
+\item{symmetric}{whether the underlying distance/similarity scores are
 symmetric. If TRUE \code{lookup_table} need only contain entries for
 one of the two pairs---i.e. an entry for value pair \eqn{(y, x)} is not
 required if an entry for \eqn{(x, y)} is already present.}
@@ -40,16 +40,16 @@ strings.}
 }
 \value{
 A \code{Lookup} instance is returned, which is an S4 class inheriting from
-\code{\linkS4class{StringMeasure}}.
+\code{\linkS4class{StringComparator}}.
 }
 \description{
-This measure compares a pair of strings \eqn{x} and \eqn{y} by retrieving
-their distance/similarity from a provided lookup table.
+Compares a pair of strings \eqn{x} and \eqn{y} by retrieving
+their distance/similarity score from a provided lookup table.
 }
 \details{
 The lookup table should contain three columns corresponding to \eqn{x},
 and \eqn{y} (\code{values_colnames} below) and the distance/similarity
-(\code{measure_colname} below). If a pair of values \eqn{x} and \eqn{y} is
+(\code{score_colname} below). If a pair of values \eqn{x} and \eqn{y} is
 not in the lookup table, a default distance/similarity is returned
 depending on whether \eqn{x = y} (\code{default_match} below) or
 \eqn{x \neq y}{x != y} (\code{default_nonmatch} below).
@@ -60,8 +60,8 @@ lookup_table <- data.frame(x = c("Melbourne", "Melbourne", "Sydney"),
                            y = c("Sydney", "Brisbane", "Brisbane"), 
                            dist = c(713.4, 1374.8, 732.5))
 
-measure <- Lookup(lookup_table, c("x", "y"), "dist")
-measure("Sydney", "Melbourne")
-measure("Melbourne", "Perth")
+comparator <- Lookup(lookup_table, c("x", "y"), "dist")
+comparator("Sydney", "Melbourne")
+comparator("Melbourne", "Perth")
 
 }

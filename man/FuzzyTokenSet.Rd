@@ -2,10 +2,10 @@
 % Please edit documentation in R/FuzzyTokenSet.R
 \name{FuzzyTokenSet}
 \alias{FuzzyTokenSet}
-\title{Fuzzy Token Set Distance}
+\title{Fuzzy Token Set Comparator}
 \usage{
 FuzzyTokenSet(
-  inner_measure = Levenshtein(normalize = TRUE),
+  inner_comparator = Levenshtein(normalize = TRUE),
   separator = "\\\\s+",
   agg_function = base::mean,
   deletion = 1,
@@ -14,10 +14,9 @@ FuzzyTokenSet(
 )
 }
 \arguments{
-\item{inner_measure}{inner string distance measure of class
-\code{\linkS4class{StringMeasure}}. Defaults to normalized \code{\link{Levenshtein}} distance.}
-
-\item{separator}{separator for tokens/words. Defaults to whitespace.}
+\item{inner_comparator}{inner string distance comparator of class
+\code{\linkS4class{StringComparator}}. Defaults to normalized \code{\link{Levenshtein}}
+distance.}
 
 \item{agg_function}{function used to aggregate the costs of the optimal
 operations. Defaults to \code{\link[base:mean]{base::mean}}.}
@@ -32,61 +31,61 @@ Defaults to unit cost.}
 token. Defaults to unit cost.}
 }
 \description{
-This hybrid token-character measure is suitable for comparing a pair of
-multi-token (multi-word) strings \eqn{x} and \eqn{y}. It measures the
-minimum cost of transforming the token set representation of \eqn{x} into
-the token set representation of \eqn{y} using single-token operations
-(insertions, deletions and substitutions). The cost of the operations are
-determined using an internal user-specified distance measure.
+Compares a pair of token sets \eqn{x} and \eqn{y} by computing the
+\emph{minimum} cost of transforming \eqn{x} into \eqn{y} using single-token
+operations (insertions, deletions and substitutions). The cost of a
+single-token operations os determined at the character-level using an
+internal string comparator.
 }
 \details{
-This measure compares the input strings \eqn{x} and \eqn{y} using a token
-set representation. A token set is an unordered enumeration of tokens,
-which may include duplicates. For example, the token set representation
-of the string "Paw Paw Illinois" is {"Illinois", "Paw", "Paw"}. After
-mapping \eqn{x} and \eqn{y} to token sets, the minimum cost of transforming
-\eqn{x} into \eqn{y} is computed based on three single-token operations:
-insertions, deletions and substitutions. The costs of the operations are
-specified as follows:
+A token set is an unordered enumeration of tokens, which may include
+duplicates. Given two token sets \eqn{x} and \eqn{y}, this comparator
+computes the minimum cost of transforming \eqn{x} into \eqn{y} using the
+following single-token operations:
 \itemize{
-\item cost of deleting a token \eqn{a} from \eqn{x}: \eqn{w_d \times \mathrm{inner}(a, "")}{w_d * inner(a, "")}
-\item cost of inserting a token \eqn{b} in \eqn{y}: \eqn{w_i \times \mathrm{inner}("", b)}{w_i * inner("", b)}
-\item cost of substituting a token \eqn{a} in \eqn{x} for a token \eqn{b}
-in \eqn{y}: \eqn{w_s \times \mathrm{inner}(a, b)}{w_s * inner(a, b)}
+\item deleting a token \eqn{a} from \eqn{x} at cost \eqn{w_d \times \mathrm{inner}(a, "")}{w_d * inner(a, "")}
+\item inserting a token \eqn{b} in \eqn{y} at cost \eqn{w_i \times \mathrm{inner}("", b)}{w_i * inner("", b)}
+\item substituting a token \eqn{a} in \eqn{x} for a token \eqn{b}
+in \eqn{y} at cost \eqn{w_s \times \mathrm{inner}(a, b)}{w_s * inner(a, b)}
 }
 
-where \eqn{\mathrm{inner}}{inner} is a user-specified internal string
-measure and \eqn{w_d, w_i, w_s} are user-specified weights, referred to as
-\code{deletion}, \code{insertion} and \code{substitution} in the parameter list. By
-default, the mean cost of the optimal (cost-minimizing) set of operations is
-returned as a measure of the distance between \eqn{x} and \eqn{y}. Other
-methods of aggregating the costs are supported by specifying a non-default
-\code{agg_function}.
+where \eqn{\mathrm{inner}}{inner} is an internal string distance comparator
+and \eqn{w_d, w_i, w_s} are positive weights, referred to as \code{deletion},
+\code{insertion} and \code{substitution} in the parameter list. By default, the
+\emph{mean} cost of the optimal (cost-minimizing) set of operations is
+returned. Other methods of aggregating the costs of the optimal operations
+are supported by specifying a non-default \code{agg_function}.
 
-The optimization problem---of finding the minimum total cost under the
-allowed operations---is solved exactly using a linear sum assignment
-solver.
+The optimization problem---minimizing the total cost under the allowed
+operations---is solved exactly using a linear sum assignment solver.
 }
 \note{
-This measure is qualitatively similar to the \code{\link{MongeElkan}} measure,
-however it is arguably more principled, since it is formulated as a
-cost minimization problem. It also offers more control over the costs
+This comparator is qualitatively similar to the \code{\link{MongeElkan}}
+comparator, however it is arguably more principled, since it is formulated
+as a cost minimization problem. It also offers more control over the costs
 of missing tokens (by varying the \code{deletion} and \code{insertion} weights).
-This is useful for comparing full names, where dropping a name (e.g.
-middle name) should not be severely penalized.
+This is useful for comparing full names, when dropping a name (e.g.
+middle name) shouldn't be severely penalized.
 }
 \examples{
 ## Compare names with heterogenous representations
 x <- "The University of California - San Diego"
 y <- "Univ. Calif. San Diego"
+# Tokenize strings on white space
+x <- strsplit(x, '\\\\s+')
+y <- strsplit(y, '\\\\s+')
 FuzzyTokenSet()(x, y)
-
 # Reduce the cost associated with missing words
 FuzzyTokenSet(deletion = 0.5, insertion = 0.5)(x, y)
 
-## Compare full names, recognizing that it is common to omit names
-x <- "JOSE ELIAS TEJADA BASQUES"
-y <- "JOSE BASQUES"
-FuzzyTokenSet(deletion = 0.5, insertion = 0.5)(x, y)
+## Compare full name with abbreviated name, reducing the penalty 
+## for dropping parts of the name
+fullname <- "JOSE ELIAS TEJADA BASQUES"
+name <- "JOSE BASQUES"
+# Tokenize strings on white space
+fullname <- strsplit(fullname, '\\\\s+')
+name <- strsplit(name, '\\\\s+')
+comparator <- FuzzyTokenSet(deletion = 0.5)
+comparator(fullname, name) < comparator(name, fullname) # TRUE
 
 }

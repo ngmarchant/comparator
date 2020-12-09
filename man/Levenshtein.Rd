@@ -2,7 +2,7 @@
 % Please edit documentation in R/Levenshtein.R
 \name{Levenshtein}
 \alias{Levenshtein}
-\title{Levenshtein (Edit) Distance}
+\title{Levenshtein String/Sequence Comparator}
 \usage{
 Levenshtein(
   deletion = 1,
@@ -15,14 +15,14 @@ Levenshtein(
 )
 }
 \arguments{
-\item{deletion}{positive cost associated with deletion of a character.
-Defaults to unit cost.}
+\item{deletion}{positive cost associated with deletion of a character
+or sequence element. Defaults to unit cost.}
 
-\item{insertion}{positive cost associated insertion of a character.
-Defaults to unit cost.}
+\item{insertion}{positive cost associated insertion of a character
+or sequence element. Defaults to unit cost.}
 
 \item{substitution}{positive cost associated with substitution of a
-character. Defaults to unit cost.}
+character or sequence element. Defaults to unit cost.}
 
 \item{normalize}{a logical. If TRUE, distances are normalized to the
 unit interval. Defaults to FALSE.}
@@ -30,7 +30,7 @@ unit interval. Defaults to FALSE.}
 \item{similarity}{a logical. If TRUE, similarity scores are returned
 instead of distances. Defaults to FALSE.}
 
-\item{ignore_case}{a logical. If TRUE, case is ignored when comparing the
+\item{ignore_case}{a logical. If TRUE, case is ignored when comparing
 strings.}
 
 \item{use_bytes}{a logical. If TRUE, strings are compared byte-by-byte
@@ -38,14 +38,17 @@ rather than character-by-character.}
 }
 \value{
 A \code{Levenshtein} instance is returned, which is an S4 class inheriting from
-\code{\linkS4class{StringMeasure}}.
+\code{\linkS4class{StringComparator}}.
 }
 \description{
-The Levenshtein distance between two strings \eqn{x} and \eqn{y} is the
-minimum cost of single-character operations (insertions, deletions or
+The Levenshtein (edit) distance between two strings/sequences \eqn{x} and
+\eqn{y} is the minimum cost of operations (insertions, deletions or
 substitutions) required to transform \eqn{x} into \eqn{y}.
 }
 \details{
+For simplicity we assume \code{x} and \code{y} are strings in this section,
+however the comparator is also implemented for more general sequences.
+
 A Levenshtein similarity is returned if \code{similarity = TRUE}, which
 is defined as
 \deqn{\mathrm{sim}(x, y) = \frac{w_d |x| + w_i |y| - \mathrm{dist}(x, y)}{2},}{sim(x, y) = (w_d |x| + w_i |y| - dist(x, y))/2}
@@ -64,7 +67,7 @@ and the normalized similarity \eqn{\mathrm{sim}_n}{sim_n} is defined as
 \deqn{\mathrm{sim}_n(x, y) = 1 - \mathrm{dist}_n(x, y) = \frac{\mathrm{sim}(x, y)}{w_d |x| + w_i |y| - \mathrm{sim}(x, y)}.}{sim_n(x, y) = 1 - dist_n(x, y) = sim(x, y) / (w_d |x| + w_i |y| - sim(x, y)).}
 }
 \note{
-If the costs of deletion and insertion are equal, this measure is
+If the costs of deletion and insertion are equal, this comparator is
 symmetric in \eqn{x} and \eqn{y}. In addition, the normalized and
 unnormalized distances satisfy the properties of a metric.
 }
@@ -86,6 +89,6 @@ Yujian, L. & Bo, L. (2007), "A Normalized Levenshtein Distance Metric",
 \strong{29}, 1091–1095.
 }
 \seealso{
-Other edit-based measures include \code{\link{Hamming}}, \code{\link{LCS}},
+Other edit-based comparators include \code{\link{Hamming}}, \code{\link{LCS}},
 \code{\link{OSA}} and \code{\link{DamerauLevenshtein}}.
 }

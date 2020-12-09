@@ -6,6 +6,16 @@
 
 template<class ForwardRange>
 class DamerauLevenshtein : public OSA<ForwardRange> {
+private:
+  // Elements of Rcpp::CharacterVector are of type Rcpp::internal::string_proxy or 
+  // Rcpp::internal::const_string_proxy. These can't easily be used as keys in an 
+  // unordered_map. So we map these types to Rcpp::String instead.
+  template <class T>
+  struct type_map { using type = T; };
+  template <int RTYPE, template <class> class StoragePolicy>
+  struct type_map<Rcpp::internal::string_proxy<RTYPE, StoragePolicy>> { using type = Rcpp::String; };
+  template <int RTYPE, template <class> class StoragePolicy>
+  struct type_map<Rcpp::internal::const_string_proxy<RTYPE, StoragePolicy>> { using type = Rcpp::String; };
 protected:
   Mat init_dmat(size_t nx, size_t ny) const;
   void fill_dmat(const ForwardRange &x, const ForwardRange &y, Mat& dist) const;
@@ -37,34 +47,6 @@ Mat DamerauLevenshtein<ForwardRange>::init_dmat(size_t nx, size_t ny) const {
   return dmat;
 }
 
-namespace std 
-{
-template<typename T>
-struct hash<reference_wrapper<T>>
-{
-  size_t operator()(const reference_wrapper<T>& r) const
-  {
-    return std::hash<T>()(r.get());
-  }
-}; 
-
-template<typename T>
-struct hash<const T>
-{
-  size_t operator()(const T r) const
-  {
-    return std::hash<T>()(r);
-  }
-}; 
-
-// template<typename T>
-// struct equal_to<reference_wrapper<T>> {
-//   bool operator()(const reference_wrapper<T>& lhs, const reference_wrapper<T>& rhs) const {
-//     return lhs.get() == rhs.get();
-//   }
-// };
-}
-
 template<class ForwardRange>
 void DamerauLevenshtein<ForwardRange>::fill_dmat(const ForwardRange &x, const ForwardRange &y, Mat& dmat) const {
   auto firstx = std::begin(x);
@@ -75,9 +57,10 @@ void DamerauLevenshtein<ForwardRange>::fill_dmat(const ForwardRange &x, const Fo
   size_t nx = std::distance(firstx, lastx);
   size_t ny = std::distance(firsty, lasty);
   
-  using Key = typename std::remove_reference<typename ForwardRange::value_type>::type;
-  std::unordered_map<std::reference_wrapper<const Key>, int> da;
-  //std::map<std::reference_wrapper<typename std::add_const<Key>::type>, int> da;
+  // Get value type, with special behavior for Rcpp::CharacterVector
+  using ValueType = typename type_map<typename ForwardRange::value_type>::type;
+  using Key = typename std::remove_reference<ValueType>::type;
+  std::unordered_map<Key, int> da;
   
   size_t db, k;
   double sub_cost, del_cost, ins_cost, tra_cost;
@@ -89,7 +72,6 @@ void DamerauLevenshtein<ForwardRange>::fill_dmat(const ForwardRange &x, const Fo
       auto search = da.find(temp);
       k = search != da.end() ? search->second : 0;
       tra_cost = dmat[k][db] + (i - k - 1 + j - db) * this->tra_weight_;
-      
       if (*firstx != *firsty) {
         sub_cost = dmat[i][j] + this->sub_weight_;
         ins_cost = dmat[i+1][j] + this->ins_weight_;
@@ -102,7 +84,8 @@ void DamerauLevenshtein<ForwardRange>::fill_dmat(const ForwardRange &x, const Fo
       }
       ++firsty;
     }
-    da.emplace(*firstx, i);
+    auto const result = da.emplace(*firstx, i);
+    if (not result.second) { result.first->second = i; }
     firsty = std::begin(y);
     ++firstx;
   }

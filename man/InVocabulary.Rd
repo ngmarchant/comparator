@@ -2,7 +2,7 @@
 % Please edit documentation in R/InVocabulary.R
 \name{InVocabulary}
 \alias{InVocabulary}
-\title{In-Vocabulary Measure}
+\title{In-Vocabulary Comparator}
 \usage{
 InVocabulary(
   vocab,
@@ -19,45 +19,45 @@ not in this vector are out-of-vocabulary (unknown).}
 
 \item{both_in_distinct}{score to return if the pair of values being
 compared are both in \code{vocab} and distinct. Defaults to 0.7, which would
-is appropriate for multiplying by a similarity measure. If multiplying
-by a distance measure, a value greater than 1 is likely to be more
+is appropriate for multiplying by similarity scores. If multiplying
+by distance scores, a value greater than 1 is likely to be more
 appropriate.}
 
 \item{both_in_same}{score to return if the pair of values being
 compared are both in \code{vocab} and identical. Defaults to 1.0, which
-would leave another measure unchanged when multiplied by this one.}
+would leave another score unchanged when multiplied by this one.}
 
 \item{one_in}{score to return if only one of the pair of values being
 compared is in \code{vocab}. Defaults to 1.0, which would leave another
-measure unchanged when multiplied by this one.}
+score unchanged when multiplied by this one.}
 
 \item{none_in}{score to return if none of the pair of values being
 compared is in \code{vocab}. Defaults to 1.0, which would leave another
-measure unchanged when multiplied by this one.}
+score unchanged when multiplied by this one.}
 
 \item{ignore_case}{a logical. If TRUE, case is ignored when comparing the
 strings.}
 }
 \value{
 An \code{InVocabulary} instance is returned, which is an S4 class inheriting from
-\code{\linkS4class{StringMeasure}}.
+\code{\linkS4class{StringComparator}}.
 }
 \description{
-This measure compares a pair of strings \eqn{x} and \eqn{y} using a
-reference vocabulary. Different scores are returned depending on whether
-both/one/neither of \eqn{x} and \eqn{y} are in the reference vocabulary.
+Compares a pair of strings \eqn{x} and \eqn{y} using a reference vocabulary.
+Different scores are returned depending on whether both/one/neither of
+\eqn{x} and \eqn{y} are in the reference vocabulary.
 }
 \details{
-This measure is not intended to serve as a useful comparison
-measure on its own. Rather, it is intended to produce multiplicative
-factors which can be applied to another similarity/distance measure.
-It is particularly useful for comparing names when a reference list
-(vocabulary) of known names is available. For example, it can be
-configured to down-weight the similarity of distinct (known) names like
-"Roberto" and "Umberto" which are semantically very different, but
-deceptively similar in terms of edit distance. The normalized Levenshtein
-similarity for these two names is 75\%, but their similarity can be
-reduced to 53\% if multiplied by this measure with the default settings.
+This comparator is not intended to produce useful scores on its own.
+Rather, it is intended to produce multiplicative factors which can be
+applied to other similarity/distance scores. It is particularly useful
+for comparing names when a reference list (vocabulary) of known names is
+available. For example, it can be configured to down-weight the similarity
+scores of distinct (known) names like "Roberto" and "Umberto" which are
+semantically very different, but deceptively similar in terms of edit
+distance. The normalized Levenshtein similarity for these two names is 75\%,
+but their similarity can be reduced to 53\% if multiplied by the score
+from this comparator using the default settings.
 }
 \examples{
 ## Compare names with possible typos using a reference of known names

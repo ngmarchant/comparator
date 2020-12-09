@@ -2,62 +2,59 @@
 % Please edit documentation in R/MongeElkan.R
 \name{MongeElkan}
 \alias{MongeElkan}
-\title{Monge-Elkan Measure}
+\title{Monge-Elkan Token Comparator}
 \usage{
 MongeElkan(
-  inner_measure = Levenshtein(similarity = TRUE, normalize = TRUE),
-  separator = "\\\\s+",
+  inner_comparator = Levenshtein(similarity = TRUE, normalize = TRUE),
   agg_function = base::mean,
   symmetrize = FALSE
 )
 }
 \arguments{
-\item{inner_measure}{internal string measure of class
-\code{\linkS4class{StringMeasure}}. Defaults to \code{\link{Levenshtein}} similarity.}
-
-\item{separator}{separator for tokens/words. Defaults to whitespace.}
+\item{inner_comparator}{internal string comparator of class
+\code{\linkS4class{StringComparator}}. Defaults to \code{\link{Levenshtein}} similarity.}
 
 \item{agg_function}{aggregation function to use when aggregating internal
 similarities/distances between tokens. Defaults to \code{\link{mean}},
-however \code{\link{hmean}} may be a better choice for normalized similarity
-measures.}
+however \code{\link{hmean}} may be a better choice when the comparator returns
+normalized similarity scores.}
 
 \item{symmetrize}{logical indicating whether to use a symmetrized version
-of the Monge-Elkan measure. Defaults to FALSE.}
+of the Monge-Elkan comparator. Defaults to FALSE.}
 }
 \value{
 A \code{MongeElkan} instance is returned, which is an S4 class inheriting from
-\code{\linkS4class{StringMeasure}}.
+\code{\linkS4class{StringComparator}}.
 }
 \description{
-The Monge-Elkan measure is a hybrid token-character measure for comparing
-a pair of multi-token (multi-word) strings \eqn{x} and \eqn{y}. It uses an
-internal character-based measure to compute similarity scores between pairs
-of tokens in \eqn{x} and \eqn{y}, then takes the average of the maximum
-score for each token in \eqn{x}.
+Compares a pair of token sets \eqn{x} and \eqn{y} by computing similarity
+scores between all pairs of tokens using an internal string comparator,
+then taking the mean of the maximum scores for each token in \eqn{x}.
 }
 \details{
-Given two token vectors \eqn{x} and \eqn{y}, the Monge-Elkan measure is
+A token set is an unordered enumeration of tokens, which may include
+duplicates.
+Given two token sets \eqn{x} and \eqn{y}, the Monge-Elkan comparator is
 defined as:
 \deqn{\mathrm{ME}(x, y) = \frac{1}{|x|} \sum_{i = 1}^{|x|} \max_j \mathrm{sim}(x_i, y_j)}{ME(x, y) = 1/|x| sum_i{ max_j sim(x_i, y_j) }}
-where \eqn{x_i} is the i-th token (string) in \eqn{x}, \eqn{|x|} is the
+where \eqn{x_i} is the i-th token in \eqn{x}, \eqn{|x|} is the
 number of tokens in \eqn{x} and \eqn{\mathrm{sim}}{sim} is an internal
-character-based similarity measure.
+string similarity comparator.
 
-A generalization of the original Monge-Elkan measure is implemented here,
-which allows for internal distance measures in place of similarity measures,
+A generalization of the original Monge-Elkan comparator is implemented here,
+which allows for distance comparators in place of similarity comparators,
 and/or more general aggregation functions in place of the arithmetic mean.
-The generalized Monge-Elkan measure is defined as:
+The generalized Monge-Elkan comparator is defined as:
 \deqn{\mathrm{ME}(x, y) = \mathrm{agg}(\mathrm{opt}_j \ \mathrm{inner}(x_i, y_j))}{ME(x, y) = agg(opt_j inner(x_i, y_j))}
 where \eqn{\mathrm{inner}}{inner} is an internal distance or similarity
-measure, \eqn{\mathrm{opt}}{opt} is \eqn{\max}{max} if
-\eqn{\mathrm{inner}}{inner} is a similarity measure or \eqn{\min}{min} if
-it is a distance measure, and \eqn{\mathrm{agg}}{agg} is an aggregation
+comparator, \eqn{\mathrm{opt}}{opt} is \eqn{\max}{max} if
+\eqn{\mathrm{inner}}{inner} is a similarity comparator or \eqn{\min}{min} if
+it is a distance comparator, and \eqn{\mathrm{agg}}{agg} is an aggregation
 function which takes a vector of scores for each token in \eqn{x} and
 returns a scalar.
 
-By default, the Monge-Elkan measure is asymmetric in its arguments \eqn{x}
-and \eqn{y}. If \code{symmetrize = TRUE}, a symmetric version of the measure
+By default, the Monge-Elkan comparator is asymmetric in its arguments \eqn{x}
+and \eqn{y}. If \code{symmetrize = TRUE}, a symmetric version of the comparator
 is obtained as follows
 \deqn{\mathrm{ME}_{sym}(x, y) = \mathrm{opt} \ \{\mathrm{ME}(x, y), \mathrm{ME}(y, x)\}}{ME_sym(x, y) = opt { ME(x, y), ME(y, x) }}
 where \eqn{\mathrm{opt}}{opt} is defined above.
@@ -66,13 +63,16 @@ where \eqn{\mathrm{opt}}{opt} is defined above.
 ## Compare names with heterogenous representations
 x <- "The University of California - San Diego"
 y <- "Univ. Calif. San Diego"
+# Tokenize strings on white space
+x <- strsplit(x, '\\\\s+')
+y <- strsplit(y, '\\\\s+')
 MongeElkan()(x, y)
 
 ## The symmetrized variant is arguably more appropriate for this example
 MongeElkan(symmetrize = TRUE)(x, y) 
 
-## Using a different internal measure changes the result
-MongeElkan(inner_measure = BinaryComp(), symmetrize=TRUE)(x, y)
+## Using a different internal comparator changes the result
+MongeElkan(inner_comparator = BinaryComp(), symmetrize=TRUE)(x, y)
 
 }
 \references{

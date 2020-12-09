@@ -1,7 +1,7 @@
-#' @include StringMeasure.R  CppMeasure.R
+#' @include StringComparator.R  CppSeqComparator.R
 NULL
 
-setClass("LCS", contains = c("StringMeasure", "CppMeasure"), 
+setClass("LCS", contains = c("CppSeqComparator", "StringComparator"), 
          slots = c(
            deletion = "numeric", 
            insertion = "numeric", 
@@ -36,16 +36,19 @@ setClass("LCS", contains = c("StringMeasure", "CppMeasure"),
          })
 
 
-#' Longest Common Subsequence (LCS) Distance
+#' Longest Common Subsequence (LCS) Comparator
 #' 
 #' @description 
-#' The Longest Common Subsequence (LCS) distance between two strings \eqn{x} 
-#' and \eqn{y} is the minimum cost of single-character operations (insertions, 
-#' and deletions) required to transform  \eqn{x} into \eqn{y}. The LCS 
-#' similarity is more commonly used, which can be interpreted as the length 
-#' of the longest subsequence common to \eqn{x} and \eqn{y}.
+#' The Longest Common Subsequence (LCS) distance between two 
+#' strings/sequences \eqn{x} and \eqn{y} is the minimum cost of operations 
+#' (insertions and deletions) required to transform  \eqn{x} into \eqn{y}. 
+#' The LCS similarity is more commonly used, which can be interpreted as the 
+#' length of the longest subsequence common to \eqn{x} and \eqn{y}.
 #' 
 #' @details 
+#' For simplicity we assume `x` and `y` are strings in this section,
+#' however the comparator is also implemented for more general sequences.
+#' 
 #' An LCS similarity is returned if `similarity = TRUE`, which 
 #' is defined as 
 #' \deqn{\mathrm{sim}(x, y) = \frac{w_d |x| + w_i |y| - \mathrm{dist}(x, y)}{2},}{sim(x, y) = (w_d |x| + w_i |y| - dist(x, y))/2}
@@ -63,26 +66,26 @@ setClass("LCS", contains = c("StringMeasure", "CppMeasure"),
 #' \deqn{\mathrm{sim}_n(x, y) = 1 - \mathrm{dist}_n(x, y) = \frac{\mathrm{sim}(x, y)}{w_d |x| + w_i |y| - \mathrm{sim}(x, y)}.}{sim_n(x, y) = 1 - dist_n(x, y) = sim(x, y) / (w_d |x| + w_i |y| - sim(x, y)).}
 #' 
 #' @note 
-#' If the costs of deletion and insertion are equal, this measure is 
+#' If the costs of deletion and insertion are equal, this comparator is 
 #' symmetric in \eqn{x} and \eqn{y}. In addition, the normalized and 
 #' unnormalized distances satisfy the properties of a metric.
 #' 
-#' @param deletion positive cost associated with deletion of a character. 
-#'   Defaults to unit cost.
-#' @param insertion positive cost associated insertion of a character.
-#'   Defaults to unit cost.
+#' @param deletion positive cost associated with deletion of a character 
+#'   or sequence element. Defaults to unit cost.
+#' @param insertion positive cost associated insertion of a character 
+#'   or sequence element. Defaults to unit cost.
 #' @param normalize a logical. If TRUE, distances are normalized to the 
 #'   unit interval. Defaults to FALSE.
 #' @param similarity a logical. If TRUE, similarity scores are returned 
 #'   instead of distances. Defaults to FALSE. 
-#' @param ignore_case a logical. If TRUE, case is ignored when comparing the 
+#' @param ignore_case a logical. If TRUE, case is ignored when comparing  
 #'   strings.
 #' @param use_bytes a logical. If TRUE, strings are compared byte-by-byte 
 #'   rather than character-by-character.
 #' 
 #' @return 
 #' A `LCS` instance is returned, which is an S4 class inheriting from 
-#' [`StringMeasure-class`].
+#' [`StringComparator-class`].
 #' 
 #' @references 
 #' Bergroth, L., Hakonen, H., & Raita, T. (2000), "A survey of longest common 
@@ -105,7 +108,7 @@ setClass("LCS", contains = c("StringMeasure", "CppMeasure"),
 #' x <- "ABC"; y <- "AAA"
 #' LCS()(x, y) == Levenshtein(substitution = 100)(x, y)
 #' 
-#' @seealso Other edit-based measures include [`Hamming`], [`Levenshtein`], 
+#' @seealso Other edit-based comparators include [`Hamming`], [`Levenshtein`], 
 #' [`OSA`] and [`DamerauLevenshtein`].
 #' 
 #' @export

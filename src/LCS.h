@@ -1,12 +1,12 @@
 #pragma once
 
-#include "IMeasures.h"
+#include "IComparator.h"
 #include <vector>
 
 using Mat = std::vector<std::vector<double> >;
 
 template<class ForwardRange>
-class LCS : public NormalizableMeasure<ForwardRange> {
+class LCS : public NormalizableComparator<ForwardRange> {
 protected:
   double ins_weight_;
   double del_weight_;
@@ -14,7 +14,7 @@ protected:
   virtual void fill_dmat(const ForwardRange &x, const ForwardRange &y, Mat& dist) const;
 public:
   LCS(double deletion = 1.0, double insertion = 1.0, bool normalize = false, bool similarity = false) : 
-  NormalizableMeasure<ForwardRange>(normalize, true, !similarity, similarity), 
+  NormalizableComparator<ForwardRange>(normalize, true, !similarity, similarity), 
   ins_weight_(insertion),
   del_weight_(deletion) 
   {

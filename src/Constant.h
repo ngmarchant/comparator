@@ -1,14 +1,14 @@
 #pragma once
 
-#include "IMeasures.h"
+#include "IComparator.h"
 
 template<class ForwardRange>
-class Constant : public Measure<ForwardRange> {
+class Constant : public Comparator<ForwardRange> {
 protected:
   double score_;
 public:
   Constant(double score = 0.0) : 
-  Measure<ForwardRange>(true, false, false),
+  Comparator<ForwardRange>(true, false, false),
   score_(score) {} 
   
   double eval(const ForwardRange& x, const ForwardRange& y) const override;

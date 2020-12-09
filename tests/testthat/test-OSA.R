@@ -12,8 +12,8 @@ examples_equal_weights <- list(
   list(x = "", y = "", true_dist = 0),                  # empty
   list(x = "positive", y = "evitisop", true_dist = 6),  # reverse
   list(x = "café", y = "cafe", true_dist = 1),          # character with diacritic
-  list(x = "Saturday", y = "Sunday", true_dist = 3)
-  
+  list(x = "Saturday", y = "Sunday", true_dist = 3),
+  list(x = list(c("A", "B", "B", "A")), y = list(c("A", "B", "A", "B")), true_dist = 1)
 )
 
 test_that("OSA distance is correct when weights are equal", {
@@ -25,26 +25,26 @@ test_that("OSA distance is correct when weights are equal", {
 })
 
 examples_nonequal_weights <- list(
-  list(measure = OSA(insertion = 10, deletion = 10, substitution = 10), 
+  list(comparator = OSA(insertion = 10, deletion = 10, substitution = 10), 
        x = "abc", y = "abc", true_dist = 0),               # identical
-  list(measure = OSA(substitution = 0.9), 
+  list(comparator = OSA(substitution = 0.9), 
        x = "plane", y = "plant", true_dist = 0.9),         # substitution
-  list(measure = OSA(insertion = 0.9), 
+  list(comparator = OSA(insertion = 0.9), 
        x = "color", y = "colour", true_dist = 0.9),        # insertion
-  list(measure = OSA(deletion = 0.9), 
+  list(comparator = OSA(deletion = 0.9), 
        x = "favourite", y = "favorite", true_dist = 0.9),  # deletion
-  list(measure = OSA(transposition = 100), 
+  list(comparator = OSA(transposition = 100), 
        x = "abc", y = "ca", true_dist = 3),                # transposition + insertion
-  list(measure = OSA(insertion = 10, deletion = 20), 
+  list(comparator = OSA(insertion = 10, deletion = 20), 
        x = "", y = "", true_dist = 0),                     # empty
-  list(measure = OSA(transposition = 1e-10), 
+  list(comparator = OSA(transposition = 1e-10), 
        x = "positive", y = "evitisop", true_dist = 6)      # reverse
 )
 
 test_that("OSA distance is correct when weights are not equal", {
   for (example in examples_nonequal_weights) {
     with(example, 
-         expect_equal(measure(x, y), true_dist))
+         expect_equal(comparator(x, y), true_dist))
     
   }
 })

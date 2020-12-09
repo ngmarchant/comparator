@@ -2,7 +2,7 @@
 % Please edit documentation in R/Euclidean.R
 \name{Euclidean}
 \alias{Euclidean}
-\title{Euclidean Distance}
+\title{Euclidean Numeric Comparator}
 \usage{
 Euclidean()
 }
@@ -27,16 +27,16 @@ y <- seq_len(5)
 Euclidean()(x, y)
 
 ## Distance between rows (elementwise) of two matrices
-measure <- Euclidean()
+comparator <- Euclidean()
 x <- matrix(rnorm(25), nrow = 5)
 y <- matrix(rnorm(5), nrow = 1)
-elementwise(measure, x, y)
+elementwise(comparator, x, y)
 
 ## Distance between rows (pairwise) of two matrices
-pairwise(measure, x, y)
+pairwise(comparator, x, y)
 
 }
 \seealso{
-Other numeric measures include \code{\link{Manhattan}}, \code{\link{Minkowski}} and
+Other numeric comparators include \code{\link{Manhattan}}, \code{\link{Minkowski}} and
 \code{\link{Chebyshev}}.
 }

@@ -2,35 +2,35 @@
 % Please edit documentation in R/BinaryComp.R
 \name{BinaryComp}
 \alias{BinaryComp}
-\title{Binary Comparison Measure}
+\title{Binary String/Sequence Comparator}
 \usage{
 BinaryComp(score = 1, similarity = FALSE, ignore_case = FALSE)
 }
 \arguments{
 \item{score}{a numeric of length 1. Positive distance to return if the
-pair of strings are not identical. Defaults to 1.0.}
+pair of strings/sequences are not identical. Defaults to 1.0.}
 
 \item{similarity}{a logical. If TRUE, similarities are returned instead of
 distances. Specifically \code{score} is returned if the strings agree,
 and 0.0 is returned otherwise.}
 
-\item{ignore_case}{a logical. If TRUE, case is ignored when comparing the
+\item{ignore_case}{a logical. If TRUE, case is ignored when comparing
 strings.}
 }
 \value{
 A \code{BinaryComp} instance is returned, which is an S4 class inheriting from
-\code{\linkS4class{StringMeasure}}.
+\code{\linkS4class{StringComparator}}.
 }
 \description{
-Compares a pair of strings based on whether they are in exact agreement or
-not.
+Compares a pair of strings or sequences based on whether they are
+identical or not.
 }
 \details{
-If \code{similarity = FALSE} (default) the measure behaves like a
-distance. When \eqn{x = y} the measure returns distance 0.0, and when
-\eqn{x \neq y} the measure returns \code{score}.
+If \code{similarity = FALSE} (default) the scores can be interpreted
+as distances. When \eqn{x = y} the comparator returns a distance of 0.0,
+and when \eqn{x \neq y} the comparator returns \code{score}.
 
-If \code{similarity = TRUE} the measure behaves like a similarity. When
-\eqn{x = y} the measure returns \code{score}, and when \eqn{x \neq y} the
-measure returns 0.0.
+If \code{similarity = TRUE} the scores can be interpreted as similarities.
+When \eqn{x = y} the comparator returns \code{score}, and when \eqn{x \neq y}
+the comparator returns 0.0.
 }

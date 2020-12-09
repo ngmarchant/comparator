@@ -2,7 +2,7 @@
 % Please edit documentation in R/Constant.R
 \name{Constant}
 \alias{Constant}
-\title{Constant Measure}
+\title{Constant String/Sequence Comparator}
 \usage{
 Constant(constant = 0)
 }
@@ -11,8 +11,9 @@ Constant(constant = 0)
 }
 \value{
 A \code{Constant} instance is returned, which is an S4 class inheriting
-from \code{\linkS4class{StringMeasure}}.
+from \code{\linkS4class{StringComparator}}.
 }
 \description{
-A trivial string measure that returns a constant for any pair of values.
+A trivial comparator that returns a constant for any pair of strings or
+sequences.
 }

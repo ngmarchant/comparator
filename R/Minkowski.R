@@ -1,6 +1,6 @@
-#' @include NumericMeasure.R PairwiseMatrix.R
+#' @include NumericComparator.R PairwiseMatrix.R
 
-setClass("Minkowski", contains = "NumericMeasure", 
+setClass("Minkowski", contains = "NumericComparator", 
          slots = c(p = "numeric"), 
          prototype = structure(
            .Data = function(x, y, ...) elementwise(sys.function(), x, y, ...),
@@ -27,7 +27,7 @@ setClass("Minkowski", contains = "NumericMeasure",
          })
 
 
-#' Minkowski Distance
+#' Minkowski Numeric Comparator
 #' 
 #' @description 
 #' The Minkowski distance (a.k.a. L-p distance) between two vectors \eqn{x} and 
@@ -42,10 +42,10 @@ setClass("Minkowski", contains = "NumericMeasure",
 #' 
 #' @return 
 #' A `Minkowski` instance is returned, which is an S4 class inheriting 
-#' from [`NumericMeasure-class`].
+#' from [`NumericComparator-class`].
 #' 
 #' @seealso 
-#' Other numeric measures include [`Manhattan`], [`Euclidean`] and 
+#' Other numeric comparators include [`Manhattan`], [`Euclidean`] and 
 #' [`Chebyshev`].
 #' 
 #' @examples 
@@ -55,13 +55,13 @@ setClass("Minkowski", contains = "NumericMeasure",
 #' Minkowski()(x, y)
 #' 
 #' ## Distance between rows (elementwise) of two matrices
-#' measure <- Minkowski()
+#' comparator <- Minkowski()
 #' x <- matrix(rnorm(25), nrow = 5)
 #' y <- matrix(rnorm(5), nrow = 1)
-#' elementwise(measure, x, y)
+#' elementwise(comparator, x, y)
 #' 
 #' ## Distance between rows (pairwise) of two matrices
-#' pairwise(measure, x, y)
+#' pairwise(comparator, x, y)
 #' 
 #' @export
 Minkowski <- function(p = 2.0) {
@@ -73,8 +73,8 @@ Minkowski <- function(p = 2.0) {
 #' @importFrom proxy dist as.matrix
 #' @describeIn pairwise Specialization for a [`Minkowski`] where `x` and `y` 
 #' matrices of rows (interpreted as vectors) to compare. 
-setMethod(elementwise, signature = c(measure = "Minkowski", x = "matrix", y = "matrix"), 
-          function(measure, x, y, ...) {
+setMethod(elementwise, signature = c(comparator = "Minkowski", x = "matrix", y = "matrix"), 
+          function(comparator, x, y, ...) {
             mode(x) <- "numeric"
             mode(y) <- "numeric"
             # recycle as needed if one matrix has fewer rows than the other
@@ -83,7 +83,7 @@ setMethod(elementwise, signature = c(measure = "Minkowski", x = "matrix", y = "m
             } else if (nrow(x) > nrow(y)) {
               y <- y[rep_len(seq_len(nrow(y)), nrow(x)),]
             }
-            p <- measure@p
+            p <- comparator@p
             if (is.infinite(p)) {
               result <- dist(x, y, method="Chebyshev", by_rows = TRUE, pairwise=TRUE)
             } else {
@@ -97,11 +97,11 @@ setMethod(elementwise, signature = c(measure = "Minkowski", x = "matrix", y = "m
 #' @importFrom proxy dist as.matrix
 #' @describeIn pairwise Specialization for a [`Minkowski`] where `x` and `y` 
 #' matrices of rows (interpreted as vectors) to compare. 
-setMethod(pairwise, signature = c(measure = "Minkowski", x = "matrix", y = "matrix"), 
-          function(measure, x, y, return_matrix, ...) {
+setMethod(pairwise, signature = c(comparator = "Minkowski", x = "matrix", y = "matrix"), 
+          function(comparator, x, y, return_matrix, ...) {
             mode(x) <- "numeric"
             mode(y) <- "numeric"
-            p <- measure@p
+            p <- comparator@p
             if (is.infinite(p)) {
               score <- dist(x, y, method="Chebyshev", pairwise = FALSE, by_rows = TRUE)
             } else {
@@ -119,10 +119,10 @@ setMethod(pairwise, signature = c(measure = "Minkowski", x = "matrix", y = "matr
 #' @importFrom proxy dist as.matrix
 #' @describeIn pairwise Specialization for [`Minkowski`] where `x` is a matrix 
 #' of rows (interpreted as vectors) to compare among themselves.
-setMethod(pairwise, signature = c(measure = "Minkowski", x = "matrix", y = "NULL"), 
-          function(measure, x, y, return_matrix, ...) {
+setMethod(pairwise, signature = c(comparator = "Minkowski", x = "matrix", y = "NULL"), 
+          function(comparator, x, y, return_matrix, ...) {
             mode(x) <- "numeric"
-            p <- measure@p
+            p <- comparator@p
             if (is.infinite(p)) {
               score <- dist(x, y, method="Chebyshev", pairwise = FALSE, by_rows = TRUE)
             } else {

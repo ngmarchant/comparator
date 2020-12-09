@@ -4,13 +4,13 @@
 #include <Rcpp.h>
 
 template<class Range> 
-class Measure {
+class Comparator {
 protected:
   bool symmetric_;
   bool distance_;
   bool similarity_;
 public:
-  Measure(bool symmetric, bool distance, bool similarity) : 
+  Comparator(bool symmetric, bool distance, bool similarity) : 
   symmetric_(symmetric), 
   distance_(distance), 
   similarity_(similarity) {}
@@ -36,12 +36,12 @@ public:
 };
 
 template<class Range> 
-class NormalizableMeasure : public Measure<Range> {
+class NormalizableComparator : public Comparator<Range> {
 protected:
   bool normalize_;
 public:
-  NormalizableMeasure(bool normalize, bool symmetric, bool distance, bool similarity) : 
-  Measure<Range>(symmetric, distance, similarity),
+  NormalizableComparator(bool normalize, bool symmetric, bool distance, bool similarity) : 
+  Comparator<Range>(symmetric, distance, similarity),
   normalize_(normalize) {}
   
   bool normalized() const { return normalize_; }
@@ -83,7 +83,7 @@ bool is_incomparable(Rcpp::internal::generic_proxy<RTYPE> x) {
 
 template <class RangeIterator>
 template <class ForwardIterator1, class ForwardIterator2>
-PairwiseMatrix Measure<RangeIterator>::pairwise(ForwardIterator1 first1, ForwardIterator1 last1, 
+PairwiseMatrix Comparator<RangeIterator>::pairwise(ForwardIterator1 first1, ForwardIterator1 last1, 
                                                 ForwardIterator2 first2, ForwardIterator2 last2) const {
   ForwardIterator1 curr1;
   size_t nrow = std::distance(first1, last1);
@@ -110,7 +110,7 @@ PairwiseMatrix Measure<RangeIterator>::pairwise(ForwardIterator1 first1, Forward
 
 template <class RangeIterator>
 template <class ForwardIterator>
-PairwiseMatrix Measure<RangeIterator>::pairwise(ForwardIterator first1, 
+PairwiseMatrix Comparator<RangeIterator>::pairwise(ForwardIterator first1, 
                                                 ForwardIterator last1) const {
   if (!is_symmetric()) {
     return pairwise(first1, last1, first1, last1);
@@ -142,7 +142,7 @@ PairwiseMatrix Measure<RangeIterator>::pairwise(ForwardIterator first1,
 
 template <class RangeIterator>
 template <class ForwardIterator1, class ForwardIterator2>
-std::vector<double> Measure<RangeIterator>::elementwise(ForwardIterator1 first1, ForwardIterator1 last1, 
+std::vector<double> Comparator<RangeIterator>::elementwise(ForwardIterator1 first1, ForwardIterator1 last1, 
                                                         ForwardIterator2 first2, ForwardIterator2 last2) const {
   std::vector<double> result;
   std::size_t size1 = std::distance(first1, last1);

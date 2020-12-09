@@ -1,16 +1,21 @@
 Package: comparator
 Type: Package
-Title: Similarity and Distance Measures in R
-Version: 0.1.0
-Date: 2020-12-06
+Title: Comparison Functions for Clustering and Record Linkage
+Version: 0.1.1
+Date: 2020-12-09
 Authors@R: c(
     person(given = "Neil", 
            family = "Marchant", 
            email = "ngmarchant@gmail.com", 
            role = c("aut", "cre")))
 Maintainer: Neil Marchant <ngmarchant@gmail.com>
-Description: Provides similarity and distance measures for clustering and 
-    record linkage applications.
+Description: Implements functions for comparing strings, sequences and 
+    numeric vectors for clustering and record linkage applications. 
+    Supported comparison functions include: generalized edit distances 
+    for comparing sequences/strings, Monge-Elkan similarity for fuzzy 
+    comparison of token sets, and L-p distances for comparing numeric 
+    vectors. Where possible, comparison functions are implemented in 
+    C/C++ to ensure good performance.
 License: GPL (>= 2)
 Imports: Rcpp (>= 1.0.5), 
     proxy (>= 0.4),
@@ -23,12 +28,13 @@ Encoding: UTF-8
 URL: https://github.com/ngmarchant/comparator
 BugReports: https://github.com/ngmarchant/comparator/issues
 Collate: 
-    'Measure.R'
-    'CppMeasure.R'
+    'Comparator.R'
+    'CppSeqComparator.R'
     'PairwiseMatrix.R'
-    'StringMeasure.R'
+    'SequenceComparator.R'
+    'StringComparator.R'
     'BinaryComp.R'
-    'NumericMeasure.R'
+    'NumericComparator.R'
     'Chebyshev.R'
     'Constant.R'
     'Levenshtein.R'
@@ -43,11 +49,12 @@ Collate:
     'LCS.R'
     'Lookup.R'
     'Manhattan.R'
+    'TokenComparator.R'
     'MongeElkan.R'
     'OSA.R'
     'RcppExports.R'
     'generalized_mean.R'
-    'strcompr.R'
+    'strcompr-package.R'
     'util.R'
 Suggests: 
     testthat

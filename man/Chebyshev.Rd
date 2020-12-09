@@ -2,13 +2,13 @@
 % Please edit documentation in R/Chebyshev.R
 \name{Chebyshev}
 \alias{Chebyshev}
-\title{Chebyshev Distance}
+\title{Chebyshev Numeric Comparator}
 \usage{
 Chebyshev()
 }
 \value{
 A \code{Chebyshev} instance is returned, which is an S4 class inheriting
-from \code{\linkS4class{NumericMeasure}}.
+from \code{\linkS4class{NumericComparator}}.
 }
 \description{
 The Chebyshev distance (a.k.a. L-Inf distance or ) between two vectors
@@ -27,16 +27,16 @@ y <- seq_len(5)
 Chebyshev()(x, y)
 
 ## Distance between rows (elementwise) of two matrices
-measure <- Chebyshev()
+comparator <- Chebyshev()
 x <- matrix(rnorm(25), nrow = 5)
 y <- matrix(rnorm(5), nrow = 1)
-elementwise(measure, x, y)
+elementwise(comparator, x, y)
 
 ## Distance between rows (pairwise) of two matrices
-pairwise(measure, x, y)
+pairwise(comparator, x, y)
 
 }
 \seealso{
-Other numeric measures include \code{\link{Manhattan}}, \code{\link{Euclidean}} and
+Other numeric comparators include \code{\link{Manhattan}}, \code{\link{Euclidean}} and
 \code{\link{Minkowski}}.
 }

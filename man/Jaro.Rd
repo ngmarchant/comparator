@@ -2,7 +2,7 @@
 % Please edit documentation in R/Jaro.R
 \name{Jaro}
 \alias{Jaro}
-\title{Jaro Measure}
+\title{Jaro String/Sequence Comparator}
 \usage{
 Jaro(similarity = TRUE, ignore_case = FALSE, use_bytes = FALSE)
 }
@@ -10,7 +10,7 @@ Jaro(similarity = TRUE, ignore_case = FALSE, use_bytes = FALSE)
 \item{similarity}{a logical. If TRUE, similarity scores are returned
 (default), otherwise distances are returned (see definition under Details).}
 
-\item{ignore_case}{a logical. If TRUE, case is ignored when comparing the
+\item{ignore_case}{a logical. If TRUE, case is ignored when comparing
 strings.}
 
 \item{use_bytes}{a logical. If TRUE, strings are compared byte-by-byte
@@ -18,26 +18,31 @@ rather than character-by-character.}
 }
 \value{
 A \code{Jaro} instance is returned, which is an S4 class inheriting from
-\code{\linkS4class{StringMeasure}}.
+\code{\linkS4class{StringComparator}}.
 }
 \description{
-The Jaro measure compares a pair of strings based on the number of
-greedily-aligned matching characters and transpositions. It was developed
-for comparing names at the U.S. Census Bureau.
+Compares a pair of strings/sequences \code{x} and \code{y} based on the number of
+greedily-aligned characters/sequence elements and the number of
+transpositions. It was developed for comparing names at the U.S. Census
+Bureau.
 }
 \details{
+For simplicity we assume \code{x} and \code{y} are strings in this section,
+however the comparator is also implemented for more general sequences.
+
 When \code{similarity = TRUE} (default), the Jaro similarity is computed as
 \deqn{\mathrm{sim}(x, y) = \frac{1}{3}\left(\frac{m}{|x|} + \frac{m}{|y|} + \frac{m - \lfloor \frac{t}{2} \rfloor}{m}\right)}{sim(x, y) = (1/3)(m/|x| + m/|y| + (m-floor(t/2)/m)}
 where \eqn{m} is the number of "matching" characters (defined below),
-\eqn{t} is the number of "transpositions", and \eqn{|x|,|y|} are the lengths
-of the strings \eqn{x} and \eqn{y}. The similarity takes on values in the
-range \eqn{[0, 1]}, where 1 corresponds to a perfect match.
+\eqn{t} is the number of "transpositions", and \eqn{|x|,|y|} are the
+lengths of the strings \eqn{x} and \eqn{y}. The similarity takes on values
+in the range \eqn{[0, 1]}, where 1 corresponds to a perfect match.
 
 The number of "matching" characters \eqn{m} is computed using a greedy
 alignment algorithm. The algorithm iterates over the characters in \eqn{x},
-attempting to align the i-th character \eqn{x_i} with the first matching
-character in \eqn{y}. When looking for matching characters in \eqn{y}, the
-algorithm only considers previously un-matched characters within a window
+attempting to align the \eqn{i}-th character \eqn{x_i} with the first
+matching character in \eqn{y}. When looking for matching characters in
+\eqn{y}, the algorithm only considers previously un-matched characters
+within a window
 \eqn{[\max(0, i - w), \min(|y|, i + w)]}{[max(0, i - w), min(|y|, i + w)]}
 where \eqn{w = \left\lfloor \frac{\max(|x|, |y|)}{2} \right\rfloor - 1}{w = floor(max(|x|, |y|)/2) - 1}.
 The alignment process yields a subsequence of matching characters from
@@ -64,6 +69,7 @@ Matching the 1985 Census of Tampa, Florida", \emph{Journal of the American
 Statistical Association} \strong{84}(406), 414-420.
 }
 \seealso{
-The \code{\link{JaroWinkler}} measure modifies the \code{\link{Jaro}} measure by boosting the
-similarity score for strings with high agreement between prefixes.
+The \code{\link{JaroWinkler}} comparator modifies the \code{\link{Jaro}} comparator by
+boosting the similarity score for strings/sequences that have matching
+prefixes.
 }

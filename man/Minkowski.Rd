@@ -2,7 +2,7 @@
 % Please edit documentation in R/Minkowski.R
 \name{Minkowski}
 \alias{Minkowski}
-\title{Minkowski Distance}
+\title{Minkowski Numeric Comparator}
 \usage{
 Minkowski(p = 2)
 }
@@ -14,7 +14,7 @@ metric.}
 }
 \value{
 A \code{Minkowski} instance is returned, which is an S4 class inheriting
-from \code{\linkS4class{NumericMeasure}}.
+from \code{\linkS4class{NumericComparator}}.
 }
 \description{
 The Minkowski distance (a.k.a. L-p distance) between two vectors \eqn{x} and
@@ -29,16 +29,16 @@ y <- seq_len(5)
 Minkowski()(x, y)
 
 ## Distance between rows (elementwise) of two matrices
-measure <- Minkowski()
+comparator <- Minkowski()
 x <- matrix(rnorm(25), nrow = 5)
 y <- matrix(rnorm(5), nrow = 1)
-elementwise(measure, x, y)
+elementwise(comparator, x, y)
 
 ## Distance between rows (pairwise) of two matrices
-pairwise(measure, x, y)
+pairwise(comparator, x, y)
 
 }
 \seealso{
-Other numeric measures include \code{\link{Manhattan}}, \code{\link{Euclidean}} and
+Other numeric comparators include \code{\link{Manhattan}}, \code{\link{Euclidean}} and
 \code{\link{Chebyshev}}.
 }

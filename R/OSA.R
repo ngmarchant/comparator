@@ -1,7 +1,7 @@
-#' @include StringMeasure.R CppMeasure.R
+#' @include StringComparator.R CppSeqComparator.R
 NULL
 
-setClass("OSA", contains = c("StringMeasure", "CppMeasure"), 
+setClass("OSA", contains = c("CppSeqComparator", "StringComparator"), 
          slots = c(
            deletion = "numeric", 
            insertion = "numeric", 
@@ -44,16 +44,19 @@ setClass("OSA", contains = c("StringMeasure", "CppMeasure"),
          })
 
 
-#' Optimal String Alignment (OSA) Distance
+#' Optimal String Alignment (OSA) String/Sequence Comparator
 #' 
 #' @description 
-#' The Optimal String Alignment (OSA) distance between two strings \eqn{x} and 
-#' \eqn{y} is the minimum cost of single-character operations (insertions, 
+#' The Optimal String Alignment (OSA) distance between two strings/sequences 
+#' \eqn{x} and \eqn{y} is the minimum cost of operations (insertions, 
 #' deletions, substitutions or transpositions) required to transform  \eqn{x} 
-#' into \eqn{y} subject to the constraint that _no substring is edited 
-#' more than once_. 
+#' into \eqn{y}, subject to the constraint that _no substring/subsequence is 
+#' edited more than once_. 
 #' 
 #' @details 
+#' For simplicity we assume `x` and `y` are strings in this section,
+#' however the comparator is also implemented for more general sequences.
+#' 
 #' An OSA similarity is returned if `similarity = TRUE`, which 
 #' is defined as 
 #' \deqn{\mathrm{sim}(x, y) = \frac{w_d |x| + w_i |y| - \mathrm{dist}(x, y)}{2},}{sim(x, y) = (w_d |x| + w_i |y| - dist(x, y))/2}
@@ -71,32 +74,32 @@ setClass("OSA", contains = c("StringMeasure", "CppMeasure"),
 #' \deqn{\mathrm{sim}_n(x, y) = 1 - \mathrm{dist}_n(x, y) = \frac{\mathrm{sim}(x, y)}{w_d |x| + w_i |y| - \mathrm{sim}(x, y)}.}{sim_n(x, y) = 1 - dist_n(x, y) = sim(x, y) / (w_d |x| + w_i |y| - sim(x, y)).}
 #' 
 #' @note 
-#' If the costs of deletion and insertion are equal, this measure is 
+#' If the costs of deletion and insertion are equal, this comparator is 
 #' symmetric in \eqn{x} and \eqn{y}. The OSA distance is not a proper metric 
 #' as it does not satisfy the triangle inequality. The Damerau-Levenshtein 
 #' distance is closely related---it allows the same edit operations as OSA, 
 #' but removes the requirement that no substring can be edited more than once. 
 #' 
-#' @param deletion positive cost associated with deletion of a character. 
-#'   Defaults to unit cost.
-#' @param insertion positive cost associated insertion of a character.
-#'   Defaults to unit cost.
+#' @param deletion positive cost associated with deletion of a character
+#'   or sequence element. Defaults to unit cost.
+#' @param insertion positive cost associated insertion of a character 
+#'   or sequence element. Defaults to unit cost.
 #' @param substitution positive cost associated with substitution of a 
-#'   character. Defaults to unit cost.
+#'   character or sequence element. Defaults to unit cost.
 #' @param transposition positive cost associated with transposing (swapping) 
-#'   a pair of characters. Defaults to unit cost.
+#'   a pair of characters or sequence elements. Defaults to unit cost.
 #' @param normalize a logical. If TRUE, distances are normalized to the 
 #'   unit interval. Defaults to FALSE.
 #' @param similarity a logical. If TRUE, similarity scores are returned 
 #'   instead of distances. Defaults to FALSE. 
-#' @param ignore_case a logical. If TRUE, case is ignored when comparing the 
+#' @param ignore_case a logical. If TRUE, case is ignored when comparing  
 #'   strings.
 #' @param use_bytes a logical. If TRUE, strings are compared byte-by-byte 
 #'   rather than character-by-character.
 #' 
 #' @return 
 #' An `OSA` instance is returned, which is an S4 class inheriting from 
-#' [`StringMeasure-class`].
+#' [`StringComparator-class`].
 #' 
 #' @references 
 #' Boytsov, L. (2011), "Indexing methods for approximate dictionary searching: 
@@ -125,7 +128,7 @@ setClass("OSA", contains = c("StringMeasure", "CppMeasure"),
 #' cars <- rownames(mtcars)
 #' pairwise(OSA(similarity = TRUE, normalize=TRUE), cars)
 #' 
-#' @seealso Other edit-based measures include [`Hamming`], [`LCS`], 
+#' @seealso Other edit-based comparators include [`Hamming`], [`LCS`], 
 #' [`Levenshtein`] and [`DamerauLevenshtein`].
 #' 
 #' @export

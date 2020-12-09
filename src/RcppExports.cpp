@@ -17,29 +17,29 @@ BEGIN_RCPP
 END_RCPP
 }
 // elementwise
-NumericVector elementwise(List& x, List& y, const List& attrs);
-RcppExport SEXP _comparator_elementwise(SEXP xSEXP, SEXP ySEXP, SEXP attrsSEXP) {
+NumericVector elementwise(List& x, List& y, const S4& m_S4);
+RcppExport SEXP _comparator_elementwise(SEXP xSEXP, SEXP ySEXP, SEXP m_S4SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List& >::type x(xSEXP);
     Rcpp::traits::input_parameter< List& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const List& >::type attrs(attrsSEXP);
-    rcpp_result_gen = Rcpp::wrap(elementwise(x, y, attrs));
+    Rcpp::traits::input_parameter< const S4& >::type m_S4(m_S4SEXP);
+    rcpp_result_gen = Rcpp::wrap(elementwise(x, y, m_S4));
     return rcpp_result_gen;
 END_RCPP
 }
 // pairwise
-S4 pairwise(List& x, Nullable<List> y_, const List& attrs, const LogicalVector& full);
-RcppExport SEXP _comparator_pairwise(SEXP xSEXP, SEXP y_SEXP, SEXP attrsSEXP, SEXP fullSEXP) {
+S4 pairwise(List& x, Nullable<List> y_, const S4& m_S4, const LogicalVector& full);
+RcppExport SEXP _comparator_pairwise(SEXP xSEXP, SEXP y_SEXP, SEXP m_S4SEXP, SEXP fullSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List& >::type x(xSEXP);
     Rcpp::traits::input_parameter< Nullable<List> >::type y_(y_SEXP);
-    Rcpp::traits::input_parameter< const List& >::type attrs(attrsSEXP);
+    Rcpp::traits::input_parameter< const S4& >::type m_S4(m_S4SEXP);
     Rcpp::traits::input_parameter< const LogicalVector& >::type full(fullSEXP);
-    rcpp_result_gen = Rcpp::wrap(pairwise(x, y_, attrs, full));
+    rcpp_result_gen = Rcpp::wrap(pairwise(x, y_, m_S4, full));
     return rcpp_result_gen;
 END_RCPP
 }

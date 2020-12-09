@@ -1,15 +1,15 @@
 #pragma once
 
-#include "IMeasures.h"
+#include "IComparator.h"
 #include <Rcpp.h>
 
 template<class ForwardRange>
-class BinaryComp : public Measure<ForwardRange> {
+class BinaryComp : public Comparator<ForwardRange> {
 protected:
   double score_;
 public:
   BinaryComp(double score = 1.0, bool similarity = false) : 
-  Measure<ForwardRange>(true, !similarity, similarity),
+  Comparator<ForwardRange>(true, !similarity, similarity),
   score_(score) {} 
   
   double eval(const ForwardRange& x, const ForwardRange& y) const override;

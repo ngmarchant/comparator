@@ -15,16 +15,19 @@ setClass("DamerauLevenshtein", contains = "Levenshtein",
            ifelse(length(errs) == 0, TRUE, errs)
          })
 
-#' Damerau-Levenshtein Distance
+#' Damerau-Levenshtein String/Sequence Comparator
 #' 
 #' @description 
-#' The Damerau-Levenshtein distance between two strings \eqn{x} and \eqn{y} is 
-#' the minimum cost of single-character operations (insertions, deletions, 
+#' The Damerau-Levenshtein distance between two strings/sequences \eqn{x} 
+#' and \eqn{y} is the minimum cost of operations (insertions, deletions, 
 #' substitutions or transpositions) required to transform \eqn{x} 
 #' into \eqn{y}. It differs from the Levenshtein distance by including 
 #' _transpositions_ (swaps) among the allowable operations.
 #' 
 #' @details 
+#' For simplicity we assume `x` and `y` are strings in this section,
+#' however the comparator is also implemented for more general sequences.
+#' 
 #' A Damerau-Levenshtein similarity is returned if `similarity = TRUE`, which 
 #' is defined as 
 #' \deqn{\mathrm{sim}(x, y) = \frac{w_d |x| + w_i |y| - \mathrm{dist}(x, y)}{2},}{sim(x, y) = (w_d |x| + w_i |y| - dist(x, y))/2}
@@ -44,23 +47,23 @@ setClass("DamerauLevenshtein", contains = "Levenshtein",
 #' \deqn{\mathrm{sim}_n(x, y) = 1 - \mathrm{dist}_n(x, y) = \frac{\mathrm{sim}(x, y)}{w_d |x| + w_i |y| - \mathrm{sim}(x, y)}.}{sim_n(x, y) = 1 - dist_n(x, y) = sim(x, y) / (w_d |x| + w_i |y| - sim(x, y)).}
 #' 
 #' @note 
-#' If the costs of deletion and insertion are equal, this measure is 
+#' If the costs of deletion and insertion are equal, this comparator is 
 #' symmetric in \eqn{x} and \eqn{y}. In addition, the normalized and 
 #' unnormalized distances satisfy the properties of a metric.
 #' 
-#' @param deletion positive cost associated with deletion of a character. 
-#'   Defaults to unit cost.
-#' @param insertion positive cost associated insertion of a character.
-#'   Defaults to unit cost.
+#' @param deletion positive cost associated with deletion of a character 
+#'   or sequence element. Defaults to unit cost.
+#' @param insertion positive cost associated insertion of a character 
+#'   or sequence element. Defaults to unit cost.
 #' @param substitution positive cost associated with substitution of a 
-#'   character. Defaults to unit cost.
+#'   character or sequence element. Defaults to unit cost.
 #' @param transposition positive cost associated with transposing (swapping) 
-#'   a pair of characters. Defaults to unit cost.
+#'   a pair of characters or sequence elements. Defaults to unit cost.
 #' @param normalize a logical. If TRUE, distances are normalized to the 
 #'   unit interval. Defaults to FALSE.
 #' @param similarity a logical. If TRUE, similarity scores are returned 
 #'   instead of distances. Defaults to FALSE. 
-#' @param ignore_case a logical. If TRUE, case is ignored when comparing the 
+#' @param ignore_case a logical. If TRUE, case is ignored when comparing  
 #'   strings.
 #' @param use_bytes a logical. If TRUE, strings are compared byte-by-byte 
 #'   rather than character-by-character.
@@ -92,7 +95,12 @@ setClass("DamerauLevenshtein", contains = "Levenshtein",
 #' cars <- rownames(mtcars)
 #' pairwise(DamerauLevenshtein(similarity = TRUE, normalize=TRUE), cars)
 #' 
-#' @seealso Other edit-based measures include [`Hamming`], [`LCS`], 
+#' ## Compare sequences using Damerau-Levenshtein distance
+#' x <- c("G", "T", "G", "C", "T", "G", "G", "C", "C", "C", "A", "T")
+#' y <- c("G", "T", "G", "C", "G", "T", "G", "C", "C", "C", "A", "T")
+#' DamerauLevenshtein()(list(x), list(y))
+#' 
+#' @seealso Other edit-based comparators include [`Hamming`], [`LCS`], 
 #' [`Levenshtein`] and [`OSA`].
 #' 
 #' @rdname DamerauLevenshtein

@@ -12,7 +12,7 @@ setClass("Euclidean", contains = "Minkowski",
          })
 
 
-#' Euclidean Distance
+#' Euclidean Numeric Comparator
 #' 
 #' @description 
 #' The Euclidean distance (a.k.a. L-2 distance) between two vectors \eqn{x} and 
@@ -28,7 +28,7 @@ setClass("Euclidean", contains = "Minkowski",
 #' from [`Minkowski`].
 #' 
 #' @seealso 
-#' Other numeric measures include [`Manhattan`], [`Minkowski`] and 
+#' Other numeric comparators include [`Manhattan`], [`Minkowski`] and 
 #' [`Chebyshev`].
 #' 
 #' @examples 
@@ -38,13 +38,13 @@ setClass("Euclidean", contains = "Minkowski",
 #' Euclidean()(x, y)
 #' 
 #' ## Distance between rows (elementwise) of two matrices
-#' measure <- Euclidean()
+#' comparator <- Euclidean()
 #' x <- matrix(rnorm(25), nrow = 5)
 #' y <- matrix(rnorm(5), nrow = 1)
-#' elementwise(measure, x, y)
+#' elementwise(comparator, x, y)
 #' 
 #' ## Distance between rows (pairwise) of two matrices
-#' pairwise(measure, x, y)
+#' pairwise(comparator, x, y)
 #' 
 #' @export
 Euclidean <- function() {

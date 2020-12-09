@@ -12,7 +12,7 @@ setClass("Manhattan", contains = "Minkowski",
          })
 
 
-#' Manhattan Distance
+#' Manhattan Numeric Comparator
 #' 
 #' @description 
 #' The Manhattan distance (a.k.a. L-1 distance) between two vectors \eqn{x} and 
@@ -28,7 +28,7 @@ setClass("Manhattan", contains = "Minkowski",
 #' from [`Minkowski`].
 #' 
 #' @seealso 
-#' Other numeric measures include [`Euclidean`], [`Minkowski`] and 
+#' Other numeric comparators include [`Euclidean`], [`Minkowski`] and 
 #' [`Chebyshev`].
 #' 
 #' @examples 
@@ -38,13 +38,13 @@ setClass("Manhattan", contains = "Minkowski",
 #' Manhattan()(x, y)
 #' 
 #' ## Distance between rows (elementwise) of two matrices
-#' measure <- Manhattan()
+#' comparator <- Manhattan()
 #' x <- matrix(rnorm(25), nrow = 5)
 #' y <- matrix(rnorm(5), nrow = 1)
-#' elementwise(measure, x, y)
+#' elementwise(comparator, x, y)
 #' 
 #' ## Distance between rows (pairwise) of two matrices
-#' pairwise(measure, x, y)
+#' pairwise(comparator, x, y)
 #' 
 #' @export
 Manhattan <- function() {

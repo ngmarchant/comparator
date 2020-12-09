@@ -1,5 +1,4 @@
 
-
 # Modified from src/library/utils/R/adist.R in base R
 strings_to_code_vectors <- function(x, y=NULL, ignore_case=FALSE, use_bytes=FALSE) {
   bytesToInt <- function(x) {

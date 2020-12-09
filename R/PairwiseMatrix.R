@@ -5,9 +5,9 @@
 #' Represents a pairwise similarity or distance matrix.
 #' 
 #' @details If the elements being compared are from the same set, the matrix 
-#'   may be symmetric if the corresponding similarity/distance measure is 
-#'   symmetric. In this case, entries in the upper triangle and/or along the 
-#'   diagonal may not be stored in memory, since they are redundant.
+#'   may be symmetric if the comparator is symmetric. In this case, entries 
+#'   in the upper triangle and/or along the diagonal may not be stored in 
+#'   memory, since they are redundant.
 #' 
 #' @slot .Data entries of the matrix in column-major order. Entries in the 
 #'   upper triangle and/or on the diagonal may be omitted.

@@ -2,13 +2,13 @@
 
 #include <numeric>
 #include <limits>
-#include "IMeasures.h"
+#include "IComparator.h"
 
 template<class ForwardRange>
-class Hamming : public NormalizableMeasure<ForwardRange> {
+class Hamming : public NormalizableComparator<ForwardRange> {
 public:
   Hamming(bool normalize = false, bool similarity = false) : 
-  NormalizableMeasure<ForwardRange>(normalize, true, !similarity, similarity) {} 
+  NormalizableComparator<ForwardRange>(normalize, true, !similarity, similarity) {} 
   
   double eval(const ForwardRange& x, const ForwardRange& y) const override;
 };

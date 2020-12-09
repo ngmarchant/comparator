@@ -28,7 +28,7 @@ private:
   typedef std::vector<double> base_vector;
 
   // Entries of the matrix stored in column-major order in the vector. Some entries may be omitted (e.g. upper 
-  // triangle) if the measure is symmetric.
+  // triangle) if the comparator is symmetric.
   size_t nrow_;
   size_t ncol_;
   bool is_full_;

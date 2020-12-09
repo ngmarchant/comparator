@@ -1,7 +1,7 @@
-#' @include StringMeasure.R CppMeasure.R
+#' @include StringComparator.R CppSeqComparator.R
 NULL
 
-setClass("Hamming", contains = c("StringMeasure", "CppMeasure"), 
+setClass("Hamming", contains = c("CppSeqComparator", "StringComparator"), 
          slots = c(constant = "numeric", 
                    normalize = "logical"), 
          prototype = structure(
@@ -26,16 +26,17 @@ setClass("Hamming", contains = c("StringMeasure", "CppMeasure"),
            ifelse(length(errs) == 0, TRUE, errs)
          })
 
-#' Hamming Distance
+#' Hamming String/Sequence Comparator
 #' 
-#' @description The Hamming distance between two strings of equal length is 
-#' the number of positions where the corresponding characters differ. It 
-#' can be viewed as a type of edit distance where the only permitted operation 
-#' is character substitution.
+#' @description 
+#' The Hamming distance between two strings/sequences of equal length is the 
+#' number of positions where the corresponding characters/sequence elements 
+#' differ. It can be viewed as a type of edit distance where the only 
+#' permitted operation is substitution of characters/sequence elements.
 #' 
-#' @details When the input strings \eqn{x} and \eqn{y} are of different 
-#' lengths (\eqn{|x| \neq |y|}{|x| != |y|}), the Hamming distance is defined 
-#' to be \eqn{\infty}{Inf}.
+#' @details When the input strings/sequences \eqn{x} and \eqn{y} are of 
+#' different lengths (\eqn{|x| \neq |y|}{|x| != |y|}), the Hamming distance 
+#' is defined to be \eqn{\infty}{Inf}.
 #' 
 #' A Hamming similarity is returned if `similarity = TRUE`. When 
 #' \eqn{|x| = |y|} the similarity is defined as follows:
@@ -46,7 +47,7 @@ setClass("Hamming", contains = c("StringMeasure", "CppMeasure"),
 #' 
 #' Normalization of the Hamming distance/similarity to the unit interval is 
 #' also supported by setting `normalize = TRUE`. The raw distance/similarity 
-#' is divided by the length of the string \eqn{|x| = |y|}. If 
+#' is divided by the length of the string/sequence \eqn{|x| = |y|}. If 
 #' \eqn{|x| \neq |y|}{|x| != |y|} the normalized distance is defined to be 1, 
 #' while the normalized similarity is defined to be 0.
 #' 
@@ -57,14 +58,14 @@ setClass("Hamming", contains = c("StringMeasure", "CppMeasure"),
 #'   to the unit interval. Defaults to FALSE.
 #' @param similarity a logical. If TRUE, similarity scores are returned 
 #'   instead of distances. Defaults to FALSE. 
-#' @param ignore_case a logical. If TRUE, case is ignored when comparing the 
+#' @param ignore_case a logical. If TRUE, case is ignored when comparing  
 #'   strings.
 #' @param use_bytes a logical. If TRUE, strings are compared byte-by-byte 
 #'   rather than character-by-character.
 #' 
 #' @return 
 #' A `Hamming` instance is returned, which is an S4 class inheriting from 
-#' [`StringMeasure-class`].
+#' [`StringComparator-class`].
 #' 
 #' @examples
 #' ## Compare US ZIP codes
@@ -75,7 +76,7 @@ setClass("Hamming", contains = c("StringMeasure", "CppMeasure"),
 #' m1(x, y)
 #' m2(x, y)
 #' 
-#' @seealso Other edit-based measures include [`LCS`], [`Levenshtein`], 
+#' @seealso Other edit-based comparators include [`LCS`], [`Levenshtein`], 
 #' [`OSA`] and [`DamerauLevenshtein`].
 #' 
 #' @export

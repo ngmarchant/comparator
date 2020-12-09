@@ -2,7 +2,7 @@
 % Please edit documentation in R/Manhattan.R
 \name{Manhattan}
 \alias{Manhattan}
-\title{Manhattan Distance}
+\title{Manhattan Numeric Comparator}
 \usage{
 Manhattan()
 }
@@ -27,16 +27,16 @@ y <- seq_len(5)
 Manhattan()(x, y)
 
 ## Distance between rows (elementwise) of two matrices
-measure <- Manhattan()
+comparator <- Manhattan()
 x <- matrix(rnorm(25), nrow = 5)
 y <- matrix(rnorm(5), nrow = 1)
-elementwise(measure, x, y)
+elementwise(comparator, x, y)
 
 ## Distance between rows (pairwise) of two matrices
-pairwise(measure, x, y)
+pairwise(comparator, x, y)
 
 }
 \seealso{
-Other numeric measures include \code{\link{Euclidean}}, \code{\link{Minkowski}} and
+Other numeric comparators include \code{\link{Euclidean}}, \code{\link{Minkowski}} and
 \code{\link{Chebyshev}}.
 }

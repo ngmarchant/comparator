@@ -1,7 +1,7 @@
-#' @include StringMeasure.R PairwiseMatrix.R
+#' @include StringComparator.R PairwiseMatrix.R
 NULL
 
-setClass("InVocabulary", contains = c("StringMeasure"), 
+setClass("InVocabulary", contains = c("StringComparator"), 
          slots = c(
            vocab = "character",
            both_in_distinct = "numeric", 
@@ -40,47 +40,47 @@ setClass("InVocabulary", contains = c("StringMeasure"),
          })
 
 
-#' In-Vocabulary Measure
+#' In-Vocabulary Comparator
 #' 
 #' @description
-#' This measure compares a pair of strings \eqn{x} and \eqn{y} using a 
-#' reference vocabulary. Different scores are returned depending on whether 
-#' both/one/neither of \eqn{x} and \eqn{y} are in the reference vocabulary.
+#' Compares a pair of strings \eqn{x} and \eqn{y} using a reference vocabulary. 
+#' Different scores are returned depending on whether both/one/neither of 
+#' \eqn{x} and \eqn{y} are in the reference vocabulary.
 #' 
 #' @details 
-#' This measure is not intended to serve as a useful comparison 
-#' measure on its own. Rather, it is intended to produce multiplicative 
-#' factors which can be applied to another similarity/distance measure. 
-#' It is particularly useful for comparing names when a reference list 
-#' (vocabulary) of known names is available. For example, it can be 
-#' configured to down-weight the similarity of distinct (known) names like 
-#' "Roberto" and "Umberto" which are semantically very different, but 
-#' deceptively similar in terms of edit distance. The normalized Levenshtein 
-#' similarity for these two names is 75%, but their similarity can be 
-#' reduced to 53% if multiplied by this measure with the default settings.
+#' This comparator is not intended to produce useful scores on its own. 
+#' Rather, it is intended to produce multiplicative factors which can be 
+#' applied to other similarity/distance scores. It is particularly useful 
+#' for comparing names when a reference list (vocabulary) of known names is 
+#' available. For example, it can be configured to down-weight the similarity 
+#' scores of distinct (known) names like "Roberto" and "Umberto" which are 
+#' semantically very different, but deceptively similar in terms of edit 
+#' distance. The normalized Levenshtein similarity for these two names is 75%, 
+#' but their similarity can be reduced to 53% if multiplied by the score 
+#' from this comparator using the default settings.
 #' 
 #' @param vocab a vector containing in-vocabulary (known) strings. Any strings 
 #'   not in this vector are out-of-vocabulary (unknown).
 #' @param both_in_distinct score to return if the pair of values being 
 #'   compared are both in `vocab` and distinct. Defaults to 0.7, which would 
-#'   is appropriate for multiplying by a similarity measure. If multiplying 
-#'   by a distance measure, a value greater than 1 is likely to be more 
+#'   is appropriate for multiplying by similarity scores. If multiplying 
+#'   by distance scores, a value greater than 1 is likely to be more 
 #'   appropriate.
 #' @param both_in_same score to return if the pair of values being 
 #'   compared are both in `vocab` and identical. Defaults to 1.0, which 
-#'   would leave another measure unchanged when multiplied by this one.
+#'   would leave another score unchanged when multiplied by this one.
 #' @param one_in score to return if only one of the pair of values being 
 #'   compared is in `vocab`. Defaults to 1.0, which would leave another 
-#'   measure unchanged when multiplied by this one.
+#'   score unchanged when multiplied by this one.
 #' @param none_in score to return if none of the pair of values being 
 #'   compared is in `vocab`. Defaults to 1.0, which would leave another 
-#'   measure unchanged when multiplied by this one.
+#'   score unchanged when multiplied by this one.
 #' @param ignore_case a logical. If TRUE, case is ignored when comparing the 
 #'   strings.
 #' 
 #' @return
 #' An `InVocabulary` instance is returned, which is an S4 class inheriting from 
-#' [`StringMeasure-class`].
+#' [`StringComparator-class`].
 #' 
 #' @examples
 #' ## Compare names with possible typos using a reference of known names
@@ -105,11 +105,11 @@ InVocabulary <- function(vocab, both_in_distinct = 0.7, both_in_same = 1.0,
 
 #' @describeIn elementwise Specialization for [`InVocabulary`] where `x` and 
 #' `y` are vectors of strings to compare.
-setMethod(elementwise, signature = c(measure = "InVocabulary", x = "vector", y = "vector"), 
-          function(measure, x, y, ...) {
-            vocab <- measure@vocab
+setMethod(elementwise, signature = c(comparator = "InVocabulary", x = "vector", y = "vector"), 
+          function(comparator, x, y, ...) {
+            vocab <- comparator@vocab
             
-            if (measure@ignore_case) {
+            if (comparator@ignore_case) {
               x <- tolower(x)
               y <- tolower(y)
               vocab <- tolower(vocab)
@@ -121,10 +121,10 @@ setMethod(elementwise, signature = c(measure = "InVocabulary", x = "vector", y =
             distinct <- x != y
             both_in <- x_known & y_known
             
-            out <- rep_len(measure@none_in, length(x))
-            out[x_known | y_known] <- measure@one_in
-            out[both_in] <- measure@both_in_same
-            out[both_in & distinct] <- measure@both_in_distinct
+            out <- rep_len(comparator@none_in, length(x))
+            out[x_known | y_known] <- comparator@one_in
+            out[both_in] <- comparator@both_in_same
+            out[both_in & distinct] <- comparator@both_in_distinct
             
             out
           }
@@ -133,11 +133,11 @@ setMethod(elementwise, signature = c(measure = "InVocabulary", x = "vector", y =
 
 #' @describeIn pairwise Specialization for [`InVocabulary`] where `x` and `y` 
 #' are vectors of strings to compare.
-setMethod(pairwise, signature = c(measure = "InVocabulary", x = "vector", y = "vector"), 
-          function(measure, x, y, return_matrix, ...) {
-            vocab <- measure@vocab
+setMethod(pairwise, signature = c(comparator = "InVocabulary", x = "vector", y = "vector"), 
+          function(comparator, x, y, return_matrix, ...) {
+            vocab <- comparator@vocab
             
-            if (measure@ignore_case) {
+            if (comparator@ignore_case) {
               x <- tolower(x)
               y <- tolower(y)
               vocab <- tolower(vocab)
@@ -152,10 +152,10 @@ setMethod(pairwise, signature = c(measure = "InVocabulary", x = "vector", y = "v
             distinct <- matrix(x, nrow=length(x), ncol=length(y))
             distinct <- sweep(distinct, 2, y, FUN = "!=")  
             
-            scores <- matrix(measure@none_in, nrow =length(x), ncol = length(y))
-            scores[x_known | y_known] <- measure@one_in
-            scores[both_in] <- measure@both_in_same
-            scores[both_in & distinct] <- measure@both_in_distinct
+            scores <- matrix(comparator@none_in, nrow =length(x), ncol = length(y))
+            scores[x_known | y_known] <- comparator@one_in
+            scores[both_in] <- comparator@both_in_same
+            scores[both_in & distinct] <- comparator@both_in_distinct
             
             if (!return_matrix) scores <- as.PairwiseMatrix(scores)
             scores
@@ -164,9 +164,9 @@ setMethod(pairwise, signature = c(measure = "InVocabulary", x = "vector", y = "v
 
 #' @describeIn pairwise Specialization for [`InVocabulary`] where `x` is a 
 #' vector of strings to compare among themselves.
-setMethod(pairwise, signature = c(measure = "InVocabulary", x = "vector", y = "NULL"), 
-          function(measure, x, y, return_matrix, ...) {
+setMethod(pairwise, signature = c(comparator = "InVocabulary", x = "vector", y = "NULL"), 
+          function(comparator, x, y, return_matrix, ...) {
             if (!return_matrix) warning("`return_matrix = FALSE` is not supported")
-            pairwise(measure, x, x, return_matrix)
+            pairwise(comparator, x, x, return_matrix)
           }
 )

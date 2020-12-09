@@ -1,7 +1,7 @@
-#' @include StringMeasure.R PairwiseMatrix.R CppMeasure.R
+#' @include StringComparator.R PairwiseMatrix.R CppSeqComparator.R
 NULL
 
-setClass("Constant", contains = c("StringMeasure", "CppMeasure"), 
+setClass("Constant", contains = c("CppSeqComparator", "StringComparator"), 
          slots = c(constant = "numeric"), 
          prototype = structure(
            .Data = function(x, y, ...) elementwise(sys.function(), x, y, ...),
@@ -23,16 +23,17 @@ setClass("Constant", contains = c("StringMeasure", "CppMeasure"),
            ifelse(length(errs) == 0, TRUE, errs)
          })
 
-#' Constant Measure
+#' Constant String/Sequence Comparator
 #' 
 #' @description 
-#' A trivial string measure that returns a constant for any pair of values.
+#' A trivial comparator that returns a constant for any pair of strings or 
+#' sequences.
 #' 
 #' @param constant a non-negative numeric vector of length 1. Defaults to zero.
 #' 
 #' @return 
 #' A `Constant` instance is returned, which is an S4 class inheriting 
-#' from [`StringMeasure-class`].
+#' from [`StringComparator-class`].
 #' 
 #' @export
 Constant <- function(constant = 0.0) {

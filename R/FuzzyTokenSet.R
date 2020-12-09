@@ -1,9 +1,9 @@
-#' @include StringMeasure.R Levenshtein.R PairwiseMatrix.R
+#' @include StringComparator.R Levenshtein.R PairwiseMatrix.R
 NULL
 
 #' @importFrom clue solve_LSAP
 #' @noRd
-.impl_inner.OptimalMatch <- function(x, y, inner_measure, agg_function,
+.impl_inner.OptimalMatch <- function(x, y, inner_comparator, agg_function,
                                      maximize, insertion, deletion, substitution) {
   seq_x <- seq_along(x)
   seq_y <- seq_along(y)
@@ -16,7 +16,7 @@ NULL
   x[ins_id] <- ""
   y[del_id] <- ""
   
-  scores <- pairwise(inner_measure, x, y)
+  scores <- pairwise(inner_comparator, x, y)
   scores <- as.matrix(scores)
   
   # Apply weights
@@ -36,23 +36,23 @@ NULL
   agg_function(scores)
 }
 
-setClass("FuzzyTokenSet", contains = "StringMeasure", 
+setClass("FuzzyTokenSet", contains = "StringComparator", 
          slots = c(separator = "character",
-                   inner_measure = "StringMeasure",
+                   inner_comparator = "StringComparator",
                    agg_function = "function", 
                    deletion = "numeric", 
                    insertion = "numeric", 
                    substitution = "numeric"), 
          prototype = structure(
            .Data = function(x, y, ...) elementwise(sys.function(), x, y, ...),
-           separator = "\\s+",
-           inner_measure = Levenshtein(),
+           inner_comparator = Levenshtein(),
            agg_function = base::mean,
            deletion = 1.0, 
            insertion = 1.0,
            substitution = 1.0,
            symmetric = TRUE,
-           distance = TRUE
+           distance = TRUE,
+           ordered = FALSE
          ),
          validity = function(object) {
            errs <- character()
@@ -64,66 +64,61 @@ setClass("FuzzyTokenSet", contains = "StringMeasure",
              errs <- c(errs, "`substitution` must be a non-negative numeric vector of length 1")
            
            symmetric_weights <- object@deletion == object@insertion
-           if (!object@symmetric & symmetric_weights & object@inner_measure@symmetric)
-             errs <- c(errs, "`symmetric` must be TRUE when `deletion==insertion` and `inner_measure` is symmetric")
-           if (object@symmetric & (!symmetric_weights | !object@inner_measure@symmetric))
-           errs <- c(errs, "`symmetric` must be FALSE when `deletion!=insertion` or `inner_measure` is not symmetric")
+           if (!object@symmetric & symmetric_weights & object@inner_comparator@symmetric)
+             errs <- c(errs, "`symmetric` must be TRUE when `deletion==insertion` and `inner_comparator` is symmetric")
+           if (object@symmetric & (!symmetric_weights | !object@inner_comparator@symmetric))
+           errs <- c(errs, "`symmetric` must be FALSE when `deletion!=insertion` or `inner_comparator` is not symmetric")
            
            if (length(object@separator) != 1)
              errs <- c(errs, "`separator` must be a character vector of length 1")
            if (object@tri_inequal)
              errs <- c(errs, "`tri_inequal` must be FALSE")
+           if (object@ordered)
+             errs <- c(errs, "`ordered` must be FALSE")
            ifelse(length(errs) == 0, TRUE, errs)
          })
 
 
-#' Fuzzy Token Set Distance
+#' Fuzzy Token Set Comparator
 #' 
 #' @description 
-#' This hybrid token-character measure is suitable for comparing a pair of 
-#' multi-token (multi-word) strings \eqn{x} and \eqn{y}. It measures the 
-#' minimum cost of transforming the token set representation of \eqn{x} into 
-#' the token set representation of \eqn{y} using single-token operations 
-#' (insertions, deletions and substitutions). The cost of the operations are 
-#' determined using an internal user-specified distance measure.
+#' Compares a pair of token sets \eqn{x} and \eqn{y} by computing the 
+#' _minimum_ cost of transforming \eqn{x} into \eqn{y} using single-token 
+#' operations (insertions, deletions and substitutions). The cost of a 
+#' single-token operations os determined at the character-level using an 
+#' internal string comparator.
 #' 
 #' @details
-#' This measure compares the input strings \eqn{x} and \eqn{y} using a token 
-#' set representation. A token set is an unordered enumeration of tokens, 
-#' which may include duplicates. For example, the token set representation 
-#' of the string "Paw Paw Illinois" is {"Illinois", "Paw", "Paw"}. After 
-#' mapping \eqn{x} and \eqn{y} to token sets, the minimum cost of transforming 
-#' \eqn{x} into \eqn{y} is computed based on three single-token operations: 
-#' insertions, deletions and substitutions. The costs of the operations are 
-#' specified as follows:
+#' A token set is an unordered enumeration of tokens, which may include 
+#' duplicates. Given two token sets \eqn{x} and \eqn{y}, this comparator 
+#' computes the minimum cost of transforming \eqn{x} into \eqn{y} using the 
+#' following single-token operations:
 #' 
-#' * cost of deleting a token \eqn{a} from \eqn{x}: \eqn{w_d \times \mathrm{inner}(a, "")}{w_d * inner(a, "")}
-#' * cost of inserting a token \eqn{b} in \eqn{y}: \eqn{w_i \times \mathrm{inner}("", b)}{w_i * inner("", b)}
-#' * cost of substituting a token \eqn{a} in \eqn{x} for a token \eqn{b} 
-#' in \eqn{y}: \eqn{w_s \times \mathrm{inner}(a, b)}{w_s * inner(a, b)}
+#' * deleting a token \eqn{a} from \eqn{x} at cost \eqn{w_d \times \mathrm{inner}(a, "")}{w_d * inner(a, "")}
+#' * inserting a token \eqn{b} in \eqn{y} at cost \eqn{w_i \times \mathrm{inner}("", b)}{w_i * inner("", b)}
+#' * substituting a token \eqn{a} in \eqn{x} for a token \eqn{b} 
+#'   in \eqn{y} at cost \eqn{w_s \times \mathrm{inner}(a, b)}{w_s * inner(a, b)}
 #' 
-#' where \eqn{\mathrm{inner}}{inner} is a user-specified internal string 
-#' measure and \eqn{w_d, w_i, w_s} are user-specified weights, referred to as 
-#' `deletion`, `insertion` and `substitution` in the parameter list. By 
-#' default, the mean cost of the optimal (cost-minimizing) set of operations is 
-#' returned as a measure of the distance between \eqn{x} and \eqn{y}. Other 
-#' methods of aggregating the costs are supported by specifying a non-default 
-#' `agg_function`.
+#' where \eqn{\mathrm{inner}}{inner} is an internal string distance comparator 
+#' and \eqn{w_d, w_i, w_s} are positive weights, referred to as `deletion`, 
+#' `insertion` and `substitution` in the parameter list. By default, the 
+#' _mean_ cost of the optimal (cost-minimizing) set of operations is 
+#' returned. Other methods of aggregating the costs of the optimal operations 
+#' are supported by specifying a non-default `agg_function`.
 #' 
-#' The optimization problem---of finding the minimum total cost under the 
-#' allowed operations---is solved exactly using a linear sum assignment 
-#' solver. 
+#' The optimization problem---minimizing the total cost under the allowed 
+#' operations---is solved exactly using a linear sum assignment solver. 
 #' 
-#' @note This measure is qualitatively similar to the [`MongeElkan`] measure, 
-#'   however it is arguably more principled, since it is formulated as a 
-#'   cost minimization problem. It also offers more control over the costs 
+#' @note This comparator is qualitatively similar to the [`MongeElkan`] 
+#'   comparator, however it is arguably more principled, since it is formulated 
+#'   as a cost minimization problem. It also offers more control over the costs 
 #'   of missing tokens (by varying the `deletion` and `insertion` weights). 
-#'   This is useful for comparing full names, where dropping a name (e.g. 
-#'   middle name) should not be severely penalized.
+#'   This is useful for comparing full names, when dropping a name (e.g. 
+#'   middle name) shouldn't be severely penalized.
 #' 
-#' @param inner_measure inner string distance measure of class 
-#'   [`StringMeasure-class`]. Defaults to normalized [`Levenshtein`] distance.
-#' @param separator separator for tokens/words. Defaults to whitespace.
+#' @param inner_comparator inner string distance comparator of class 
+#'   [`StringComparator-class`]. Defaults to normalized [`Levenshtein`] 
+#'   distance.
 #' @param agg_function function used to aggregate the costs of the optimal 
 #'   operations. Defaults to [`base::mean`].
 #' @param deletion positive weight associated with deletion of a token. 
@@ -137,49 +132,51 @@ setClass("FuzzyTokenSet", contains = "StringMeasure",
 #' ## Compare names with heterogenous representations
 #' x <- "The University of California - San Diego"
 #' y <- "Univ. Calif. San Diego"
+#' # Tokenize strings on white space
+#' x <- strsplit(x, '\\s+')
+#' y <- strsplit(y, '\\s+')
 #' FuzzyTokenSet()(x, y)
-#' 
 #' # Reduce the cost associated with missing words
 #' FuzzyTokenSet(deletion = 0.5, insertion = 0.5)(x, y)
 #' 
-#' ## Compare full names, recognizing that it is common to omit names
-#' x <- "JOSE ELIAS TEJADA BASQUES"
-#' y <- "JOSE BASQUES"
-#' FuzzyTokenSet(deletion = 0.5, insertion = 0.5)(x, y)
+#' ## Compare full name with abbreviated name, reducing the penalty 
+#' ## for dropping parts of the name
+#' fullname <- "JOSE ELIAS TEJADA BASQUES"
+#' name <- "JOSE BASQUES"
+#' # Tokenize strings on white space
+#' fullname <- strsplit(fullname, '\\s+')
+#' name <- strsplit(name, '\\s+')
+#' comparator <- FuzzyTokenSet(deletion = 0.5)
+#' comparator(fullname, name) < comparator(name, fullname) # TRUE
 #' 
 #' @export
-FuzzyTokenSet <- function(inner_measure = Levenshtein(normalize = TRUE), 
+FuzzyTokenSet <- function(inner_comparator = Levenshtein(normalize = TRUE), 
                           separator = "\\s+", agg_function = base::mean, 
                           deletion = 1, insertion = 1, substitution = 1) {
-  distance <- inner_measure@distance
-  similarity <- inner_measure@similarity
-  symmetric <- inner_measure@symmetric & deletion == insertion
+  distance <- inner_comparator@distance
+  similarity <- inner_comparator@similarity
+  symmetric <- inner_comparator@symmetric & deletion == insertion
   arguments <- c(as.list(environment()))
   do.call("new", append("FuzzyTokenSet", arguments))
 }
 
 #' @describeIn elementwise Specialization for [`FuzzyTokenSet`] where `x` and `y` 
-#' are vectors of strings to compare.
-setMethod(elementwise, signature = c(measure = "FuzzyTokenSet", x = "vector", y = "vector"), 
-          function(measure, x, y, ...) {
-            # tokenize
-            tokens1 <- strsplit(x, measure@separator)
-            tokens2 <- strsplit(y, measure@separator)
-            
-            # TODO: wrong. Want proper recycling
-            if (length(tokens1) < length(tokens2)) {
-              tokens1 <- rep(tokens1, times = length(tokens2))
-            } else if (length(tokens2) < length(tokens1)) {
-              tokens2 <- rep(tokens2, times = length(tokens1))
+#' are lists of token vectors to compare.
+setMethod(elementwise, signature = c(comparator = "FuzzyTokenSet", x = "list", y = "list"), 
+          function(comparator, x, y, ...) {
+            if (length(x) < length(y)) {
+              x <- rep(x, times = length(y))
+            } else if (length(y) < length(x)) {
+              y <- rep(y, times = length(x))
             }
             
             # Pre-allocate score vector for output
-            out <- vector(mode = "numeric", length = length(tokens1))
-            for (i in seq_along(tokens1)) {
-              out[i] <- .impl_inner.OptimalMatch(tokens1[[i]], tokens2[[i]], 
-                                                 measure@inner_measure, measure@agg_function, 
-                                                 !measure@distance, measure@insertion, 
-                                                 measure@deletion, measure@substitution)
+            out <- vector(mode = "numeric", length = length(x))
+            for (i in seq_along(x)) {
+              out[i] <- .impl_inner.OptimalMatch(x[[i]], y[[i]], 
+                                                 comparator@inner_comparator, comparator@agg_function, 
+                                                 !comparator@distance, comparator@insertion, 
+                                                 comparator@deletion, comparator@substitution)
             }
             
             out
@@ -187,29 +184,19 @@ setMethod(elementwise, signature = c(measure = "FuzzyTokenSet", x = "vector", y 
 )
 
 #' @describeIn pairwise Specialization for [`FuzzyTokenSet`] where `x` and `y` are 
-#' vectors of strings to compare.
-setMethod(pairwise, signature = c(measure = "FuzzyTokenSet", x = "vector", y = "vector"), 
-          function(measure, x, y, return_matrix, ...) {
-            # tokenize
-            tokens1 <- strsplit(x, measure@separator)
-            tokens2 <- strsplit(y, measure@separator)
-            
-            if (length(tokens1) < length(tokens2)) {
-              tokens1 <- rep(tokens1, times = length(tokens2))
-            } else if (length(tokens2) < length(tokens1)) {
-              tokens2 <- rep(tokens2, times = length(tokens1))
-            }
-            
+#' lists of token vectors to compare.
+setMethod(pairwise, signature = c(comparator = "FuzzyTokenSet", x = "list", y = "list"), 
+          function(comparator, x, y, return_matrix, ...) {
             # Pre-allocate pairwise score matrix for output
-            scores <- matrix(0.0, nrow = length(tokens1), ncol = length(tokens2))
+            scores <- matrix(0.0, nrow = length(x), ncol = length(y))
             
             # Loop over all combinations in input character vectors
-            for (i in seq_len(length(tokens1))) {
-              for (j in seq_len(length(tokens2))) {
-                scores[i,j] <- .impl_inner.OptimalMatch(tokens1[[i]], tokens2[[j]], 
-                                                        measure@inner_measure, measure@agg_function, 
-                                                        !measure@distance, measure@insertion, 
-                                                        measure@deletion, measure@substitution)
+            for (i in seq_len(length(x))) {
+              for (j in seq_len(length(y))) {
+                scores[i,j] <- .impl_inner.OptimalMatch(x[[i]], y[[j]], 
+                                                        comparator@inner_comparator, comparator@agg_function, 
+                                                        !comparator@distance, comparator@insertion, 
+                                                        comparator@deletion, comparator@substitution)
               }
             }
             if (!return_matrix) scores <- as.PairwiseMatrix(scores)
@@ -217,11 +204,11 @@ setMethod(pairwise, signature = c(measure = "FuzzyTokenSet", x = "vector", y = "
           }
 )
 
-#' @describeIn pairwise Specialization for [`FuzzyTokenSet`] where `x` is a vector 
-#' of strings to compare among themselves.
-setMethod(pairwise, signature = c(measure = "FuzzyTokenSet", x = "vector", y = "NULL"), 
-          function(measure, x, y, return_matrix, ...) {
+#' @describeIn pairwise Specialization for [`FuzzyTokenSet`] where `x` is a list of token 
+#' vectors to compare among themselves.
+setMethod(pairwise, signature = c(comparator = "FuzzyTokenSet", x = "vector", y = "NULL"), 
+          function(comparator, x, y, return_matrix, ...) {
             if (!return_matrix) warning("`return_matrix = FALSE` is not supported")
-            pairwise(measure, x, x, return_matrix)
+            pairwise(comparator, x, x, return_matrix)
           }
 )

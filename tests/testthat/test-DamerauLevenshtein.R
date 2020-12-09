@@ -15,9 +15,10 @@ examples_equal_weights <- list(
   list(x = "1234", y = "", true_dist = 4),              # complete deletion
   list(x = "", y = "1234", true_dist = 4),              # complete insertion
   list(x = "", y = "", true_dist = 0),                  # empty
-  list(x = "positive", y = "evitisop", true_dist = 6),   # reverse
+  list(x = "positive", y = "evitisop", true_dist = 6),  # reverse
   list(x = "café", y = "cafe", true_dist = 1),          # character with diacritic
-  list(x = "Saturday", y = "Sunday", true_dist = 3)
+  list(x = "Saturday", y = "Sunday", true_dist = 3),
+  list(x = list(c("A", "B", "B", "A")), y = list(c("A", "B", "A", "B")), true_dist = 1)
 )
 
 test_that("Damerau-Levenshtein distance is correct when weights are equal", {
@@ -29,26 +30,26 @@ test_that("Damerau-Levenshtein distance is correct when weights are equal", {
 })
 
 examples_nonequal_weights <- list(
-  list(measure = DamerauLevenshtein(insertion = 10, deletion = 10, substitution = 10), 
+  list(comparator = DamerauLevenshtein(insertion = 10, deletion = 10, substitution = 10), 
        x = "abc", y = "abc", true_dist = 0),               # identical
-  list(measure = DamerauLevenshtein(substitution = 0.9), 
+  list(comparator = DamerauLevenshtein(substitution = 0.9), 
        x = "plane", y = "plant", true_dist = 0.9),         # substitution
-  list(measure = DamerauLevenshtein(insertion = 0.9), 
+  list(comparator = DamerauLevenshtein(insertion = 0.9), 
        x = "color", y = "colour", true_dist = 0.9),        # insertion
-  list(measure = DamerauLevenshtein(deletion = 0.9), 
+  list(comparator = DamerauLevenshtein(deletion = 0.9), 
        x = "favourite", y = "favorite", true_dist = 0.9),  # deletion
-  list(measure = DamerauLevenshtein(transposition = 100), 
+  list(comparator = DamerauLevenshtein(transposition = 100), 
        x = "abc", y = "ca", true_dist = 3),                # transposition + insertion
-  list(measure = DamerauLevenshtein(insertion = 10, deletion = 20), 
+  list(comparator = DamerauLevenshtein(insertion = 10, deletion = 20), 
        x = "", y = "", true_dist = 0),                     # empty
-  list(measure = DamerauLevenshtein(transposition = 1e-10), 
+  list(comparator = DamerauLevenshtein(transposition = 1e-10), 
        x = "positive", y = "evitisop", true_dist = 1.3e-9) # reverse
 )
 
 test_that("Damerau-Levenshtein distance is correct when weights are not equal", {
   for (example in examples_nonequal_weights) {
     with(example, 
-         expect_equal(measure(x, y), true_dist))
+         expect_equal(comparator(x, y), true_dist))
     
   }
 })
