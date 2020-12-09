@@ -6,7 +6,6 @@
 \usage{
 FuzzyTokenSet(
   inner_comparator = Levenshtein(normalize = TRUE),
-  separator = "\\\\s+",
   agg_function = base::mean,
   deletion = 1,
   insertion = 1,

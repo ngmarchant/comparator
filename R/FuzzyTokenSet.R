@@ -37,8 +37,7 @@ NULL
 }
 
 setClass("FuzzyTokenSet", contains = "StringComparator", 
-         slots = c(separator = "character",
-                   inner_comparator = "StringComparator",
+         slots = c(inner_comparator = "StringComparator",
                    agg_function = "function", 
                    deletion = "numeric", 
                    insertion = "numeric", 
@@ -69,8 +68,6 @@ setClass("FuzzyTokenSet", contains = "StringComparator",
            if (object@symmetric & (!symmetric_weights | !object@inner_comparator@symmetric))
            errs <- c(errs, "`symmetric` must be FALSE when `deletion!=insertion` or `inner_comparator` is not symmetric")
            
-           if (length(object@separator) != 1)
-             errs <- c(errs, "`separator` must be a character vector of length 1")
            if (object@tri_inequal)
              errs <- c(errs, "`tri_inequal` must be FALSE")
            if (object@ordered)
@@ -151,8 +148,8 @@ setClass("FuzzyTokenSet", contains = "StringComparator",
 #' 
 #' @export
 FuzzyTokenSet <- function(inner_comparator = Levenshtein(normalize = TRUE), 
-                          separator = "\\s+", agg_function = base::mean, 
-                          deletion = 1, insertion = 1, substitution = 1) {
+                          agg_function = base::mean, deletion = 1, 
+                          insertion = 1, substitution = 1) {
   distance <- inner_comparator@distance
   similarity <- inner_comparator@similarity
   symmetric <- inner_comparator@symmetric & deletion == insertion
