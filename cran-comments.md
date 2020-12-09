@@ -25,14 +25,22 @@ In addition, several improvements have been made in the resubmitted version (v0.
 First release on CRAN.
 
 ## Test environments
+
 * Fedora 33, R 4.0.3
 * Windows 10, R 4.0.3
 * winbuilder (devel)
 
 ## R CMD check results
 
+```
 Maintainer: 'Neil Marchant <ngmarchant@gmail.com>'
-  
+ 
 New submission
 
+Possibly mis-spelled words in DESCRIPTION:
+   Monge (15:38)
+   Elkan (15:44)
 0 errors | 0 warnings | 1 note
+```
+
+The words are not mis-spelled. They are the last names of [Alvaro Monge](https://web.csulb.edu/~amonge/) and [Charles Elkan](https://cseweb.ucsd.edu/~elkan/).
