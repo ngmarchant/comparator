@@ -26,3 +26,8 @@ test_that("InVocabulary comparator is correct when ignoring case", {
   expect_equal(comparator("Paul", "paul"), 1)
   expect_equal(comparator("chen", "cheng"), 0.7)
 })
+
+test_that("Recycling is performed correctly for InVocabulary comparator", {
+  expect_equal(comparator("Paul", c("Paul", "cheng", "Saul")), c(1, 0.5, 0.7))
+  expect_equal(comparator(c("Paul", "cheng", "Saul"), "Paul"), c(1, 0.5, 0.7))
+})

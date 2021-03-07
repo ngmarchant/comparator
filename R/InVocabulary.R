@@ -107,6 +107,12 @@ InVocabulary <- function(vocab, both_in_distinct = 0.7, both_in_same = 1.0,
 #' `y` are vectors of strings to compare.
 setMethod(elementwise, signature = c(comparator = "InVocabulary", x = "vector", y = "vector"), 
           function(comparator, x, y, ...) {
+            if (length(x) < length(y)) {
+              x <- rep_len(x, length(y))
+            } else if (length(y) < length(x)) {
+              y <- rep_len(y, length(x))
+            }
+            
             vocab <- comparator@vocab
             
             if (comparator@ignore_case) {

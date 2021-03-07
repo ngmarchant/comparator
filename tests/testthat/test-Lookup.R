@@ -39,3 +39,9 @@ test_that("Lookup comparator is correct when ignoring case", {
   expect_equal(comparator("Yellow", "Gold"), 0.1)
   expect_equal(comparator("Amber", "AMBER"), 0)
 })
+
+test_that("Recycling is performed correctly for Lookup comparator", {
+  comparator <- Lookup(lookup_table, c("x", "y"), "s")
+  expect_equal(comparator("Blue", c("Aqua", "Green", "Red")), c(0.2, NA_real_, NA_real_))
+  expect_equal(comparator(c("Aqua", "Green", "Red"), "Blue"), c(0.2, NA_real_, NA_real_))
+})

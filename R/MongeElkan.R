@@ -129,16 +129,14 @@ MongeElkan <- function(inner_comparator = Levenshtein(similarity = TRUE, normali
 #' lists of token vectors to compare.
 setMethod(elementwise, signature = c(comparator = "MongeElkan", x = "list", y = "list"), 
           function(comparator, x, y, ...) {
-            n <- max(length(x), length(y))
-            
             if (length(x) < length(y)) {
-              x <- rep(x, times = length(y))
+              x <- rep_len(x, length(y))
             } else if (length(y) < length(x)) {
-              y <- rep(y, times = length(x))
+              y <- rep_len(y, length(x))
             }
             
-            out <- vector(mode = "numeric", length = n)
-            for (i in seq_len(n)) {
+            out <- vector(mode = "numeric", length = length(x))
+            for (i in seq_along(out)) {
               out[i] <- .impl_inner.MongeElkan(x[[i]], y[[i]], 
                                                comparator@inner_comparator, comparator@inner_opt, 
                                                comparator@agg_function, comparator@symmetric)
