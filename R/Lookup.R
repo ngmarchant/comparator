@@ -140,6 +140,12 @@ Lookup <- function(lookup_table, values_colnames, score_colname,
 #' are vectors of strings to compare
 setMethod(elementwise, signature = c(comparator = "Lookup", x = "vector", y = "vector"), 
           function(comparator, x, y, ...) {
+            if (length(x) < length(y)) {
+              x <- rep_len(x, length(y))
+            } else if (length(y) < length(x)) {
+              y <- rep_len(y, length(x))
+            }
+            
             if (comparator@ignore_case) {
               x <- tolower(x)
               y <- tolower(y)

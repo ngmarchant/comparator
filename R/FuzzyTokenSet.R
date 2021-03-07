@@ -162,14 +162,14 @@ FuzzyTokenSet <- function(inner_comparator = Levenshtein(normalize = TRUE),
 setMethod(elementwise, signature = c(comparator = "FuzzyTokenSet", x = "list", y = "list"), 
           function(comparator, x, y, ...) {
             if (length(x) < length(y)) {
-              x <- rep(x, times = length(y))
+              x <- rep_len(x, length(y))
             } else if (length(y) < length(x)) {
-              y <- rep(y, times = length(x))
+              y <- rep_len(y, length(x))
             }
             
             # Pre-allocate score vector for output
             out <- vector(mode = "numeric", length = length(x))
-            for (i in seq_along(x)) {
+            for (i in seq_along(out)) {
               out[i] <- .impl_inner.OptimalMatch(x[[i]], y[[i]], 
                                                  comparator@inner_comparator, comparator@agg_function, 
                                                  !comparator@distance, comparator@insertion, 
