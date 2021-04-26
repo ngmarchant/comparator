@@ -80,15 +80,15 @@ setClass("FuzzyTokenSet", contains = "StringComparator",
 #' 
 #' @description 
 #' Compares a pair of token sets \eqn{x} and \eqn{y} by computing the 
-#' _minimum_ cost of transforming \eqn{x} into \eqn{y} using single-token 
-#' operations (insertions, deletions and substitutions). The cost of a 
-#' single-token operations os determined at the character-level using an 
+#' optimal cost of transforming \eqn{x} into \eqn{y} using single-token 
+#' operations (insertions, deletions and substitutions). The cost of  
+#' single-token operations is determined at the character-level using an 
 #' internal string comparator.
 #' 
 #' @details
 #' A token set is an unordered enumeration of tokens, which may include 
 #' duplicates. Given two token sets \eqn{x} and \eqn{y}, this comparator 
-#' computes the minimum cost of transforming \eqn{x} into \eqn{y} using the 
+#' computes the optimal cost of transforming \eqn{x} into \eqn{y} using the 
 #' following single-token operations:
 #' 
 #' * deleting a token \eqn{a} from \eqn{x} at cost \eqn{w_d \times \mathrm{inner}(a, "")}{w_d * inner(a, "")}
@@ -96,19 +96,21 @@ setClass("FuzzyTokenSet", contains = "StringComparator",
 #' * substituting a token \eqn{a} in \eqn{x} for a token \eqn{b} 
 #'   in \eqn{y} at cost \eqn{w_s \times \mathrm{inner}(a, b)}{w_s * inner(a, b)}
 #' 
-#' where \eqn{\mathrm{inner}}{inner} is an internal string distance comparator 
-#' and \eqn{w_d, w_i, w_s} are positive weights, referred to as `deletion`, 
+#' where \eqn{\mathrm{inner}}{inner} is an internal string comparator and 
+#' \eqn{w_d, w_i, w_s} are non-negative weights, referred to as `deletion`, 
 #' `insertion` and `substitution` in the parameter list. By default, the 
-#' _mean_ cost of the optimal (cost-minimizing) set of operations is 
-#' returned. Other methods of aggregating the costs of the optimal operations 
-#' are supported by specifying a non-default `agg_function`.
+#' _mean_ cost of the optimal set of operations is returned. Other methods of 
+#' aggregating the costs are supported by specifying a non-default 
+#' `agg_function`.
 #' 
-#' The optimization problem---minimizing the total cost under the allowed 
-#' operations---is solved exactly using a linear sum assignment solver. 
+#' If the internal string comparator is a _distance_ function, then the optimal 
+#' set of operations _minimize_ the cost. Otherwise, the optimal set of 
+#' operations _maximize_ the cost. The optimization problem is solved exactly 
+#' using a linear sum assignment solver. 
 #' 
 #' @note This comparator is qualitatively similar to the [`MongeElkan`] 
 #'   comparator, however it is arguably more principled, since it is formulated 
-#'   as a cost minimization problem. It also offers more control over the costs 
+#'   as a cost optimization problem. It also offers more control over the costs 
 #'   of missing tokens (by varying the `deletion` and `insertion` weights). 
 #'   This is useful for comparing full names, when dropping a name (e.g. 
 #'   middle name) shouldn't be severely penalized.
@@ -118,12 +120,12 @@ setClass("FuzzyTokenSet", contains = "StringComparator",
 #'   distance.
 #' @param agg_function function used to aggregate the costs of the optimal 
 #'   operations. Defaults to [`base::mean`].
-#' @param deletion positive weight associated with deletion of a token. 
-#'   Defaults to unit cost.
-#' @param insertion positive weight associated insertion of a token.
-#'   Defaults to unit cost.
-#' @param substitution positive weight associated with substitution of a 
-#'   token. Defaults to unit cost.
+#' @param deletion non-negative weight associated with deletion of a token. 
+#'   Defaults to 1.
+#' @param insertion non-negative weight associated insertion of a token.
+#'   Defaults to 1.
+#' @param substitution non-negative weight associated with substitution of a 
+#'   token. Defaults to 1.
 #' 
 #' @examples
 #' ## Compare names with heterogenous representations
