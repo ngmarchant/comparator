@@ -20,26 +20,26 @@ distance.}
 \item{agg_function}{function used to aggregate the costs of the optimal
 operations. Defaults to \code{\link[base:mean]{base::mean}}.}
 
-\item{deletion}{positive weight associated with deletion of a token.
-Defaults to unit cost.}
+\item{deletion}{non-negative weight associated with deletion of a token.
+Defaults to 1.}
 
-\item{insertion}{positive weight associated insertion of a token.
-Defaults to unit cost.}
+\item{insertion}{non-negative weight associated insertion of a token.
+Defaults to 1.}
 
-\item{substitution}{positive weight associated with substitution of a
-token. Defaults to unit cost.}
+\item{substitution}{non-negative weight associated with substitution of a
+token. Defaults to 1.}
 }
 \description{
 Compares a pair of token sets \eqn{x} and \eqn{y} by computing the
-\emph{minimum} cost of transforming \eqn{x} into \eqn{y} using single-token
-operations (insertions, deletions and substitutions). The cost of a
-single-token operations os determined at the character-level using an
+optimal cost of transforming \eqn{x} into \eqn{y} using single-token
+operations (insertions, deletions and substitutions). The cost of
+single-token operations is determined at the character-level using an
 internal string comparator.
 }
 \details{
 A token set is an unordered enumeration of tokens, which may include
 duplicates. Given two token sets \eqn{x} and \eqn{y}, this comparator
-computes the minimum cost of transforming \eqn{x} into \eqn{y} using the
+computes the optimal cost of transforming \eqn{x} into \eqn{y} using the
 following single-token operations:
 \itemize{
 \item deleting a token \eqn{a} from \eqn{x} at cost \eqn{w_d \times \mathrm{inner}(a, "")}{w_d * inner(a, "")}
@@ -48,20 +48,22 @@ following single-token operations:
 in \eqn{y} at cost \eqn{w_s \times \mathrm{inner}(a, b)}{w_s * inner(a, b)}
 }
 
-where \eqn{\mathrm{inner}}{inner} is an internal string distance comparator
-and \eqn{w_d, w_i, w_s} are positive weights, referred to as \code{deletion},
+where \eqn{\mathrm{inner}}{inner} is an internal string comparator and
+\eqn{w_d, w_i, w_s} are non-negative weights, referred to as \code{deletion},
 \code{insertion} and \code{substitution} in the parameter list. By default, the
-\emph{mean} cost of the optimal (cost-minimizing) set of operations is
-returned. Other methods of aggregating the costs of the optimal operations
-are supported by specifying a non-default \code{agg_function}.
+\emph{mean} cost of the optimal set of operations is returned. Other methods of
+aggregating the costs are supported by specifying a non-default
+\code{agg_function}.
 
-The optimization problem---minimizing the total cost under the allowed
-operations---is solved exactly using a linear sum assignment solver.
+If the internal string comparator is a \emph{distance} function, then the optimal
+set of operations \emph{minimize} the cost. Otherwise, the optimal set of
+operations \emph{maximize} the cost. The optimization problem is solved exactly
+using a linear sum assignment solver.
 }
 \note{
 This comparator is qualitatively similar to the \code{\link{MongeElkan}}
 comparator, however it is arguably more principled, since it is formulated
-as a cost minimization problem. It also offers more control over the costs
+as a cost optimization problem. It also offers more control over the costs
 of missing tokens (by varying the \code{deletion} and \code{insertion} weights).
 This is useful for comparing full names, when dropping a name (e.g.
 middle name) shouldn't be severely penalized.

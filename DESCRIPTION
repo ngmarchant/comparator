@@ -37,6 +37,7 @@ Collate:
     'NumericComparator.R'
     'Chebyshev.R'
     'Constant.R'
+    'CustomStringComparator.R'
     'Levenshtein.R'
     'DamerauLevenshtein.R'
     'Minkowski.R'
