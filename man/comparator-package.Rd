@@ -6,13 +6,7 @@
 \alias{comparator-package}
 \title{comparator: Comparison Functions for Clustering and Record Linkage}
 \description{
-Implements functions for comparing strings, sequences and 
-    numeric vectors for clustering and record linkage applications. 
-    Supported comparison functions include: generalized edit distances 
-    for comparing sequences/strings, Monge-Elkan similarity for fuzzy 
-    comparison of token sets, and L-p distances for comparing numeric 
-    vectors. Where possible, comparison functions are implemented in 
-    C/C++ to ensure good performance.
+Implements functions for comparing strings, sequences and numeric vectors for clustering and record linkage applications. Supported comparison functions include: generalized edit distances for comparing sequences/strings, Monge-Elkan similarity for fuzzy comparison of token sets, and L-p distances for comparing numeric vectors. Where possible, comparison functions are implemented in C/C++ to ensure good performance.
 }
 \seealso{
 Useful links:
