@@ -10,4 +10,11 @@ Fix compilation problem identified by CRAN checks.
 
 ## R CMD check results
 
-Returning `Status: OK`
+Status: 1 NOTE
+
+Compilation used the following non-portable
+  flag(s):
+  ‘-Werror=format-security’  ‘-Wp,-D_FORTIFY_SOURCE=2’
+  ‘-Wp,-D_GLIBCXX_ASSERTIONS’
+
+These flags are set by Fedora 35.
