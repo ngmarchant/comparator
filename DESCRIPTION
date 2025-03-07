@@ -1,8 +1,8 @@
 Package: comparator
 Type: Package
 Title: Comparison Functions for Clustering and Record Linkage
-Version: 0.1.2
-Date: 2022-03-15
+Version: 0.1.3
+Date: 2025-03-07
 Authors@R: c(
     person(given = "Neil", 
            family = "Marchant", 
