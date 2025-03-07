@@ -4,7 +4,7 @@
 #include <vector>
 #include <algorithm>
 
-inline std::size_t operator "" _sz (unsigned long long int x)
+inline std::size_t operator ""_sz(unsigned long long int x)
 {
   return x;
 }
