@@ -13,13 +13,15 @@ setClass("CppSeqComparator",
          contains = "VIRTUAL")
 
 is_list_of_vectors <- function(x) {
-  all(sapply(x, is.vector))
+  is.list(x) & all(sapply(x, is.vector))
 }
 
 #' @describeIn elementwise Specialization for [`CppSeqComparator-class`] where 
 #' `x` and `y` are lists of sequences (vectors) to compare.
 setMethod(elementwise, signature = c(comparator = "CppSeqComparator", x = "list", y = "list"), 
           function(comparator, x, y, ...) {
+            x <- as.list(x)
+            y <- as.list(y)
             if (!is_list_of_vectors(x)) stop("`x` must be a list of vectors")
             if (!is_list_of_vectors(y)) stop("`y` must be a list of vectors")
             elementwisecpp(x, y, comparator)
@@ -30,6 +32,8 @@ setMethod(elementwise, signature = c(comparator = "CppSeqComparator", x = "list"
 #' and `y` are lists of sequences (vectors) to compare.
 setMethod(pairwise, signature = c(comparator = "CppSeqComparator", x = "list", y = "list"), 
           function(comparator, x, y, return_matrix, ...) {
+            x <- as.list(x)
+            y <- as.list(y)
             if (!is_list_of_vectors(x)) stop("`x` must be a list of vectors")
             if (!is_list_of_vectors(y)) stop("`y` must be a list of vectors")
             scores <- pairwisecpp(x, y, comparator, TRUE)
@@ -42,6 +46,7 @@ setMethod(pairwise, signature = c(comparator = "CppSeqComparator", x = "list", y
 #' a list of sequences (vectors) to compare.
 setMethod(pairwise, signature = c(comparator = "CppSeqComparator", x = "list", y = "NULL"), 
           function(comparator, x, y, return_matrix, ...) {
+            x <- as.list(x)
             if (!is_list_of_vectors(x)) stop("`x` must be a list of vectors")
             scores <- pairwisecpp(x, NULL, comparator, return_matrix)
             if (return_matrix) scores <- as.matrix(scores)
