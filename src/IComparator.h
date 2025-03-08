@@ -33,6 +33,8 @@ public:
   bool is_distance() const { return distance_; }
   
   bool is_similarity() const { return similarity_; }
+  
+  virtual ~Comparator() = default;
 };
 
 template<class Range> 
