@@ -1,7 +1,6 @@
 ## Comments
 
-Fix WARN and NOTE messages identified by CRAN checks. This involved fixing 
-deprecated C++ syntax and no longer specifying C++11 as a SystemRequirement.
+Fix new-delete-type mismatch identified by gcc Asan.
 
 ## Test environments
 

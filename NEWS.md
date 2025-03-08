@@ -1,3 +1,6 @@
+# comparator 0.1.4
+* Fix new-delete-type mistmatch identified by gcc Asan
+
 # comparator 0.1.3
 * Fix deprecated C++ syntax (literal operators) and avoid specifying C+11 as required by new CRAN policy.
 
